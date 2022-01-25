@@ -42,7 +42,7 @@ rho = rhon*eye(size(crr)); % expand to matrix
 %% discretization 
 [y_dash, Dr_dash] = chebdif(N, 2);  % y_dash in [-1, 1]
 r = (h*y_dash + b + a)/2;           % radial coordinate
-rn = r/h0;
+rn = r/h;
 Dr1 =  2*h0/h*Dr_dash(:,:,1);       % differentiation on [-1/2, 1/2]
 Dr2 = (2*h0/h)^2*Dr_dash(:,:,2);    % 2nd order differentiation on [-1/2, 1/2]
 Id = eye(size(Dr1));                % identity matrix for discretization
@@ -59,7 +59,7 @@ M = kron(rho, Id);
 
 % incorporate BCs:
 B1 = kron(crz, Id([1, N], :)); % BC going into L1
-B0 = kron(crr, Dr1([1, N], :)) + kron(crp*A, rn1inv([1, N], :)); % BC going into L0
+B0 = kron(crr, Dr1([1, N], :)) + kron(crp*A, rn1inv([1, N], :)) + 1i*n*kron(crp, rn1inv([1, N], :)); % BC going into L0
 dofBC = [1, N, N+1, 2*N, 2*N+1, 3*N];
 L2(dofBC, :) = 0; L1(dofBC, :) = B1; L0(dofBC, :) = B0; M(dofBC, :) = 0;
 
