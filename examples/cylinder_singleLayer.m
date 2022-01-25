@@ -1,7 +1,7 @@
 clear all
 
 r = [5e-3, 6e-3];
-N = [10];
+N = [20];
 Nudof = 3;
 mats = Material('zircaloy', 99.3e9, 0.37, 6560, 'Enu');
 n = 1;
