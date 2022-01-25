@@ -1,0 +1,13 @@
+{
+	"name": "steel",
+	"symmetry": "anisotropic",
+    "rho": 	7900,
+	"C": 	[[281.72e9, 131.12e9,  113.12e9,  0e9,     0e9,   0e9],
+             [131.12e9, 281.72e9,  131.12e9,  0e9,     0e9,   0e9],
+             [113.12e9, 131.12e9,  281.72e9,  0e9,     0e9,   0e9], 
+             [ 0e9,     0e9,        0e9,    84.298e9,  0e9,   0e9],
+             [ 0e9,     0e9,        0e9,      0e9,   84.298e9, 0e9],
+             [ 0e9,     0e9,        0e9,      0e9,     0e9,  84.298e9]
+            ],
+    "source": "M. Zheng, C. He, Y. Lyu, and B. Wu, “Guided waves propagation in anisotropic hollow cylinders by Legendre polynomial solution based on state-vector formalism,” Composite Structures, vol. 207, pp. 645–657, Jan. 2019, doi: 10.1016/j.compstruct.2018.09.042."
+}
