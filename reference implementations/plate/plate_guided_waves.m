@@ -1,4 +1,16 @@
 %% Dispersion calculation in a generally anisotropic elastic plate
+% Depends on the DMSUITE toolbox by Weideman and Reddy: 
+% https://mathworks.com/matlabcentral/fileexchange/29-dmsuite
+% 
+% 2022 - Daniel A. Kiefer
+% Institut Langevin, Paris, France
+% 
+% see also:
+% [1] D. A. Kiefer, M. Ponschab, S. J. Rupitsch, and M. Mayle, “Calculating the full 
+% leaky Lamb wave spectrum with exact fluid interaction,” The Journal of the Acoustical 
+% Society of America, vol. 145, no. 6, pp. 3341–3350, Jun. 2019, doi: 10.1121/1.5109399.
+%
+
 h = 1e-3;   % thickness in m
 N = 20;     % discretization: polynomial order of interpolants
 rho = 7900; lbd = 1.1538e11; mu = 7.6923e10; % steel material
@@ -34,7 +46,7 @@ dofBC = [(0:length(udof)-1)*N+1; (1:length(udof))*N]; % [1, N, N+1, 2*N, 2*N+1, 
 L2(dofBC, :) = 0; L1(dofBC, :) = B1; L0(dofBC, :) = B0; M(dofBC, :) = 0;
 
 %% solve for frequency and plot:
-kh = linspace(1e-2, 15, 300); % wavenumber-thickness (solve for frequency)
+kh = linspace(1e-2, 15, 300); % wavenumber*thickness 
 whn = nan(size(M, 2), length(kh)); tic 
 for ii = 1:length(kh)
     kh0 = kh(ii);
@@ -42,7 +54,7 @@ for ii = 1:length(kh)
     whn(:,ii) = sqrt(wh2);
 end
 fh = real(whn/2/pi*fh0); fh(fh == 0) = nan;
-chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(fh, 2), size(fh, 1), chron, chron/length(fh(:))*1e3);
+chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(fh, 1), size(fh, 2), chron, chron/length(fh(:))*1e3);
 
 % plot wavenumbers:
 kkh = kh.*ones(size(fh));
@@ -57,7 +69,7 @@ xlim([0, 6e6]/1e6), ylim([0, 12])
 xlabel('f in MHz'), ylabel('cp in mm/us')
 
 %% solve for wavenumbers:
-fh = linspace(1e-2, 6, 300).'*1e6*h;
+fh = linspace(1e-2, 6, 300).'*1e6*h; % frequency*thickness
 kh = nan(length(fh), size(M, 2)*2); tic
 for ii = 1:length(fh)
     whn = 2*pi*fh(ii)/fh0; % current frequency-thickness (normalized)
@@ -66,13 +78,13 @@ for ii = 1:length(fh)
 end
 chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(kh, 1), size(kh, 2), chron, chron/length(kh(:))*1e3);
 
-% wave numbers:
+% plot wave numbers:
 ffh = fh.*ones(size(kh));
 figure(3), scatter(real(kh(:))/h/1e3, ffh(:)/h/1e6, 8, abs(imag(kh(:))), 'filled'), 
 caxis([0, 0.12]), xlim([0, 12]), ylim([0, fh(end)/h/1e6])
 xlabel('k in rad/mm'), ylabel('f in MHz')
 
-% phase vel:
+% plot phase vel:
 ffh = fh.*ones(size(kh));
 figure(4), scatter(ffh(:)/h/1e6, 2*pi*ffh(:)./real(kh(:))/1e3, 8, abs(imag(kh(:))), 'filled'), 
 caxis([0, 0.12]), xlim([0, fh(end)/h/1e6]), ylim([0, 15]),
