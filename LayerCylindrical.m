@@ -1,21 +1,17 @@
 classdef LayerCylindrical 
     properties (Access = public)
-        a 
-        b 
-        r 
-        N
-        D1 
-        D2 
-        eta
-        mat
+        r   % collocation points on domain of unit length
+        eta % collocation points on [-1, 1] TODO: is this being used?
+        h   % thickness in m
+        N   % number of collocation points
+        D1  % diff matrix on unit domain 
+        D2  % second order 
+        mat % material 
         % n = 0 % circumferential order: exp(1i*n*phi)
-    end
-    properties (Dependent)
-        h
     end
 
     methods
-        function [obj] = LayerCylindrical(mat, r1, r2, N)
+        function [obj] = LayerCylindrical(mat, rs, N)
             %% LayerSolid: constructor method
             obj.mat = mat;
             
@@ -24,9 +20,8 @@ classdef LayerCylindrical
             obj.D1 = 2*D_dash(:,:,1);
             obj.D2 = 4*D_dash(:,:,2);
             
-            obj.a = r1;
-            obj.b = r2;
-            obj.r = (obj.eta + 1)/2 + obj.a/obj.h;
+            obj.h = rs(2) - rs(1);
+            obj.r = (obj.eta + 1)/2 + rs(1)/obj.h;
         end
 
         function [L0, L1, L2] = stiffnessOp(obj, dof, n)
@@ -96,10 +91,6 @@ classdef LayerCylindrical
             I = eye(length(dof));
             Id = eye(obj.N);  
             U0 = kron(I, Id([1, obj.N], :));
-        end
-
-        function h = get.h(obj)
-            h = obj.b - obj.a;
         end
         
     end

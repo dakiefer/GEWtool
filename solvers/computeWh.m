@@ -1,4 +1,5 @@
-function whn = solveWithKh(kh, M, L0, L1, L2)
+function wh = computeWh(guide, kh)
+    M = guide.op.M; L0 = guide.op.L0; L1 = guide.op.L1; L2 = guide.op.L2;
     tic 
     whn = nan(size(M, 2), length(kh));
     for ii = 1:length(kh)
@@ -8,4 +9,5 @@ function whn = solveWithKh(kh, M, L0, L1, L2)
     whn(whn == 0) = nan;
     chron = toc;
     fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(whn, 2), size(whn, 1), chron, chron/length(whn(:))*1e3);
+    wh = whn*guide.np.fh0;
 end

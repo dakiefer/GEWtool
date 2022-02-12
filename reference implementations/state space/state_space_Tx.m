@@ -3,18 +3,19 @@
 % parameters:
 mat = Material('brass'); c = mat.tensor; rho = mat.rho;
 h = 1e-3; % thickness in m
-kh = linspace(1e-2, 15, 400); % wavenumber-thickness (solve for frequency)
+kh = linspace(1e-2, 20, 200); % wavenumber-thickness (solve for frequency)
 N = 20; % discretization = polynomial order of interpolants
 
 %% derived parameters and normalize parameters:
 c0 = c(1,2,1,2); h0 = h; % normalization parameters
-rho0 = rho; f0 = sqrt(c0/rho0)/h0; % normalization parameters
+rho0 = rho; fh0 = sqrt(c0/rho0); % normalization parameters
 rhon = rho/rho0; cn = c/c0;
 
 % relevant material matrices: 
 udof = [1, 2];
 cxx = squeeze(cn(1,udof,udof,1));
-cxy = squeeze(cn(1,udof,udof,2)); cyx = squeeze(cn(2,udof,udof,1));
+cxy = squeeze(cn(1,udof,udof,2)); 
+cyx = squeeze(cn(2,udof,udof,1));
 cyy = squeeze(cn(2,udof,udof,2));
 I = eye(size(cxx));
 
@@ -55,18 +56,18 @@ for ii = 1:length(kh)
     [wh2] = polyeig((1i*kh0)^2*L2 + (1i*kh0)*L1 + L0, M); % does not work properly with eig()
     whn(:,ii) = sqrt(wh2);
 end
-fh = real(whn/2/pi*f0*h0); fh(fh == 0) = nan;
+fh = real(whn/2/pi*fh0); % fh(fh == 0) = nan;
 chron = toc;
 fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(fh, 2), size(fh, 1), chron, chron/length(fh(:))*1e3);
 
 % wavenumbers:
-kkh = kh.*ones(size(fh));
-hold on, plot(kkh(:), fh(:), '.');
-ylim([0, 5e3]), xlim([0, 10])
-ylabel('fh in m/s'), xlabel('kh in 1')
+% kkh = kh.*ones(size(fh));
+% hold on, plot(kkh(:), fh(:), '.');
+% ylim([0, 5e3]), xlim([0, 10])
+% ylabel('fh in m/s'), xlabel('kh in 1')
 
 % phase vel:
-% kkh = kh.*ones(size(fh));
-% figure, plot(fh(:), 2*pi*fh(:)./kkh(:), '.');
-% ylim([0, 10e3]), xlim([0, 10000])
-% xlabel('f h in m/s'), ylabel('cp in m/s')
+kkh = kh.*ones(size(fh));
+figure, plot(fh(:), 2*pi*fh(:)./kkh(:), '.');
+ylim([0, 10e3]), xlim([0, 6000])
+xlabel('f h in m/s'), ylabel('cp in m/s')
