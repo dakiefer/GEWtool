@@ -28,16 +28,16 @@ rhon = rho/rho0; cn = c/c0;
 udof = [1, 2, 3];
 
 % relevant material matrices: 
-crr = squeeze(cn(1,udof,udof,1));
-cpp = squeeze(cn(2,udof,udof,2));
-czz = squeeze(cn(3,udof,udof,3));
-Czp = squeeze(cn(3,udof,udof,2)) + squeeze(cn(2,udof,udof,3));
-Crz = squeeze(cn(3,udof,udof,1)) + squeeze(cn(1,udof,udof,3));
-Crp = squeeze(cn(1,udof,udof,2)) + squeeze(cn(2,udof,udof,1));
-crp = squeeze(cn(1,udof,udof,2));
-crz = squeeze(cn(1,udof,udof,3));
-A = [0, -1, 0; 1, 0, 0; 0, 0, 0]; % differetiation in curvilinear coordinate system
-B = [1,  0, 0; 0, 1, 0; 0, 0, 0]; % differetiation in curvilinear coordinate system
+czz = squeeze(cn(1,udof,udof,1));
+crr = squeeze(cn(2,udof,udof,2));
+cpp = squeeze(cn(3,udof,udof,3));
+Crp = squeeze(cn(2,udof,udof,3)) + squeeze(cn(3,udof,udof,2));
+Czp = squeeze(cn(1,udof,udof,3)) + squeeze(cn(3,udof,udof,1));
+Crz = squeeze(cn(2,udof,udof,1)) + squeeze(cn(1,udof,udof,2));
+crp = squeeze(cn(2,udof,udof,3));
+crz = squeeze(cn(2,udof,udof,1));
+A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
+B = [0, 0, 0; 0, 1,  0; 0, 0, 1]; % differetiation in curvilinear coordinate system
 A = A(udof, udof); B = B(udof, udof);
 rho = rhon*eye(size(crr)); % expand to matrix
 
