@@ -25,19 +25,23 @@ h = b-a; % thickness
 c0 = c(1,2,1,2); h0 = h; % normalization parameters
 rho0 = rho; f0 = sqrt(c0/rho0)/h0; % normalization parameters
 rhon = rho/rho0; cn = c/c0;
+udof = [1, 2, 3];
 
 % relevant material matrices: 
-crr = squeeze(cn(1,:,:,1));
-cpp = squeeze(cn(2,:,:,2));
-czz = squeeze(cn(3,:,:,3));
-Czp = squeeze(cn(3,:,:,2)) + squeeze(cn(2,:,:,3));
-Crz = squeeze(cn(3,:,:,1)) + squeeze(cn(1,:,:,3));
-Crp = squeeze(cn(1,:,:,2)) + squeeze(cn(2,:,:,1));
-crp = squeeze(cn(1,:,:,2));
-crz = squeeze(cn(1,:,:,3));
+crr = squeeze(cn(1,udof,udof,1));
+cpp = squeeze(cn(2,udof,udof,2));
+czz = squeeze(cn(3,udof,udof,3));
+Czp = squeeze(cn(3,udof,udof,2)) + squeeze(cn(2,udof,udof,3));
+Crz = squeeze(cn(3,udof,udof,1)) + squeeze(cn(1,udof,udof,3));
+Crp = squeeze(cn(1,udof,udof,2)) + squeeze(cn(2,udof,udof,1));
+crp = squeeze(cn(1,udof,udof,2));
+crz = squeeze(cn(1,udof,udof,3));
 A = [0, -1, 0; 1, 0, 0; 0, 0, 0]; % differetiation in curvilinear coordinate system
 B = [1,  0, 0; 0, 1, 0; 0, 0, 0]; % differetiation in curvilinear coordinate system
+A = A(udof, udof); B = B(udof, udof);
 rho = rhon*eye(size(crr)); % expand to matrix
+
+% cpp = 0*cpp; Czp = 0*Czp; Crp = 0*Crp; crp = 0*crp;
 
 %% discretization 
 [y_dash, Dr_dash] = chebdif(N, 2);  % y_dash in [-1, 1]
@@ -60,7 +64,7 @@ M = kron(rho, Id);
 % incorporate BCs:
 B1 = kron(crz, Id([1, N], :)); % BC going into L1
 B0 = kron(crr, Dr1([1, N], :)) + kron(crp*A, rn1inv([1, N], :)) + 1i*n*kron(crp, rn1inv([1, N], :)); % BC going into L0
-dofBC = [1, N, N+1, 2*N, 2*N+1, 3*N];
+dofBC = [(0:length(udof)-1)*N+1; (1:length(udof))*N]; % [1, N, N+1, 2*N, 2*N+1, 3*N];
 L2(dofBC, :) = 0; L1(dofBC, :) = B1; L0(dofBC, :) = B0; M(dofBC, :) = 0;
 
 %% solve for frequency:
