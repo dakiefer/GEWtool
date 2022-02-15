@@ -1,4 +1,4 @@
-classdef GUWguide < matlab.mixin.Copyable
+classdef Waveguide < matlab.mixin.Copyable
 
 properties (Access = public)
 	geom
@@ -9,11 +9,12 @@ properties (Access = public)
 end % properties
 
 properties (Dependent)
+	h0  		% short hand for obj.np.h0
 end % properties Dependent
 
 
 methods 
-	function obj = GUWguide(mats, rs, Ns, Nudof)
+	function obj = Waveguide(mats, rs, Ns, Nudof)
 		if nargin < 4, Nudof = 3*ones(size(Ns)); end
 		obj.geom = Geometry(rs, Ns, Nudof);
 		obj.mat = mats;
@@ -24,10 +25,9 @@ methods
 		obj.np = np;
 	end
 
-	% function lay = get.lay(obj)
-	% 	error('to be implemented')
-	% 	lay = [];
-	% end
+	function h0 = get.h0(obj)
+		h0 = obj.np.h0;
+	end
 
 	function guw = fullyCoupled(obj, n)
 		udof = 1:3;
@@ -39,7 +39,7 @@ methods
 	function guw = Lamb(obj, n)
 		udof = 1:2;
 		guw = obj;
-		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, length(udof));
+		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
 		guw.op = obj.assembleLayers(udof, n);
 		guw.op = obj.freeBCs(udof, n);
 	end
@@ -47,7 +47,7 @@ methods
 	function obj = sh(obj, n)
 		udof = 3;
 		guw = obj;
-		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, length(udof));
+		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, ones(size(obj.geom.N)));
 		guw.op = obj.assembleLayers(udof, n);
 		guw.op = obj.freeBCs(udof, n);
 	end

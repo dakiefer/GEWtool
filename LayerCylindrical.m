@@ -24,7 +24,7 @@ classdef LayerCylindrical
             obj.r = (obj.eta + 1)/2 + rs(1)/obj.h;
         end
 
-        function [L0, L1, L2] = stiffnessOp(obj, dof, n)
+        function [L0, L1, L2] = stiffnessOp(obj, udof, n)
             % stiffnessOp stiffness operator describing the left side of the 
             % elastodynamic wave equation:
             % L u = (w h0)^2 M u, 
@@ -32,17 +32,17 @@ classdef LayerCylindrical
 
             cn = obj.mat.tensor/obj.mat.tensor(1,2,1,2); % normalized stiffness tensor
             % relevant material matrices: 
-            crr = squeeze(cn(1,dof,dof,1));
-            cpp = squeeze(cn(2,dof,dof,2));
-            czz = squeeze(cn(3,dof,dof,3));
-            Czp = squeeze(cn(3,dof,dof,2)) + squeeze(cn(2,dof,dof,3));
-            Crz = squeeze(cn(3,dof,dof,1)) + squeeze(cn(1,dof,dof,3));
-            Crp = squeeze(cn(1,dof,dof,2)) + squeeze(cn(2,dof,dof,1));
-            crp = squeeze(cn(1,dof,dof,2));
-            crz = squeeze(cn(1,dof,dof,3));
+            czz = squeeze(cn(1,udof,udof,1));
+            crr = squeeze(cn(2,udof,udof,2));
+            cpp = squeeze(cn(3,udof,udof,3));
+            Crp = squeeze(cn(2,udof,udof,3)) + squeeze(cn(3,udof,udof,2));
+            Czp = squeeze(cn(1,udof,udof,3)) + squeeze(cn(3,udof,udof,1));
+            Crz = squeeze(cn(2,udof,udof,1)) + squeeze(cn(1,udof,udof,2));
+            crp = squeeze(cn(2,udof,udof,3));
+            crz = squeeze(cn(2,udof,udof,1));
             % differetiation in curvilinear coordinate system:
-            A = [0, -1, 0; 1, 0, 0; 0, 0, 0]; A = squeeze(A(dof, dof));
-            B = [1,  0, 0; 0, 1, 0; 0, 0, 0]; B = squeeze(B(dof, dof));
+            A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; A = squeeze(A(udof, udof));
+            B = [0, 0, 0; 0, 1,  0; 0, 0, 1]; B = squeeze(B(udof, udof));
             % differentiation matrices on normalized domain 
             Dr1 = obj.D1; Dr2 = obj.D2; r = obj.r;
             Id = eye(size(Dr1));                % identity matrix for discretization
@@ -55,18 +55,18 @@ classdef LayerCylindrical
                 + (1i*n).^2*(kron(cpp, diag(1./r.^2)));
         end
 
-        function [M] = massOp(obj, dof)
+        function [M] = massOp(obj, udof)
             % massOp mass operator describing the right side of the elastodynamic
             % wave equation:
             % L u = -(w h0)^2 M u, 
             % where M = rho*d_ik. 
             
-            rhon = 1*eye(length(dof)); % normalized mass matrix tensor 
+            rhon = 1*eye(length(udof)); % normalized mass matrix tensor 
             Id = eye(size(obj.D1));                % identity matrix for discretization
             M = kron(rhon, Id); 
         end
 
-        function [B0, B1] = tractionOp(obj, dof, n)
+        function [B0, B1] = tractionOp(obj, udof, n)
             % tractionOp traction operator to impose traction boundary conditions.
             % The traction operator B is given by
             % B u = T ey,
@@ -75,10 +75,10 @@ classdef LayerCylindrical
             % the plate.
 
             cn = obj.mat.tensor/obj.mat.tensor(1,2,1,2); % normalized stiffness tensor
-            crr = squeeze(cn(1,dof,dof,1));
-            crp = squeeze(cn(1,dof,dof,2));
-            crz = squeeze(cn(1,dof,dof,3));
-            A = [0, -1, 0; 1, 0, 0; 0, 0, 0]; A = squeeze(A(dof, dof)); % differetiation in curvilinear coordinate system
+            crr = squeeze(cn(2,udof,udof,2));
+            crp = squeeze(cn(2,udof,udof,3));
+            crz = squeeze(cn(2,udof,udof,1));
+            A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; A = squeeze(A(udof, udof)); % differetiation in curvilinear coordinate system
             % differentiation matrices on normalized domain 
             Dr1 = obj.D1; rInv = diag(1./obj.r); 
             Id = eye(obj.N);                % identity matrix for discretization
@@ -87,8 +87,8 @@ classdef LayerCylindrical
             B0 = kron(crr, Dr1([1, obj.N], :)) + kron(crp*A, rInv([1, obj.N], :)) + 1i*n*kron(crp, rInv([1, obj.N], :)); % BC going into L0
         end
 
-        function [U0] = displacementOp(obj, dof)
-            I = eye(length(dof));
+        function [U0] = displacementOp(obj, udof)
+            I = eye(length(udof));
             Id = eye(obj.N);  
             U0 = kron(I, Id([1, obj.N], :));
         end
