@@ -1,0 +1,8 @@
+{
+	"name": "chromium",
+	"symmetry": "isotropic",
+    "rho": 	    7194,
+	"lambda":   83.347e9,
+    "mu":       115.39e9,
+    "source": "Institut Langevin"
+}

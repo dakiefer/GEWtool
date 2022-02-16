@@ -7,7 +7,6 @@ function c = voigt2tensor(C)
 
 validateattributes(C,{'numeric'},{'size',[6 6]});
 if ~issymmetric(C), error('Voigt matrix C must be symmetric.'); end
-warning('untested')
 c = zeros(3, 3, 3, 3);
 IJ = [ {1}, {1}; {2}, {2}; {3}, {3}; {2}, {3}; {3}, {1}; {1}, {2}]; % voigt -> tensor indices
 for i = 1:6
