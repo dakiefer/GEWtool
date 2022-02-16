@@ -9,13 +9,11 @@ classdef LayerPlate < Layer
         function [L0, L1, L2] = stiffnessOp(obj, udof, varargin)
             % stiffnessOp stiffness operator 
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
-            warning('where is normalized stiffness tensor stored?')
             % relevant material matrices: 
             cxx = squeeze(cn(1,udof,udof,1));
             cxy = squeeze(cn(1,udof,udof,2)); 
             cyx = squeeze(cn(2,udof,udof,1));
             cyy = squeeze(cn(2,udof,udof,2));
-            I = eye(size(cxx)); 
             % differentiation matrices on normalized domain:
             D1 = obj.D1; D2 = obj.D2; 
             Id = eye(size(D1)); % identity matrix for discretization
