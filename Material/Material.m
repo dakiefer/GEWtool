@@ -13,6 +13,8 @@ end
 
 properties (Dependent)
     C double 
+    cl
+    ct
 end
 
 methods
@@ -43,5 +45,31 @@ methods
         obj.name = data.name;
         obj.symmetry = data.symmetry;
     end
+    
+    function [cs, eu] = wavespeeds(obj, ek)
+        % WAVESPEEDS Compute the wave speeds by solving the Kelvin-Christoffel
+        % equation (eigenvalue problem for cl, ct1, ct2).
+        if nargin < 2, ek = [1; 0; 0]; end
+        ek = ek(:); ekS = shiftdim(ek, -3);
+        D = 1/obj.rho*sum(sum(ek.*obj.c.*ekS, 4), 1); % Kristoffel tensor: 1/rho ek.c.ek
+        D = squeeze(D); % 3x3 matrix
+        if nargout == 1
+            cs = sort(sqrt(eig(D)), 'descend');
+        else
+            [eu, cs2] = eig(D, 'vector'); 
+            [cs, ind] = sort(sqrt(cs2), 'descend');
+            eu = eu(:,ind);
+        end
+    end
+    
+    function cl = get.cl(obj)
+        cs = wavespeeds(obj);
+        cl = cs(1);
+    end
+    function ct = get.ct(obj)
+        cs = wavespeeds(obj);
+        ct = cs(2:3);
+    end
+    
 end % methods
 end % class
