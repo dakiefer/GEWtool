@@ -1,4 +1,4 @@
-function [op] = assembleLayers(obj, udof, n)
+function op = assembleLayers(obj, udof, n)
 
 geom = obj.geom; lays = obj.lay;
 c0 = obj.np.c0; rho0 = obj.np.rho0; h0 = obj.np.h0; 

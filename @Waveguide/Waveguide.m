@@ -3,7 +3,7 @@ classdef Waveguide < matlab.mixin.Copyable
 properties (Access = public)
 	geom
 	mat
-	lay  LayerCylindrical
+	lay Layer = LayerPlate.empty
 	op = [] 	% operators 
 	np  		% normalization parameters (material, geom)
 end % properties
