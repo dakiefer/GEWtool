@@ -1,0 +1,9 @@
+{
+	"name": "steel", 
+	"symmetry": "isotropic",
+	"lambda": 115.6e9,
+	"mu": 78.99e9,
+	"rho": 7900,
+	"dEdT":-0.07870e9,
+	"source":"T. Burgschneider, “Vermessung temperaturabhängiger Materialkonstanten mittels Lamb-Wellen,” Bachelor Thesis, FAU Erlangen-Nürnberg, 2020."
+}
