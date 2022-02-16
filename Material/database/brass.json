@@ -1,0 +1,8 @@
+{
+	"name": "Brass CuZn37",
+	"symmetry": "isotropic",
+	"lambda": 87.22e9,
+	"mu": 41.045e9,
+	"rho": 8440,
+	"dEdT":-0.05e9
+}
