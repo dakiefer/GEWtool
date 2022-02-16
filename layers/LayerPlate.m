@@ -8,7 +8,7 @@ classdef LayerPlate < Layer
         
         function [L0, L1, L2] = stiffnessOp(obj, udof, varargin)
             % stiffnessOp stiffness operator 
-            cn = obj.mat.tensor/obj.mat.tensor(1,2,1,2); % normalized stiffness tensor
+            cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             warning('where is normalized stiffness tensor stored?')
             % relevant material matrices: 
             cxx = squeeze(cn(1,udof,udof,1));
@@ -25,7 +25,7 @@ classdef LayerPlate < Layer
         
         function [B0, B1] = tractionOp(obj, udof, varargin)
             % tractionOp traction operator 
-            cn = obj.mat.tensor/obj.mat.tensor(1,2,1,2); % normalized stiffness tensor
+            cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             % relevant material matrices: 
             cyx = squeeze(cn(2,udof,udof,1));
             cyy = squeeze(cn(2,udof,udof,2));

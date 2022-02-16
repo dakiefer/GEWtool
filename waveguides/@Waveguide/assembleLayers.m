@@ -7,7 +7,7 @@ L2glob = []; L1glob = []; L0glob = []; Mglob = [];
 for lay=lays
     [L0lay, L1lay, L2lay] = lay.stiffnessOp(udof, n);
     Mlay = lay.massOp(udof);
-    c0l = lay.mat.tensor(1,2,1,2); rho0l = lay.mat.rho; hl = lay.h;
+    c0l = lay.mat.c(1,2,1,2); rho0l = lay.mat.rho; hl = lay.h;
     L2glob = blkdiag(L2glob, L2lay*c0l/c0);
     L1glob = blkdiag(L1glob, L1lay*c0l/c0*h0/hl);
     L0glob = blkdiag(L0glob, L0lay*c0l/c0*(h0/hl)^2);
@@ -22,7 +22,7 @@ for ii = 1:Nitf
     gdofBC = [geom.gdofOfLay{ii}(ldofBC1), geom.gdofOfLay{ii+1}(ldofBC2)];
     gdofs = [geom.gdofOfLay{ii}(:); geom.gdofOfLay{ii+1}(:)];
     ldofBC1 = 2:2:2*length(udof); ldofBC2 = 1:2:2*length(udof); % redefine to fit the reduced BC matrices 
-    c0l1 = lay1.mat.tensor(1,2,1,2); c0l2 = lay2.mat.tensor(1,2,1,2); 
+    c0l1 = lay1.mat.c(1,2,1,2); c0l2 = lay2.mat.c(1,2,1,2); 
     [B0l1, B1l1] = lay1.tractionOp(udof, n); 
     B0l1 = B0l1(ldofBC1, :)*c0l1/c0*h0/lay1.h; B1l1 = B1l1(ldofBC1, :)*c0l1/c0;
     [B0l2, B1l2] = lay2.tractionOp(udof, n);

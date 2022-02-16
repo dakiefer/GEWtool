@@ -12,7 +12,7 @@ gdofBC2 = geom.gdofOfLay{end}(ldofBC2);
 gdofs1 = geom.gdofOfLay{1}(:);
 gdofs2 = geom.gdofOfLay{end}(:);
 ldofBC1 = 1:2:2*length(udof); ldofBC2 = 2:2:2*length(udof); % redefine to fit the reduced BC matrices 
-c0l1 = lay1.mat.tensor(1,2,1,2); c0l2 = lay2.mat.tensor(1,2,1,2); 
+c0l1 = lay1.mat.c(1,2,1,2); c0l2 = lay2.mat.c(1,2,1,2); 
 [B0l1, B1l1] = lay1.tractionOp(udof, n); 
 B0l1 = B0l1(ldofBC1, :)*c0l1/c0*h0/lay1.h; B1l1 = B1l1(ldofBC1, :)*c0l1/c0;
 [B0l2, B1l2] = lay2.tractionOp(udof, n);

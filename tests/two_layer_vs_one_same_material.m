@@ -10,7 +10,7 @@ n = 0;
 kh = linspace(1e-3, 5, 200); % wavenumber-thickness (solve for frequency)
 
 %% one layer:
-c0 = mats(1).tensor(1,2,1,2); h0 = r(3) - r(1); % normalization parameters
+c0 = mats(1).c(1,2,1,2); h0 = r(3) - r(1); % normalization parameters
 rho0 = mats(1).rho; fh0 = sqrt(c0/rho0); % normalization parameters
 geom = Geometry([r(1), r(3)], 40, Nudof);
 l1 = LayerCylindrical(mats(1), r(1), r(3), 40);

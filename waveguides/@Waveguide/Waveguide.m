@@ -18,7 +18,7 @@ methods
 		if nargin < 4, Nudof = 3*ones(size(Ns)); end
 		obj.geom = Geometry(rs, Ns, Nudof);
 		obj.mat = mats;
-		np.c0 = mats(1).tensor(1,2,1,2); 
+		np.c0 = mats(1).c(1,2,1,2); 
 		np.h0 =(rs(end)-rs(1))/length(mats); % normalization parameters
 		np.rho0 = mats(1).rho;
 		np.fh0 = sqrt(np.c0/np.rho0);

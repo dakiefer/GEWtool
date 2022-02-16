@@ -14,7 +14,7 @@
 mat = jsondecode(fileread('../../../Material/database/steel_zheng.json'));
 rho = mat.rho; c = voigt2tensor(mat.C);
 % mat = Material('steel');
-% rho = mat.rho; c = mat.tensor;
+% rho = mat.rho; c = mat.c;
 b = 141.3/2*1e-3; % outer radius
 h = 12.5e-3; % thickness
 a = b-h; % inner radius

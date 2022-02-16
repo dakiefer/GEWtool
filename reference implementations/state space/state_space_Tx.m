@@ -1,7 +1,7 @@
 %% Dispersion calculation in a generally anisotropic elastic plate
 
 % parameters:
-mat = Material('brass'); c = mat.tensor; rho = mat.rho;
+mat = Material('brass'); c = mat.c; rho = mat.rho;
 h = 1e-3; % thickness in m
 kh = linspace(1e-2, 20, 200); % wavenumber-thickness (solve for frequency)
 N = 20; % discretization = polynomial order of interpolants
