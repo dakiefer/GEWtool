@@ -2,7 +2,7 @@
 %% Example
 % Compute dispersion spectrum for a 1-mm thick brass plate:
 
-mat = Material('brass'); c = mat.tensor; rho = mat.rho;
+mat = Material('brass'); c = mat.c; rho = mat.rho;
 h = 1e-3; % thickness in m
 freq = linspace(0.001, 4, 500).'*1e6; % frequency in Hz
 % freq = 1e6;
@@ -60,9 +60,9 @@ Bd = kron(B,Id(dofBC, :));
 
 % dofBC = 3*N + [1, N, N+1, 2*N, 2*N+1, 3*N];
 dofBC = 3*N + [1, N, N+1, 2*N];
-% L1d(dofBC, :) = []; L0d(dofBC, :) = []; Md(dofBC, :) = []; % remove DBC rows
-% L1d(:, dofBC) = []; L0d(:, dofBC) = []; Md(:, dofBC) = []; % remove DBC columns
-L1d(dofBC, :) = 0; L0d(dofBC, :) = Bd; Md(dofBC, :) = 0;
+L1d(dofBC, :) = []; L0d(dofBC, :) = []; Md(dofBC, :) = []; % remove DBC rows
+L1d(:, dofBC) = []; L0d(:, dofBC) = []; Md(:, dofBC) = []; % remove DBC columns
+% L1d(dofBC, :) = 0; L0d(dofBC, :) = Bd; Md(dofBC, :) = 0;
 %% 
 % Iterate over frequencies, solve and plot phase velocity
 
@@ -70,8 +70,8 @@ kh = nan(length(freq), size(Md, 2));
 for ii = 1:length(freq)
     whn = wn(ii)*hn; % current frequency-thickness (normalized)
     [un, khiMat] = eig(L0d + whn*Md, L1d);
-    unorm = sum(un([1:2*N], :).*conj(un([1:2*N], :)), 1);
-    Tnorm = sum(un([2*N+1:size(un, 1)], :).*conj(un([2*N+1:size(un, 1)], :)), 1);
+%     unorm = sum(un([1:2*N], :).*conj(un([1:2*N], :)), 1);
+%     Tnorm = sum(un([2*N+1:size(un, 1)], :).*conj(un([2*N+1:size(un, 1)], :)), 1);
     khi = diag(khiMat);
 %     khi(unorm./Tnorm < 1e-1) = nan;
 %     [un, khi] = polyeig(L0d + whn*Md, L1d); % solve eigenvalue problem

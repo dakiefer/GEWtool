@@ -1,41 +1,26 @@
 % specify parameters:
 clear all
-r = [20e-3, 20.5e-3, 21e-3];
-N = [30, 30];
-Nudof = [3, 3];
-mat = Material('steel');
-% mat = Material('zircaloy', 99.3e9, 0.37, 6560, 'Enu'); 
-mats = [mat, mat];
-n = 0;
-kh = linspace(1e-3, 5, 500); % wavenumber-thickness (solve for frequency)
+r = [20e-3, 20.5e-3, 21e-3]; % radial interface coordinates of layers in m
+N = [15, 15]; % number of discretization points
+mat.rho = 7900; lbd = 1.1538e11; mu = 7.6923e10; % steel material
+II = eye(3).*shiftdim(eye(3), -2); % 4th order "unit tensor"
+mat.c = lbd*II + mu*(permute(II, [1 3 4 2]) + permute(II, [1 3 2 4])); % stiffness tensor
+n = 0; % circumferential order
+k = linspace(1e-2, 15, 200)/(r(end)-r(1)); % wavenumber (solve for frequency)
 
 %% one layer:
-c0 = mats(1).tensor(1,2,1,2); h0 = r(3) - r(1); % normalization parameters
-rho0 = mats(1).rho; f0 = sqrt(c0/rho0)/h0; % normalization parameters
-geom = Geometry([r(1), r(3)], 40, Nudof);
-l1 = LayerCylindrical(mats(1), r(1), r(3), 40);
-[M, L0, L1, L2] = assembleLayers(geom, l1, n, c0, h0, rho0);
-[M, L0, L1, L2] = freeBCs(M, L0, L1, L2, geom, l1, n, c0, h0);
+cyl = Cylinder(mat, [r(1), r(3)], sum(N));
+guw = cyl.fullyCoupled(n);
+ff = computeW(guw, k)/2/pi; kk = k.*ones(size(ff));
+figure, plot(kk(:), ff(:), 'gx'); ylim([0, 4e3]/(r(end)-r(1)));
+xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 
-% solve and plot:
-whn = solveWithKh(kh, M, L0, L1, L2);
-fh = whn/2/pi*f0*h0; 
-kkh = kh.*ones(size(fh));
-figure, hold on, plot(kkh(:)/h0, fh(:)/h0, 'gx');
 
 %% two layers of same material and same total thickness as one layer:
-geom = Geometry(r, N, Nudof);
-l1 = LayerCylindrical(mats(1), r(1), r(2), N(1));
-l2 = LayerCylindrical(mats(2), r(2), r(3), N(2));
-[M, L0, L1, L2] = assembleLayers(geom, [l1, l2], n, c0, h0, rho0);
-[M, L0, L1, L2] = freeBCs(M, L0, L1, L2, geom, [l1, l2], n, c0, h0);
+cyl = Cylinder([mat, mat], r, N);
+guw = cyl.fullyCoupled(n);
+ff = computeW(guw, k)/2/pi; kk = k.*ones(size(ff));
+hold on, plot(kk(:), ff(:), 'k.'); ylim([0, 4e3]/(r(end)-r(1)));
+xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
+legend({'single', 'two lay.'}, 'Location','southeast')
 
-% solve and plot:
-whn = solveWithKh(kh, M, L0, L1, L2);
-fh = whn/2/pi*f0*h0; 
-kkh = kh.*ones(size(fh));
-plot(kkh(:)/h0, fh(:)/h0, 'k.');
-
-xlim([0, 5e3]), ylim([0, 4e6])
-xlabel('k in rad/m'), ylabel('f in Hz')
-legend({'one', 'two'})

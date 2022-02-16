@@ -2,7 +2,7 @@
 %% Example
 % Compute dispersion spectrum for a 1-mm thick brass plate:
 
-mat = Material('brass'); c = mat.tensor; rho = mat.rho;
+mat = Material('brass'); c = mat.c; rho = mat.rho;
 h = 1e-3; % thickness in m
 vp = linspace(0.001, 25, 500).'*1e3; % frequency in Hz
 % freq = linspace(0.005, 4, 150)*1e6; % frequency in Hz

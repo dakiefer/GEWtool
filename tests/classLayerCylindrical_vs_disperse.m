@@ -12,7 +12,7 @@ Nudof = 3;
 udofs = 1:3;
 
 %% problem definition
-c0 = mat.tensor(1,2,1,2); h0 = b - a; % normalization parameters
+c0 = mat.c(1,2,1,2); h0 = b - a; % normalization parameters
 rho0 = mat.rho; f0 = sqrt(c0/rho0)/h0; % normalization parameters
 geom = Geometry([a, b], N, Nudof);
 l1 = LayerCylindrical(mat, a, b, N);
