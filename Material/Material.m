@@ -1,5 +1,5 @@
 classdef Material
-% MATERIAL load and represent material data.
+% MATERIAL represent and load material data.
 %
 % 2022 - Daniel Kiefer
 % Institut Langevin, Paris, France
@@ -74,10 +74,27 @@ methods
         D = 1/obj.rho*sum(sum(ek.*obj.c.*ekS, 4), 1); % Kristoffel tensor: 1/rho ek.c.ek
         D = squeeze(D); % 3x3 matrix
         [eu, cs2] = eig(D, 'vector'); 
-        cosTheta = sum(ek.*eu, 1); % angle with propagation direction
+        cosTheta = abs(sum(ek.*eu, 1)); % angle with propagation direction
         [~, ind] = sort(cosTheta, 'descend'); % sort: quasi-long., quasi-transv1, quasi-transv2
         cs = sqrt(cs2(ind)); % wave speeds [cl, ct1, ct2]
         eu = eu(:,ind); % polarization vectors
+    end
+
+    function obj = permute13(obj)
+        % PERMUTE13 Permute the ex and ez components. Useful if material is
+        % given with principal direction ez instead of ex.
+        perm = [3, 2, 1, 6, 5, 4]; % 1->3, 2->2, 3->1, 23->21, 13->31, 12->32
+        C = obj.C(perm, :); % permute rows
+        C = C(:,perm); % permute cols
+        obj.C = C;
+    end
+
+    %% overload operators: 
+    function ret = eq(a, b)
+        ret = ~any(a.C ~= b.C, 'all') && a.rho == b.rho;
+    end
+    function ret = ne(a, b)
+        ret = ~eq(a, b);
     end
     
 end % methods
