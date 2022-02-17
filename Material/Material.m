@@ -1,20 +1,21 @@
-classdef Material < matlab.mixin.Copyable
+classdef Material
 % MATERIAL load and represent material data.
 %
 % 2022 - Daniel Kiefer
 % Institut Langevin, Paris, France
 
 properties
-    name
-    symmetry
-    c double
-    rho double
+    name        % name for the material: string
+    symmetry    % symmetry class: e.g., "isotropic": string
+    C double    % Voigt notated stiffness [6x6]
+    rho double  % mass density [1x1]
 end
 
 properties (Dependent)
-    C double 
-    cl
-    ct
+    c double % 4th order stiffness tensor
+    cl       % (quasi)-longitudinal waves speed
+    ct       % (quasi)-transverse waves speed 1
+    ct2      % (quasi)-transverse waves speed 2
 end
 
 methods
@@ -45,30 +46,38 @@ methods
         obj.name = data.name;
         obj.symmetry = data.symmetry;
     end
-    
-    function [cs, eu] = wavespeeds(obj, ek)
-        % WAVESPEEDS Compute the wave speeds by solving the Kelvin-Christoffel
-        % equation (eigenvalue problem for cl, ct1, ct2).
-        if nargin < 2, ek = [1; 0; 0]; end
-        ek = ek(:); ekS = shiftdim(ek, -3);
-        D = 1/obj.rho*sum(sum(ek.*obj.c.*ekS, 4), 1); % Kristoffel tensor: 1/rho ek.c.ek
-        D = squeeze(D); % 3x3 matrix
-        if nargout == 1
-            cs = sort(sqrt(eig(D)), 'descend');
-        else
-            [eu, cs2] = eig(D, 'vector'); 
-            [cs, ind] = sort(sqrt(cs2), 'descend');
-            eu = eu(:,ind);
-        end
+
+    function c = get.c(obj)
+        c = voigt2tensor(obj.C);
     end
-    
+    function obj = set.c(obj, c)
+        obj.C = tensor2voigt(c);
+    end
     function cl = get.cl(obj)
         cs = wavespeeds(obj);
         cl = cs(1);
     end
     function ct = get.ct(obj)
         cs = wavespeeds(obj);
-        ct = cs(2:3);
+        ct = cs(2);
+    end
+    function ct2 = get.ct2(obj)
+        cs = wavespeeds(obj);
+        ct2 = cs(3);
+    end
+    
+    function [cs, eu] = wavespeeds(obj, ek)
+        % WAVESPEEDS Compute the wave speeds by solving the Kelvin-Christoffel
+        % equation (eigenvalue problem for cl, ct1, ct2).
+        if nargin < 2, ek = [1; 0; 0]; end
+        ek = ek(:); ekS = shiftdim(ek, -3); % prepare for contraction
+        D = 1/obj.rho*sum(sum(ek.*obj.c.*ekS, 4), 1); % Kristoffel tensor: 1/rho ek.c.ek
+        D = squeeze(D); % 3x3 matrix
+        [eu, cs2] = eig(D, 'vector'); 
+        cosTheta = sum(ek.*eu, 1); % angle with propagation direction
+        [~, ind] = sort(cosTheta, 'descend'); % sort: quasi-long., quasi-transv1, quasi-transv2
+        cs = sqrt(cs2(ind)); % wave speeds [cl, ct1, ct2]
+        eu = eu(:,ind); % polarization vectors
     end
     
 end % methods
