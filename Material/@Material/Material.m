@@ -23,6 +23,7 @@ methods
         if nargin == 1 && (ischar(varargin{1}) || isstring(varargin{1}))  % load by name
             matname = varargin{1};
             [dir, ~] = fileparts(which('Material'));
+            dir = fileparts(dir); % remove the @Material folder
             dir = fullfile(dir, 'database');
             filename = fullfile(dir, [matname '.json']);
             data = jsondecode(fileread(filename));
@@ -65,20 +66,6 @@ methods
         cs = wavespeeds(obj);
         ct2 = cs(3);
     end
-    
-    function [cs, eu] = wavespeeds(obj, ek)
-        % WAVESPEEDS Compute the wave speeds by solving the Kelvin-Christoffel
-        % equation (eigenvalue problem for cl, ct1, ct2).
-        if nargin < 2, ek = [1; 0; 0]; end
-        ek = ek(:); ekS = shiftdim(ek, -3); % prepare for contraction
-        D = 1/obj.rho*sum(sum(ek.*obj.c.*ekS, 4), 1); % Kristoffel tensor: 1/rho ek.c.ek
-        D = squeeze(D); % 3x3 matrix
-        [eu, cs2] = eig(D, 'vector'); 
-        cosTheta = abs(sum(ek.*eu, 1)); % angle with propagation direction
-        [~, ind] = sort(cosTheta, 'descend'); % sort: quasi-long., quasi-transv1, quasi-transv2
-        cs = sqrt(cs2(ind)); % wave speeds [cl, ct1, ct2]
-        eu = eu(:,ind); % polarization vectors
-    end
 
     function obj = permute13(obj)
         % PERMUTE13 Permute the ex and ez components. Useful if material is
@@ -89,12 +76,18 @@ methods
         obj.C = C;
     end
 
+    plotSlownessCurve(varargin)
+    [cs, eu] = wavespeeds(obj, ek)
+
     %% overload operators: 
     function ret = eq(a, b)
         ret = ~any(a.C ~= b.C, 'all') && a.rho == b.rho;
     end
     function ret = ne(a, b)
         ret = ~eq(a, b);
+    end
+    function plot(varargin)
+        plotSlownessCurve(varargin{:});
     end
     
 end % methods
