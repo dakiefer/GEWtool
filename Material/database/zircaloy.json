@@ -2,12 +2,12 @@
 	"name": "zirconium alloy",
 	"symmetry": "transversely isotropic",
     "rho": 	6550,
-	"C": 	[[149e9,  72e9,  78e9,  0e9,  0e9,  0e9],
-             [ 72e9, 149e9,  78e9,  0e9,  0e9,  0e9],
-             [ 78e9,  78e9, 154e9,  0e9,  0e9,  0e9], 
-             [ 0e9,   0e9,   0e9,  35e9,  0e9,  0e9],
-             [ 0e9,   0e9,   0e9,   0e9,  35e9, 0e9],
-             [ 0e9,   0e9,   0e9,   0e9,   0e9, 38.5e9]
+	"C": 	[[154e9,  78e9,  78e9,  0e9,   0e9,  0e9],
+             [ 78e9, 149e9,  72e9,  0e9,   0e9,  0e9],
+             [ 78e9,  72e9, 149e9,  0e9,   0e9,  0e9], 
+             [ 0e9,   0e9,   0e9, 38.5e9,  0e9,  0e9],
+             [ 0e9,   0e9,   0e9,   0e9,  35e9,  0e9],
+             [ 0e9,   0e9,   0e9,   0e9,   0e9, 35e9]
             ],
     "Nindep": 5,
     "source": "Institut Langevin"
