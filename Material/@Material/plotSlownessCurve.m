@@ -4,7 +4,7 @@ function plotSlownessCurve(varargin)
         obj = varargin{1}; erot = [0;0;1];
     elseif nargin>=2
         obj = varargin{1};
-        erot = varargin{2};
+        erot = varargin{2}; erot = erot(:)/norm(erot);
     end
     if nargin < 2,  end
     eks = null(erot.'); % svd to compute orthogonal vectors to erot
