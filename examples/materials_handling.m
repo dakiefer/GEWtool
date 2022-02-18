@@ -4,6 +4,7 @@
 % Institut Langevin, Paris, France
 % 
 
+clear all
 %% The "Material" class can be used to represent and manage material data. The
 % simplest way to create an material object is by loading data from a ".json"
 % file by passing the file name: 
