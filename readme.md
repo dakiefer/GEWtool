@@ -10,7 +10,7 @@ A MATLAB© Toolbox for guided ultrasonic waves (GUWs).
 2. Add the folders `layers`, `material`, `solvers` and `waveguides` to the matlab path and save for future sessions.  For example:
 
   ```matlab
-  installdir = fullfile('~', 'Documents', 'MATLAB'); % adjust!
+  installdir = fullfile('~', 'Documents', 'MATLAB'); % adjust to path where you put GUWTool!
   addpath(fullfile(installdir, 'GUWTool', 'layers'));
   addpath(fullfile(installdir, 'GUWTool', 'material'));
   addpath(fullfile(installdir, 'GUWTool', 'solvers'));
