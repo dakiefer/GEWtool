@@ -1,5 +1,4 @@
 # Specify filepatterns you want git to ignore.
 
 adamou.m
-zircaloy_aniso.json
 *.asv

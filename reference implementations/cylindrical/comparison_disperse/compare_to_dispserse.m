@@ -21,7 +21,7 @@ kh = linspace(1e-2, 2, 400); % wavenumber-thickness (solve for frequency)
 % rho = 7900; lbd = 1.1538e11; mu = 7.6923e10; % material parameters
 II = eye(3).*shiftdim(eye(3), -2); % 4th order "unit tensor"
 c = lbd*II + mu*(permute(II, [1 3 4 2]) + permute(II, [1 3 2 4])); % stiffness tensor
-% mat = jsondecode(fileread('../../Material/database/zircaloy_aniso.json'));
+% mat = jsondecode(fileread('../../Material/database/zircaloy.json'));
 % rho = mat.rho; c = voigt2tensor(mat.C);
 % mat = Material('zircaloy', 99.3e9, 0.37, 6560, 'Enu'); % from http://www.matweb.com/search/DataSheet.aspx?MatGUID=e36a9590eb5945de94d89a35097b7faa&ckck=1
 
