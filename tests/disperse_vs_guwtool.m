@@ -1,5 +1,5 @@
 % reference data:
-load('../reference implementations/cylindrical/comparison_disperse/disperse.mat')
+load('data/disperse.mat')
 figure, hold on
 plot(disperse.k/1e-3, disperse.f*1e6, 'g.')
 xlim([0, 0.5]), ylim([0, 200])
