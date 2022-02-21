@@ -15,26 +15,26 @@ end
 
 methods
 
-    function geom = Geometry(yItf, N, Nudof)
+    function obj = Geometry(yItf, N, Nudof)
         % mesh parameters:
         if nargin < 3, Nudof = 3*ones(size(N)); end
-        geom.nLay = length(yItf) - 1;
-        geom.N = N(:); % discretization order: number of collocation points
-        geom.Nudof = Nudof(:); % how many of the ux, uy, uz degrees of freedom
-        geom.nItf = length(yItf);
-        geom.yItf = [yItf(1:end-1).', yItf(2:end).'];
-        geom.h = diff(geom.yItf, 1, 2); % first order along 2nd dim
+        obj.nLay = length(yItf) - 1;
+        obj.N = N(:); % discretization order: number of collocation points
+        obj.Nudof = Nudof(:); % how many of the ux, uy, uz degrees of freedom
+        obj.nItf = length(yItf);
+        obj.yItf = [yItf(1:end-1).', yItf(2:end).'];
+        obj.h = diff(obj.yItf, 1, 2); % first order along 2nd dim
         % mesh connectivity:
-        % geom.nodesOfElem = zeros(geom.nLay, 2); % connectivity map
-        % geom.nodesOfElem(:,1) = 1:geom.nItf-1;
-        % geom.nodesOfElem(:,2) = 2:geom.nItf;
+        % obj.nodesOfElem = zeros(obj.nLay, 2); % connectivity map
+        % obj.nodesOfElem(:,1) = 1:obj.nItf-1;
+        % obj.nodesOfElem(:,2) = 2:obj.nItf;
         % boundary condition nodes:
         dof0 = 0;
         for e=1:length(N)
-            geom.ldofBC{e} = (0:Nudof(e)-1)*N(e) + [1; N(e)];
+            obj.ldofBC{e} = (0:Nudof(e)-1)*N(e) + [1; N(e)];
             [etad, ~] = chebdif(N(e), 1);
-            geom.y{e} = (geom.h(e)*etad + geom.yItf(e, 2) + geom.yItf(e, 1))/2;
-            geom.gdofOfLay{e} = dof0 + (1:Nudof(e)*N(e)); dof0 = dof0 + Nudof(e)*N(e);
+            obj.y{e} = (-obj.h(e)*etad + obj.yItf(e, 2) + obj.yItf(e, 1))/2;
+            obj.gdofOfLay{e} = dof0 + (1:Nudof(e)*N(e)); dof0 = dof0 + Nudof(e)*N(e);
         end
     end
 

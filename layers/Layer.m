@@ -2,7 +2,6 @@ classdef Layer
 
     properties (Access = public)
         y   % collocation points on domain of unit length
-        eta % collocation points on [-1, 1] TODO: is this being used?
         h   % thickness in m
         N   % number of collocation points
         D1  % diff matrix on unit domain 
@@ -15,11 +14,11 @@ classdef Layer
             % LayerCylindrical: constructor
             obj.mat = mat;
             obj.N = N;
-            [obj.eta, D_dash] = chebdif(obj.N, 2);
-            obj.D1 = 2*D_dash(:,:,1);
+            [eta, D_dash] = chebdif(obj.N, 2);
+            obj.D1 = -2*D_dash(:,:,1);
             obj.D2 = 4*D_dash(:,:,2);
             obj.h = ys(2) - ys(1);
-            obj.y = (obj.eta + 1)/2 + ys(1)/obj.h;
+            obj.y = (-eta + 1)/2 + ys(1)/obj.h;
         end
 
         function M = massOp(obj, udof)
