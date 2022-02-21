@@ -67,13 +67,14 @@ methods
         ct2 = cs(3);
     end
 
-    function obj = permute13(obj)
-        % PERMUTE13 Permute the ex and ez components. Useful if material is
-        % given with principal direction ez instead of ex.
-        perm = [3, 2, 1, 6, 5, 4]; % 1->3, 2->2, 3->1, 23->21, 13->31, 12->32
-        C = obj.C(perm, :); % permute rows
-        C = C(:,perm); % permute cols
-        obj.C = C;
+    function obj = permute(obj, perm)
+        % PERMUTE Permute the material coordinate system. The default
+        % transformation is ex-ey-ez -> ez-ex-ey, i.e. 
+        % 3->1, 1->2, 2->3, 6->4, 4->5, 5->6, given by perm = [3,1,2,6,4,5].
+        if nargin < 2
+            perm = [3,1,2,6,4,5]; % 3->1, 1->2, 2->3, 6->4, 4->5, 5->6
+        end
+        obj.C = obj.C(perm,perm);
     end
 
     plotSlownessCurve(varargin)
