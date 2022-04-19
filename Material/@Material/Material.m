@@ -27,6 +27,13 @@ methods
             dir = fullfile(dir, 'database');
             filename = fullfile(dir, [matname '.json']);
             data = jsondecode(fileread(filename));
+        elseif nargin == 3 && (ischar(varargin{1}) || isstring(varargin{1})) 
+            validateattributes(varargin{2},{'numeric'},{'size',[6 6]});
+            validateattributes(varargin{3},{'numeric'},{'size',[1 1]});
+            data.name = varargin{1};
+            data.C = varargin{2};
+            data.rho = varargin{3};
+            data.symmetry = 'anisotropic';
         elseif nargin == 4 && (ischar(varargin{1}) || isstring(varargin{1})) 
             validateattributes(varargin{2},{'numeric'},{'size',[1 1]});
             validateattributes(varargin{3},{'numeric'},{'size',[1 1]});

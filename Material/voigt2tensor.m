@@ -3,7 +3,7 @@ function c = voigt2tensor(C)
 % notated matrix C.
 % 
 % see also: D. Royer and T. Valier-Brasier, Ondes élastiques dans les solides 
-% % (Elastic waves in solids), vol. 1, 2 vols. London: ISTE éditions, 2021.
+% (Elastic waves in solids), vol. 1, 2 vols. London: ISTE éditions, 2021.
 %
 % 2022 - Daniel Kiefer
 % Institut Langevin, Paris, France
