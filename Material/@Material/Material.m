@@ -22,10 +22,7 @@ methods
     function obj = Material(varargin)
         if nargin == 1 && (ischar(varargin{1}) || isstring(varargin{1}))  % load by name
             matname = varargin{1};
-            [dir, ~] = fileparts(which('Material'));
-            dir = fileparts(dir); % remove the @Material folder
-            dir = fullfile(dir, 'database');
-            filename = fullfile(dir, [matname '.json']);
+            filename = [matname '.json'];
             data = jsondecode(fileread(filename));
         elseif nargin == 3 && (ischar(varargin{1}) || isstring(varargin{1})) 
             validateattributes(varargin{2},{'numeric'},{'size',[6 6]});

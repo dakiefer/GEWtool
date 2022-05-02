@@ -1,0 +1,7 @@
+{
+	"name": "Aluminum",
+	"symmetry": "isotropic",
+	"lambda": 5.1448e+10,
+	"mu": 2.6504e+10,
+	"rho": 2680
+}
