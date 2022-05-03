@@ -22,3 +22,8 @@ guw = plate.Lamb; % assembles matrices for the specified waves
 ff = computeW(guw, k)/2/pi; kk = k.*ones(size(ff));
 figure, plot(kk(:), ff(:), '.'); ylim([0, 6e3]/h);
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
+
+%% compute wavenumbers and plot:
+freq = linspace(1e-3, 6, 200).'*1e6;
+dat = computeK(guw, 2*pi*freq);
+hold on, plot(dat.k(:), dat.w(:)/2/pi, '.'); xlim([0, max(k)])
