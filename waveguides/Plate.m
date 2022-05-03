@@ -2,7 +2,11 @@ classdef Plate < Waveguide
 
 methods 
 	function obj = Plate(mats, ys, Ns)
-        if isscalar(ys), ys = ys*[-1/2, 1/2]; end % convert thickness to y-range
+        if isscalar(ys) 
+            ys = ys*[-1/2, 1/2]; % convert thickness to y-range
+        elseif length(ys) == length(mats)
+            ys = [0; cumsum(ys(:))].';
+        end
 		obj = obj@Waveguide(mats, ys, Ns);
         obj.lay = LayerPlate.empty; % initialize with correct class
 		for ii = 1:length(mats)
