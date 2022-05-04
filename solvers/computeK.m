@@ -17,6 +17,8 @@ function dat = computeK(wguide, w, nModes)
     chron = toc; 
     fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(kh, 1), size(kh, 2), chron, chron/length(kh(:))*1e3);
     dat.k = kh/wguide.np.h0;
-    dat.u = reshape(u, [size(kh), wguide.geom.N, wguide.geom.Nudof]); 
     dat.w = w.*ones(size(kh));
+    if wguide.geom.nLay == 1
+        dat.u = reshape(u, [size(kh), wguide.geom.N, wguide.geom.Nudof]); 
+    end
 end
