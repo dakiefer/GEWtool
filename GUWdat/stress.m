@@ -21,4 +21,6 @@ for i = 1:wguide.geom.nLay
     T{i} = sum(1i*dat.k.*cx.*uu + cy.*ud, 6);   % contraction 
 end
 
+% NOTE: the implementation that avoids calling strain() is a bit faster.
+
 end
