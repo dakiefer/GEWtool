@@ -22,7 +22,7 @@ function plotSlownessCurve(varargin)
     s = 1./vs.'; % slowness
 
     polarplot(p, s)
-    legend({'cl', 'ct1', 'ct2'})
+    legend({'sl', 'st1', 'st2'})
     title(sprintf('%s: slowness curves around rotation axis [%g, %g, %g]\nangle 0: [%g, %g, %g]',...
         obj.name, erot(1), erot(2), erot(3), e0(1), e0(2), e0(3)))
 end
