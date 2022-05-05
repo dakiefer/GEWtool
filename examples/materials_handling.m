@@ -23,8 +23,9 @@ C = mat.C   % save the Voigt stiffness matrix into "C"
 % you should take into account that ex is the wave propagation direction, ey the
 % cross-sectional coordinate (of the plate) and ez the out-of plane direction. 
 % If you need to switch the ex and ez base vectors, you can use the function 
-% permute13():
-mat31 = mat.permute13();
+% permute(). Its default transformation is ex-ey-ez -> ez-ex-ey, 
+% i.e., 3->1, 1->2, 2->3, 6->4, 4->5, 5->6, given by perm = [3,1,2,6,4,5]:
+mat31 = mat.permute()
 C31 = mat31.C
 
 %% The wave speeds (cl, ct, ct2) are calculated for the general anisotropic case
