@@ -3,6 +3,10 @@ function [p] = poyntingVec(wguide, dat)
 
 v = velocity(dat);
 T = stress(wguide, dat);
-p = -1/2*real(squeeze(sum(conj(v).*T, 4)));
+
+p = cell(wguide.geom.nLay,1);
+for i = 1:wguide.geom.nLay
+    p{i} = -1/2*real(squeeze(sum(conj(v{i}).*T{i}, 4)));
+end
 
 end

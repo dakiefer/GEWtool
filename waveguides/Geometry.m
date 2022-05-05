@@ -5,7 +5,7 @@ properties
     nItf         % number of interfaces, includes outer ones
     N            % number of collocation points for each layer
     Nudof        % number of displacement dofs for each layer
-    yItf         % position of interfaces in m
+    yItf         % position of interfaces in m [nLay x 2]
     y            % cell array with collocation points for each layer in m 
     h            % thickness for each layer in m
     % nodesOfElem  % connectivity map: row e contains left and right node num of elem e -> TODO not being used

@@ -3,6 +3,9 @@ function [v] = velocity(dat)
 
 w = dat.w;
 u = dat.u;
-v = -1i*w.*squeeze(u);
+v = cell(size(u));
+for i = 1:length(v) % for every layer
+    v{i} = -1i*w.*u{i};
+end
 
 end

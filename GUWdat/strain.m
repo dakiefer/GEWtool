@@ -1,26 +1,30 @@
 function [S] = strain(wguide,dat)
 %STRAIN Compute the strain S.
 
-% initialize 
-D1 = 1/wguide.geom.h*wguide.lay.D1; % TODO: multilayer
-Nudof = wguide.geom.Nudof; % Lamb and/or SH
-es = eye(Nudof); % unit directional vectors
+S = cell(wguide.geom.nLay, 1); % allocate for each layer
+for i = 1:wguide.geom.nLay
+    % initialize 
+    lay = wguide.lay(i);
+    D1 = 1/lay.h*lay.D1; % TODO: multilayer
+    Nudof = wguide.geom.Nudof(i); % Lamb and/or SH
+    es = eye(Nudof); % unit directional vectors
+    
+    % compute du/dy:
+    uu = permute(dat.u{i}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.
+    ud = sum(shiftdim(D1, -2).*uu, 4);       % du/dy
+    uu = permute(uu, [1,2,4,3,5]);           % same size as ud
+    
+    % compute displacement gradient
+    es = shiftdim(es, -3);
+    ex = es(:,:,:,:,1);   % propagation direction
+    F = 1i*dat.k.*ex.*uu; % inialize displacement gradient 
+    for j=2:Nudof % every dimension of waveguide cross section
+        ej = es(:,:,:,:,j);
+        F = F + ej.*ud;
+    end
+    
+    % compute stress
+    S{i} = 1/2*(F + permute(F, [1,2,3,5,4])); % symmetric part of gradient
+end 
 
-% compute du/dy:
-uu = permute(dat.u, [1, 2, 5, 3, 4]); % assume this to be done already? 
-ud = sum(shiftdim(D1, -2).*uu, 4);
-uu = permute(uu, [1,2,4,3,5]);
-
-% compute displacement gradient
-es = shiftdim(es, -3);
-ex = es(:,:,:,:,1);
-F = 1i*dat.k.*ex.*uu; % inialize displacement gradient 
-for j=2:Nudof
-    ej = es(:,:,:,:,j);
-    F = F + ej.*ud;
-end
-
-% compute stress
-S = 1/2*(F + permute(F, [1,2,3,5,4]));
-
-end
+end % end function

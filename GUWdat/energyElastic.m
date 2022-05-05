@@ -3,6 +3,11 @@ function [Eelast] = energyElastic(wguide,dat)
 %section.
 
 eelast = energyDensityElastic(wguide, dat);
-Eelast = chebintegrate(eelast, wguide.geom.yItf, 3);
+
+Eelast = zeros(size(dat.k));
+for i = 1:wguide.geom.nLay % for every layer
+    lims = wguide.geom.yItf(i,:);   % lower and upper integration limits
+    Eelast = Eelast + chebintegrate(eelast{i}, lims, 3);
+end
 
 end
