@@ -9,6 +9,12 @@ classdef MaterialIsotropic < Material
     end
 
     methods
+        function obj = MaterialIsotropic(varargin)
+            obj = obj@Material(varargin{:});
+            if ~strcmp(obj.symmetry, 'isotropic') 
+                error('Given material data is anisotrpic.');
+            end
+        end
         function lambda = get.lambda(obj)
             lambda = obj.C(1,2);
         end
