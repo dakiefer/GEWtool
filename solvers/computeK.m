@@ -1,12 +1,14 @@
-function dat = computeK(wguide, w, nModes)
-    if nargin < 3, nModes = 2*size(wguide.op.M,1); end
-    wh = w*wguide.np.h0;
-    M = wguide.op.M; L0 = wguide.op.L0; L1 = wguide.op.L1; L2 = wguide.op.L2;
+function dat = computeK(guw, w, nModes)
+    if nargin < 3, nModes = 2*size(guw.op.M,1); end
+    if ~isvector(w), error('Angular frequencies should be a [Nx1] array.'); end
+    w = w(:); % column vector
+    wh = w*guw.np.h0;
+    M = guw.op.M; L0 = guw.op.L0; L1 = guw.op.L1; L2 = guw.op.L2;
     tic 
     kh = nan(length(wh), nModes);
     u = nan(length(wh), nModes, size(M,1));
     for ii = 1:length(wh)
-        whn = wh(ii)/wguide.np.fh0; % current frequency-thickness (normalized)
+        whn = wh(ii)/guw.np.fh0; % current frequency-thickness (normalized)
         [ui, ikhi] = polyeig(L0 + whn^2*M, L1, L2);
         spurious = abs(ikhi)<=1e-8; ikhi(spurious) = nan; ui(:,spurious) = nan;
         [khi, ind] = sort(-1i*ikhi);
@@ -16,9 +18,11 @@ function dat = computeK(wguide, w, nModes)
     end
     chron = toc; 
     fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(kh, 1), size(kh, 2), chron, chron/length(kh(:))*1e3);
-    dat.k = kh/wguide.np.h0;
+    dat.k = kh/guw.np.h0;
     dat.w = w.*ones(size(kh));
-    if wguide.geom.nLay == 1
-        dat.u = reshape(u, [size(kh), wguide.geom.N, wguide.geom.Nudof]); 
+    dat.u = cell(guw.geom.nLay, 1);
+    for i = 1:guw.geom.nLay
+        ulay = u(:,:,guw.geom.gdofOfLay{i});
+        dat.u{i} = reshape(ulay, [size(kh), guw.geom.N(i), guw.geom.Nudof(i)]);
     end
 end
