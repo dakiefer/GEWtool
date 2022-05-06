@@ -1,7 +1,7 @@
 function [eElastic] = energyDensityElastic(wguide, dat)
 %ENERGYDENSITYELASTIC Compute the elastic energy density.
 
-warning('energyDensityElastic(): not valid for viscuous media?')
+warning('energyDensityElastic(): not valid for viscous media?')
 
 S = strain(wguide, dat);
 T = stress(wguide, dat);
