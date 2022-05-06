@@ -11,10 +11,10 @@
 % Society of America, vol. 145, no. 6, pp. 3341–3350, Jun. 2019, doi: 10.1121/1.5109399.
 %
 
-h = 1e-3;   % thickness in m (ey-dimension)
-b = 0.1e-3;   % width in m (ez-dimension)
-N = 12;     % discretization in y: polynomial order of interpolants
-P = 8;     % discretization in z: polynomial order of interpolants
+h = 5e-3;   % thickness in m (ey-dimension)
+b = 15e-3;   % width in m (ez-dimension)
+N = 8;     % discretization in y: polynomial order of interpolants
+P = 10;     % discretization in z: polynomial order of interpolants
 rho = 7900; lbd = 1.1538e11; mu = 7.6923e10; % steel material
 
 % define and normalize parameters:
@@ -78,14 +78,14 @@ L2(doftyg, :) = 0; L1(doftyg, :) = By1; L0(doftyg, :) = By0; M(doftyg, :) = 0;
 L2(doftzg, :) = 0; L1(doftzg, :) = Bz1; L0(doftzg, :) = Bz0; M(doftzg, :) = 0;
 
 %% solve for frequency and plot:
-kh = linspace(1e-2, 10, 150); % wavenumber*thickness 
+kh = linspace(1e-2, 600, 120)*h0; % wavenumber*thickness 
 whn = nan(size(M, 2), length(kh)); tic 
 for ii = 1:length(kh)
     kh0 = kh(ii);
     [wh2] = polyeig((1i*kh0)^2*L2 + (1i*kh0)*L1 + L0, M); 
     whn(:,ii) = sqrt(wh2);
 end
-fh = real(whn/2/pi*fh0); fh(fh == 0) = nan;
+fh = real(whn/2/pi*fh0); fh(abs(fh) <= 1e-3) = nan;
 chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(fh, 1), size(fh, 2), chron, chron/length(fh(:))*1e3);
 
 %% plot 
@@ -95,13 +95,19 @@ plate = Plate(mat, h, 25);
 guw = plate.fullyCoupled;
 dat = computeW(guw, kh/h0);
 figure, hold on
-plot(dat.k(:)/1e3, dat.w(:)/2/pi/1e6, '.');
+plot(dat.k(:), dat.w(:)/2/pi, 'kx');
+plate = Plate(mat, b, 25);
+guw = plate.fullyCoupled;
+dat = computeW(guw, kh/h0);
+plot(dat.k(:), dat.w(:)/2/pi, 'x', 'Color', [0.7 0.7 0.7]);
 
 % plot strip wavenumbers:
 kkh = kh.*ones(size(fh));
-plot(kkh(:)/h0/1e3, fh(:)/h0/1e6, '.');
-xlim([0, 10]), ylim([0, 6]),
-xlabel('k in rad/mm'), ylabel('f in MHz'),
+plot(kkh(:)/h0, fh(:)/h0, 'r.', 'MarkerSize', 10);
+xlim([0, max(kh)/h0]), ylim([0, 300e3]),
+xlabel('k in rad/m'), ylabel('f in Hz'),
+legend({'plate h', 'plate b', 'strip hxb'}, 'Location','southeast')
+title(sprintf('strip with cross section h = %d mm, b = %d mm', h/1e-3, b/1e-3))
 
 % plot phase vel:
 % kkh = kh.*ones(size(fh));
