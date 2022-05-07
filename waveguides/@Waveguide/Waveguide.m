@@ -32,6 +32,7 @@ methods
 	function guw = fullyCoupled(obj, n)
 		udof = 1:3;
 		guw = obj;
+        guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 3*ones(size(obj.geom.N))); % update 
 		guw.op = obj.assembleLayers(udof, n);
 		guw.op = obj.freeBCs(udof, n);
 	end
