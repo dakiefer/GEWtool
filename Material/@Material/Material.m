@@ -101,6 +101,7 @@ methods
 
     plotSlownessCurve(varargin)
     [cs, eu] = wavespeeds(obj, ek)
+    save(obj,path)
 
     %% overload operators: 
     function ret = eq(a, b)
