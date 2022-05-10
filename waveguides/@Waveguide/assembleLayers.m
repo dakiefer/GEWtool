@@ -33,8 +33,10 @@ for ii = 1:Nitf
             Ul1(ldofBC1, :),  -Ul2(ldofBC2, :)]; % displ
     CC1 = [B1l1,              -B1l2;  % traction
          0*B1l1,              0*B1l2]; % displ
-    L0glob(gdofBC, gdofs) = 0; L1glob(gdofBC, gdofs) = CC0; 
-    L2glob(gdofBC, gdofs) = CC1; Mglob(gdofBC, gdofs) = 0;
+    L0glob(gdofBC, gdofs) = CC0; 
+    L1glob(gdofBC, gdofs) = CC1; 
+    L2glob(gdofBC, gdofs) = 0; 
+    Mglob(gdofBC, gdofs) = 0;
 end
 
 op.M = Mglob; op.L0 = L0glob; op.L1 = L1glob; op.L2 = L2glob;
