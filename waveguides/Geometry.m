@@ -18,6 +18,12 @@ methods
     function obj = Geometry(yItf, N, Nudof)
         % mesh parameters:
         if nargin < 3, Nudof = 3*ones(size(N)); end
+        if ~isvector(yItf)
+            if size(yItf, 2)~=2
+                error('Incorrect size of interface coordinates. Expected a vector or nx2 array.');
+            end
+            yItf = [yItf(:,1).', yItf(end,2)];
+        end
         obj.nLay = length(yItf) - 1;
         obj.N = N(:); % discretization order: number of collocation points
         obj.Nudof = Nudof(:); % how many of the ux, uy, uz degrees of freedom
