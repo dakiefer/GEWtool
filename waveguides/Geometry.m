@@ -10,6 +10,7 @@ properties
     h            % thickness for each layer in m
     % nodesOfElem  % connectivity map: row e contains left and right node num of elem e -> TODO not being used
     ldofBC       % local dofs of BC: e.g. [1, N+1; N, 2*N] -> [upper; lower]
+    gdofBC = []; % global dofs of BCs: differs from ldofBC for multilayer problems
     gdofOfLay    % cell array with global dofs assigned to layers
 end
 
@@ -36,11 +37,12 @@ methods
         % obj.nodesOfElem(:,2) = 2:obj.nItf;
         % boundary condition nodes:
         dof0 = 0;
-        for e=1:length(N)
+        for e=1:length(N) % length(N) == number of layers
             obj.ldofBC{e} = (0:Nudof(e)-1)*N(e) + [1; N(e)];
             [etad, ~] = chebdif(N(e), 1);
             obj.y{e} = (-obj.h(e)*etad + obj.yItf(e, 2) + obj.yItf(e, 1))/2;
             obj.gdofOfLay{e} = dof0 + (1:Nudof(e)*N(e)); dof0 = dof0 + Nudof(e)*N(e);
+            obj.gdofBC = [obj.gdofBC, obj.gdofOfLay{e}(obj.ldofBC{e})];
         end
     end
 
