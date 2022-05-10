@@ -17,13 +17,13 @@ cyl = Cylinder(mat, [a, b], N);
 %% zeroth-order circumferential waves:
 n = 0;
 guw = cyl.fullyCoupled(n);
-ff = computeW(guw, k)/2/pi; kk = k.*ones(size(ff));
-hold on, plot(kk(:), ff(:), '.'); 
+dat = computeW(guw, k); 
+hold on, plot(dat.k(:), dat.w(:)/2/pi, '.'); 
 legend({'disperse', 'n = 0'})
 
 %% fist-order circumferential waves:
 n = 1;
 guw = cyl.fullyCoupled(n);
-ff = computeW(guw, k)/2/pi; kk = k.*ones(size(ff));
-hold on, plot(kk(:), ff(:), '.'); 
+dat = computeW(guw, k); 
+hold on, plot(dat.k(:), dat.w(:)/2/pi, '.'); 
 legend({'disperse', 'n = 0', 'n = 1'})
