@@ -12,9 +12,10 @@ N = 4:30;
 %% computing the frequency w
 ws=nan(numel(N),1); % allocate
 dofs=ws; % allocate
+disp('Test computeW():')
 for i=1:numel(N)
-    plate = Plate(mat, h, N(i));
-    guw = plate.Lamb;
+    plate = Plate(mat, h, N(i)); guw = plate.Lamb;
+%     guw = matricesLamb(mat, h, N(i));
     dofs(i)=size(guw.op.L0,1);
     dat = computeW(guw, k0);
     [~, indSel] = min(abs(dat.w - w0));
@@ -41,9 +42,10 @@ errW = abs(ws(end)/detRoot-1)
 %% computing the wavenumbers k
 ks=nan(numel(N),1); % allocate
 dofs=ks; % allocate
+disp('Test computeK():')
 for i=1:numel(N)
-    plate = Plate(mat, h, N(i));
-    guw = plate.Lamb;
+    plate = Plate(mat, h, N(i));  guw = plate.Lamb;
+%     guw = matricesLamb(mat, h, N(i));
     dofs(i)=size(guw.op.L0,1);
     dat = computeK(guw, w0);
     [~, indSel] = min(abs(dat.k - k0));

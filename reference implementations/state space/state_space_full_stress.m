@@ -80,7 +80,7 @@ for ii = 1:length(freq)
 %     plot(abs(un(:, ki))); xline(2*N)
 end
 chron = toc;
-fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g.\n', size(kh, 1), size(kh, 2), chron, chron/(size(kh, 1)*size(kh, 2)));
+fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g ms.\n', size(kh, 1), size(kh, 2), chron, chron/(size(kh, 1)*size(kh, 2))*1e3);
 
 % 
 % Prepare for plotting only propagating modes:
