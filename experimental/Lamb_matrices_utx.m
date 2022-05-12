@@ -1,4 +1,4 @@
-function [guw] = matricesLamb(mat, h, N)
+function [guw] = Lamb_matrices_utx(mat, h, N)
 % Generate matrices for convergence test
 c = mat.c; rho = mat.rho;
 c0 = c(1,2,1,2); h0 = h; % normalization parameters
