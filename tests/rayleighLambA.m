@@ -5,7 +5,8 @@ function [res] = rayleighLambA(mat, wh, kh)
 % (Elastic waves in solids 1: propagation), vol. 1, 2 vols. London: ISTE éditions, 2021.
 
 
-cl = mat.cl; ct = mat.ct;
+cl = sqrt((mat.c(1,1,2,2) + 2*mat.c(2,3,2,3))/mat.rho); % better accuracy than mat.cl
+ct = sqrt(mat.c(2,3,2,3)/mat.rho);
 khl = wh/cl; kht = wh/ct;
 khly = sqrt(khl.^2 - kh.^2);
 khty = sqrt(kht.^2 - kh.^2);
