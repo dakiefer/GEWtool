@@ -51,7 +51,28 @@ methods
 		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, ones(size(obj.geom.N)));
 		guw.op = obj.assembleLayers(udof, n);
 		guw.op = obj.freeBCs(udof, n);
-	end
+    end
+    
+    function lin = isLinearizableInK2(obj)
+        if obj.geom.Nudof < 2, lin = false; return; end % TODO look at SH waves
+        if obj.geom.nLay > 1, lin = false; return; end  % TODO implement for multiple layers
+        if isempty(obj.op), warning('Setup problem first.'); end
+        N = obj.geom.N; 
+        dofx = 1:N; dofy = N+1:2*N;
+        L2test = all(obj.op.L2(dofy,dofx) == 0, 'all');
+        L1test = all(obj.op.L1(dofx,dofx) == 0, 'all') & all(obj.op.L1(dofy,dofy) == 0, 'all');
+        L0test = all(obj.op.L0(dofx,dofy) == 0, 'all');
+        lin = L2test & L1test & L0test;
+    end
+    
+    function obj = linearizeInK2(obj)
+        L2 = obj.op.L2; L1 = obj.op.L1; L0 = obj.op.L0;
+        N = obj.geom.N;
+        dofx = 1:N; dofy = N+1:2*N;
+        L2(dofy,dofx) = L1(dofy,dofx); 
+        L0(dofx,dofy) = L1(dofx,dofy);
+        obj.op.L2 = L2; obj.op.L1 = []; obj.op.L0 = L0;
+    end
 
 	[op] = assembleLayers(obj, udof, n)
 	[op] = freeBCs(obj, udof, n)

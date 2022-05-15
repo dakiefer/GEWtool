@@ -7,7 +7,7 @@ function dat = computeK(guw, w, nModes)
         if isequal(L2, zeros(size(L2)))
             nModes = size(guw.op.M,1);
         else
-            nModes = 2*size(guw.op.M,1);
+            nModes = size(guw.op.M,1);
         end
     end
     tic 
@@ -17,6 +17,11 @@ function dat = computeK(guw, w, nModes)
         whn = wh(ii)/guw.np.fh0; % current frequency-thickness (normalized)
         if isequal(L2, zeros(size(L2)))
             [ui, ikhi] = polyeig(L0 + whn^2*M, L1);
+        elseif isempty(L1)
+            [ui, ikhi2] = polyeig(L0 + whn^2*M, L2);
+            ikhi = sqrt(ikhi2);
+            N = guw.geom.N; dofy = N+1:2*N;
+            ui(dofy,:) = ikhi.'.*ui(dofy,:);
         else
             [ui, ikhi] = polyeig(L0 + whn^2*M, L1, L2);
         end
