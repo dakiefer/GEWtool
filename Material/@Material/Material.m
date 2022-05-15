@@ -98,6 +98,14 @@ methods
         end
         obj.C = obj.C(perm,perm);
     end
+    
+    function decoupl = decouplesXYvsZ(obj)
+        xy = [1 2]; % Lamb polarization
+        z =  3; % SH polarization 
+        c1test = obj.c(xy,xy,z,xy); 
+        c2test = obj.c(xy,z,xy,xy);
+        decoupl = all(c1test(:) == 0) & all(c2test(:) == 0);
+    end
 
     plotSlownessCurve(varargin)
     [cs, eu] = wavespeeds(obj, ek)
