@@ -1,0 +1,8 @@
+{
+	"name": "steelHecla37",
+	"lambda": 111e9,
+	"mu":	  82.1e9,
+	"rho":    7823,
+	"symmetry": "isotropic",
+	"source": "Smith et al. 1966, Hecla 37(0.4)"
+}

@@ -1,0 +1,12 @@
+{
+"name": "silver",
+"rho":  10490,
+"C":[[1.222E+11,9.07E+10,9.07E+10,0,0,0],
+	 [9.07E+10,1.222E+11,9.07E+10,0,0,0],
+	 [9.07E+10,9.07E+10,1.222E+11,0,0,0],
+	 [0,0,0,4.54E+10,0,0],
+	 [0,0,0,0,4.54E+10,0],
+	 [0,0,0,0,0,4.54E+10]],
+"symmetry": "anisotropic",
+"source": "Brennan Dubuc: Computation of propagating and non-propagating guided modes in nonuniformly stressed plates using spectral methods"
+}

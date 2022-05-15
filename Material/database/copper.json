@@ -1,0 +1,9 @@
+{
+	"name": "Copper EN-DLP",
+	"params": "Enu",
+	"lambda": 1.0466e+11,
+	"mu": 	  4.9254e+10,
+	"rho": 	  8940,
+	"symmetry": "isotropic",
+	"source": "https://www.wieland.com/mediaPool/content/media/de/datenblaetter/baender_und_bleche/K15_14.pdf"
+}

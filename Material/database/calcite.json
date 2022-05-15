@@ -1,0 +1,8 @@
+{
+	"name": "Calcite (CaCO3), axis: para.",
+	"lambda": 	106.2e9,
+	"mu":		35e9,
+    "rho": 		2710,
+	"symmetry": "isotropic",
+    "source": "https://www.crystran.co.uk/optical-materials/calcite-caco3"
+}

@@ -1,0 +1,7 @@
+{
+	"name": "PEI Ultem 1000",
+	"lambda": 3.826e+09,
+	"mu": 	  1.0791e+09,
+	"rho": 	  1270,
+	"symmetry": "isotropic"
+}

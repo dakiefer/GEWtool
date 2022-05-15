@@ -1,0 +1,7 @@
+{
+	"name": "water sea",
+	"lambda":   2.1635e+09,
+	"mu": 		0,
+	"rho": 		1029,
+	"symmetry": "isotropic"
+}

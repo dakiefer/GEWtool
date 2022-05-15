@@ -1,0 +1,9 @@
+{
+	"name": "Glycerine",
+	"params": "wavespeed",
+	"lambda": 4.0149e+09,
+	"mu":	  315000000,
+	"rho": 	  1260,
+	"symmetry": "isotropic",
+	"source": "https://www.nde-ed.org/GeneralResources/MaterialProperties/UT/ut_matlprop_liquids.htm"
+}
