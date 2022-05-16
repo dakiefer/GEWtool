@@ -4,20 +4,21 @@
 % aluminum plate.
 
 clear all
-addpath('experimental')
+addpath('../experimental')
 mat = Material('aluminum');
 h = 1; 
 w0 = 2*pi*5000; % for reference and mode selection
 k0 = 5.59596;  % for reference and mode selection (also: 3.6180, 3.8674, 5.59596, 7.8648)
-N = 4:40;
+N = 4:30;
 
 %% computing the frequency w
 ws=nan(numel(N),1); % allocate
 dofs=ws; % allocate
 disp('Test computeW():'), tic
 for i=1:numel(N)
-    plate = Plate(mat, h, N(i)); guw = plate.Lamb;
+%     plate = Plate(mat, h, N(i)); guw = plate.Lamb;
 %     guw = Lamb_matrices_rectangularSCM(mat, h, N(i));
+    guw = Lamb_matrices_SEM(mat, h, N(i)-1);
     dofs(i)=size(guw.op.L0,1);
     dat = computeW(guw, k0);
     [~, indSel] = min(abs(dat.w - w0));
@@ -35,7 +36,7 @@ residuumAtRLRoot = abs(rayLamb(detRoot))
 err=abs(ws-detRoot)/detRoot;
 errWNmax = err(end)
 
-plot(dofs,abs(err),'o--');
+figure(1), hold on, plot(dofs,abs(err),'o--');
 ax=gca; ax.YScale='log';
 xlabel('matrix size (= 2N)'), ylabel('rel. error')
 title('Error w.r.t Rayleigh-Lamb root')
