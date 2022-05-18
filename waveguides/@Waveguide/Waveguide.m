@@ -73,6 +73,16 @@ methods
         L0(dofx,dofy) = L1(dofx,dofy);
         obj.op.L2 = L2; obj.op.L1 = []; obj.op.L0 = L0;
     end
+    
+    function decoupl = decouplesLambvsSH(obj)
+        lays = obj.lay;
+        for l = lays % test each of the layers
+            if ~l.decouplesLambvsSH
+                decoupl = false; return;
+            end
+        end
+        decoupl = true;
+    end
 
 	[op] = assembleLayers(obj, udof, n)
 	[op] = freeBCs(obj, udof, n)
