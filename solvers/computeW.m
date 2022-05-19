@@ -1,10 +1,9 @@
 function dat = computeW(guw, k, nModes)
-    if nargin < 3, nModes = size(guw.op.M,1); end
     if ~isvector(k), error('Wavenumbers should be a [1xN] array.'); end
+    if nargin < 3, nModes = size(guw.op.M,1); end
     k = k(:).'; % row vector
     kh = k*guw.np.h0;
     M = guw.op.M; L0 = guw.op.L0; L1 = guw.op.L1; L2 = guw.op.L2;
-    tic 
     whn = nan(size(M, 2), length(kh));
     u = nan(nModes, length(kh), size(M,1));
     for n = 1:length(kh)
@@ -16,8 +15,6 @@ function dat = computeW(guw, k, nModes)
         u(:,n,:) = un(:,1:nModes).'; % save
         whn(:, n) = whnn(1:nModes);
     end
-    chron = toc;
-    fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g ms\n', size(whn, 2), size(whn, 1), chron, chron/length(whn(:))*1e3);
     dat.w = whn*guw.np.fh0/guw.np.h0;
     dat.k = kh.*ones(size(whn))/guw.np.h0;
     dat.u = cell(guw.geom.nLay, 1);
