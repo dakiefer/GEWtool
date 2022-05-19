@@ -38,6 +38,9 @@ methods
 	end
 
 	function guw = Lamb(obj, n)
+        if ~obj.decouplesLambvsSH
+            warning('GUWtool:Waveguide You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
+        end
 		udof = 1:2;
 		guw = obj;
 		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
@@ -46,6 +49,9 @@ methods
 	end
 
 	function obj = sh(obj, n)
+        if ~obj.decouplesLambvsSH
+            warning('GUWtool:Waveguide You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
+        end
 		udof = 3;
 		guw = obj;
 		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, ones(size(obj.geom.N)));

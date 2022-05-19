@@ -76,10 +76,10 @@ classdef LayerCylindrical < Layer
             z =  3; % SH polarization 
             L2 = cxx;
             L1 = Cxp*A + Crx + Cxp;
-            L0 = crr + Crp*A + cpp + cpp*B + Crp + 2*cpp*A + cpp;
+            L0 = crr + Crp*A + 2*cpp + cpp*B + Crp + 2*cpp*A;
             
             % test 
-            test = L2(xy,z) | L2(z,xy).' | L1(xy,z) | L1(z,xy).' | L0(xy,z) | L0(z,xy).';
+            test = ~(L2(xy,z) | L2(z,xy).' | L1(xy,z) | L1(z,xy).' | L0(xy,z) | L0(z,xy).');
             decoupl = any(test(:));
         end
         

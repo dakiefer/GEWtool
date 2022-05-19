@@ -35,5 +35,13 @@ classdef LayerPlate < Layer
             B0 = kron(cyy, D1([1, obj.N], :));
         end
         
+        function decoupl = decouplesLambvsSH(obj)
+            xy = [1 2]; % Lamb polarization
+            z =  3; % SH polarization 
+            c1test = obj.mat.c(xy,xy,z,xy); 
+            c2test = obj.mat.c(xy,z,xy,xy);
+            decoupl = all(c1test(:) == 0) & all(c2test(:) == 0);
+        end
+        
     end % methods
 end % class
