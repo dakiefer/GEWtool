@@ -23,7 +23,7 @@ dat = computeW(guw, k);
 hold on, plot(dat.k(:), dat.w(:)/2/pi, 'cx'); drawnow;
 
 %% bilayer problem thick-thin:
-b = linspace(r(1)*(1+1e-4), r(3)*(1-1e-4), 20);
+b = linspace(r(1)*(1+1e-4), r(3)*(1-1e-4), 5);
 cc = inferno(length(b));
 for ii = 1:length(b)
     r0 = [r(1), b(ii), r(3)];
