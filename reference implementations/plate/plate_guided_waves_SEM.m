@@ -5,7 +5,7 @@
 % 
 
 h = 1e-3;   % thickness in m
-N = 19;     % discretization: polynomial order of interpolants
+N = 13;     % discretization: polynomial order of interpolants
 rho = 7900; lbd = 1.1538e11; mu = 7.6923e10; % steel material
 
 % define and normalize parameters:
@@ -26,17 +26,30 @@ I = eye(size(cxx));
 %% discretize: 
 tic 
 dom = [0 1];
-[y, w] = chebpts(N); % lobpts, legpts
+[y, w] = chebpts(N, dom); % lobpts, legpts
 % D1 = diffmat(N,1,[0 1],'chebkind2'); D2 = diffmat(N,2,[0 1],'chebkind2');
 % mesh = Geometry(dom, N, length(udof));
 % mesh.y{1} = y;
-Psi = chebpoly(0:N, dom);
+
+Psi = chebpoly(0:N-1, dom);
+P = zeros(N, size(Psi,2));
+for i = 1:size(Psi, 2)
+    Pi = Psi(:,i);
+    P(:,i) = Pi(y);
+end
+
 Psid = diff(Psi);
-me = elemM(Psi);
+Pd = zeros(N, size(Psid,2));
+for i = 1:size(Psid, 2)
+    Pdi = Psid(:,i);
+    Pd(:,i) = Pdi(y);
+end
+
+me = elemM(P,w);
 k2 = me;
-k1 = elemK1(Psi, Psid);
+k1 = elemK1(P, Pd, w);
 g1 = -k1.';
-g0 = elemG0(Psid);
+g0 = elemG0(Pd, w);
 M  = kron(rhon*I,me);
 K2 = kron(cxx, k2);
 K1 = kron(cxy, k1);
@@ -68,47 +81,47 @@ figure(1), hold on, plot(kkh(ind)/h/1e3, real(fh(ind))/h/1e6, 'x');
 drawnow
 
 %% solve for wavenumbers:
-fh = linspace(1e-2, 6, 300).'*1e6*h; % frequency*thickness
-kh = nan(length(fh), size(M, 2)*2); tic
-for ii = 1:length(fh)
-    whn = 2*pi*fh(ii)/fh0; % current frequency-thickness (normalized)
-    [un, khi] = polyeig(L0 + whn^2*M, L1, L2); 
-    kh(ii, :) = -1i*khi;
-end
-chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(kh, 1), size(kh, 2), chron, chron/length(kh(:))*1e3);
-
-% % plot wave numbers:
-ffh = fh.*ones(size(kh));
-figure(2), scatter(real(kh(:))/h/1e3, ffh(:)/h/1e6, 8, abs(imag(kh(:))), 'filled'), 
-caxis([0, 0.12]), xlim([0, 12]), ylim([0, fh(end)/h/1e6])
-xlabel('k in rad/mm'), ylabel('f in MHz')
+% fh = linspace(1e-2, 6, 300).'*1e6*h; % frequency*thickness
+% kh = nan(length(fh), size(M, 2)*2); tic
+% for ii = 1:length(fh)
+%     whn = 2*pi*fh(ii)/fh0; % current frequency-thickness (normalized)
+%     [un, khi] = polyeig(L0 + whn^2*M, L1, L2); 
+%     kh(ii, :) = -1i*khi;
+% end
+% chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(kh, 1), size(kh, 2), chron, chron/length(kh(:))*1e3);
+% 
+% % % plot wave numbers:
+% ffh = fh.*ones(size(kh));
+% figure(2), scatter(real(kh(:))/h/1e3, ffh(:)/h/1e6, 8, abs(imag(kh(:))), 'filled'), 
+% caxis([0, 0.12]), xlim([0, 12]), ylim([0, fh(end)/h/1e6])
+% xlabel('k in rad/mm'), ylabel('f in MHz')
 
 
 %% element matrices:
-function me = elemM(Psi) 
+function me = elemM(Psi, w) 
     me = zeros(length(Psi));
     for i = 1:length(Psi)
         for j = i:length(Psi)
-            me(i,j) = sum(Psi(:,i)*Psi(:,j));
+            me(i,j) = w*(Psi(:,i).*Psi(:,j));
             me(j,i) = me(i,j);
         end
     end
 end
 
-function le1 = elemK1(Psi, Psid) 
+function le1 = elemK1(Psi, Psid, w) 
     le1 = zeros(size(Psi,2));
     for i = 1:size(Psi,2)
         for j = 1:size(Psi,2)
-            le1(i,j) = sum(Psi(:,i)*Psid(:,j));
+            le1(i,j) = w*(Psi(:,i).*Psid(:,j)); 
         end
     end
 end
 
-function g0 = elemG0(Psid) 
+function g0 = elemG0(Psid, w) 
     g0 = zeros(size(Psid,2));
     for i = 1:size(Psid,2)
         for j = i:size(Psid,2)
-            g0(i,j) = -sum(Psid(:,i)*Psid(:,j));
+            g0(i,j) = -w*(Psid(:,i).*Psid(:,j));
             g0(j,i) = g0(i,j);
         end
     end

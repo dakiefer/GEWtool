@@ -16,17 +16,30 @@ I = eye(size(cxx));
 
 %% discretize: 
 dom = [0 1];
-% [y, w] = chebpts(N); % lobpts, legpts
+[y, w] = chebpts(2*N-1, dom, 2); % lobpts, legpts
 % D1 = diffmat(N,1,[0 1],'chebkind2'); D2 = diffmat(N,2,[0 1],'chebkind2');
 % mesh = Geometry(dom, N, length(udof));
 % mesh.y{1} = y;
-Psi = chebpoly(0:N, dom);
+
+Psi = chebpoly(0:N-1, dom);
+P = zeros(length(y), size(Psi,2));
+for i = 1:size(Psi, 2)
+    Pi = Psi(:,i);
+    P(:,i) = Pi(y);
+end
+
 Psid = diff(Psi);
-me = elemM(Psi);
+Pd = zeros(length(y), size(Psid,2));
+for i = 1:size(Psid, 2)
+    Pdi = Psid(:,i);
+    Pd(:,i) = Pdi(y);
+end
+
+me = elemM(P,w);
 k2 = me;
-k1 = elemK1(Psi, Psid);
+k1 = elemK1(P, Pd, w);
 g1 = -k1.';
-g0 = elemG0(Psid);
+g0 = elemG0(Pd, w);
 M  = kron(rhon*I,me);
 K2 = kron(cxx, k2);
 K1 = kron(cxy, k1);
@@ -47,30 +60,30 @@ guw.geom = Geometry([0, h],N,2);
 
 
 %% element matrices:
-function me = elemM(Psi) 
-    me = zeros(length(Psi));
-    for i = 1:length(Psi)
-        for j = i:length(Psi)
-            me(i,j) = sum(Psi(:,i)*Psi(:,j));
+function me = elemM(Psi, w) 
+    me = zeros(size(Psi,2));
+    for i = 1:size(Psi,2)
+        for j = i:size(Psi,2)
+            me(i,j) = w*(Psi(:,i).*Psi(:,j));
             me(j,i) = me(i,j);
         end
     end
 end
 
-function le1 = elemK1(Psi, Psid) 
+function le1 = elemK1(Psi, Psid, w) 
     le1 = zeros(size(Psi,2));
     for i = 1:size(Psi,2)
         for j = 1:size(Psi,2)
-            le1(i,j) = sum(Psi(:,i)*Psid(:,j));
+            le1(i,j) = w*(Psi(:,i).*Psid(:,j)); 
         end
     end
 end
 
-function g0 = elemG0(Psid) 
+function g0 = elemG0(Psid, w) 
     g0 = zeros(size(Psid,2));
     for i = 1:size(Psid,2)
         for j = i:size(Psid,2)
-            g0(i,j) = -sum(Psid(:,i)*Psid(:,j));
+            g0(i,j) = -w*(Psid(:,i).*Psid(:,j));
             g0(j,i) = g0(i,j);
         end
     end

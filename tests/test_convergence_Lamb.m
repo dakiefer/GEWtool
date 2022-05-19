@@ -18,7 +18,7 @@ disp('Test computeW():'), tic
 for i=1:numel(N)
 %     plate = Plate(mat, h, N(i)); guw = plate.Lamb;
 %     guw = Lamb_matrices_rectangularSCM(mat, h, N(i));
-    guw = Lamb_matrices_SEM(mat, h, N(i)-1);
+    guw = Lamb_matrices_SEM(mat, h, N(i));
     dofs(i)=size(guw.op.L0,1);
     dat = computeW(guw, k0);
     [~, indSel] = min(abs(dat.w - w0));
@@ -36,10 +36,12 @@ residuumAtRLRoot = abs(rayLamb(detRoot))
 err=abs(ws-detRoot)/detRoot;
 errWNmax = err(end)
 
-figure(1), hold on, plot(dofs,abs(err),'o--');
+open('data/convergence_SCM.fig'), hold on
+plot(dofs,abs(err),'o--');
 ax=gca; ax.YScale='log';
 xlabel('matrix size (= 2N)'), ylabel('rel. error')
 title('Error w.r.t Rayleigh-Lamb root')
+legend({'SCM', 'new'})
 
 
 
