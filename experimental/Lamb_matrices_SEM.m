@@ -19,16 +19,9 @@ dom = [0 1];
 Ni = 2*N; % integration points (needs to be sufficient to integrate square basis functions)
 [yi, w] = chebpts(Ni, dom, 2); % lobpts, legpts
 Dy = diffmat(Ni, dom);
-% D1 = diffmat(N,1,[0 1],'chebkind2'); D2 = diffmat(N,2,[0 1],'chebkind2');
-% mesh = Geometry(dom, N, length(udof));
-% mesh.y{1} = y;
 
 Psi = chebpoly(0:N-1, dom);
-P = zeros(length(yi), size(Psi,2)); % each column is sampled polynomial 
-for i = 1:size(Psi, 2)
-    Pi = Psi(:,i);
-    P(:,i) = Pi(yi);
-end
+P = Psi(yi,:);
 Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials
 
 me = elemM(P,w);

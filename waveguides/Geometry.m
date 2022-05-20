@@ -3,15 +3,19 @@ classdef Geometry
 properties 
     nLay         % number of layers
     nItf         % number of interfaces, includes outer ones
-    N            % number of collocation points for each layer
-    Nudof        % number of displacement dofs for each layer
-    yItf         % position of interfaces in m [nLay x 2]
-    y            % cell array with collocation points for each layer in m 
-    h            % thickness for each layer in m
+    N            % number of nodal points for each layer
+    Nudof        % number of displacement dofs (e.g., ux, uy, uz) for each layer
+    yItf         % position of interfaces in meter [nLay x 2]
+    y            % cell array with nodal points for each layer in meter
+    h            % thickness for each layer in meter
     % nodesOfElem  % connectivity map: row e contains left and right node num of elem e -> TODO not being used
-    ldofBC       % local dofs of BC: e.g. [1, N+1; N, 2*N] -> [upper; lower]
-    gdofBC = []; % global dofs of BCs: differs from ldofBC for multilayer problems
+    ldofBC       % cell array of local dofs at boundaries: e.g. [1, N; N+1, 2*N] -> [upper, lower]
     gdofOfLay    % cell array with global dofs assigned to layers
+    Ndof         % total number of degrees of freedom
+end
+
+properties (Dependent)
+    gdofBC      % a link to all gdofOfLay(ldofBC) assembled into one array
 end
 
 methods
@@ -36,13 +40,35 @@ methods
         % obj.nodesOfElem(:,1) = 1:obj.nItf-1;
         % obj.nodesOfElem(:,2) = 2:obj.nItf;
         % boundary condition nodes:
-        dof0 = 0;
         for e=1:length(N) % length(N) == number of layers
-            obj.ldofBC{e} = (0:Nudof(e)-1)*N(e) + [1; N(e)];
-            [etad, ~] = chebdif(N(e), 1);
+            obj.ldofBC{e} = (0:Nudof(e)-1).'*N(e) + [1, N(e)];
+            etad = chebpts(N(e)); etad = flipud(etad);
             obj.y{e} = (-obj.h(e)*etad + obj.yItf(e, 2) + obj.yItf(e, 1))/2;
-            obj.gdofOfLay{e} = dof0 + (1:Nudof(e)*N(e)); dof0 = dof0 + Nudof(e)*N(e);
-            obj.gdofBC = [obj.gdofBC, obj.gdofOfLay{e}(obj.ldofBC{e})];
+            if e == 1
+                gdofE = 1:Nudof(e)*N(e);
+            else
+                Ncommon = min(Nudof(e-1:e)); % number of common degrees of freedom at interface
+                gdofBCLast = obj.gdofOfLay{e-1}(obj.ldofBC{e-1}); % global dofs at boundary of last layer
+                gdofCommon = gdofBCLast(end-Ncommon+1:end,2).'; % dofs of previous layer at interface
+                gdofLastLay = obj.gdofOfLay{e-1}(end);
+                Nnew = Nudof(e)*N(e)-Ncommon; % subtract common number of dofs with previous layer
+                gdofNew = gdofLastLay + (1:Nnew); 
+                ldofInd = 1:Nudof(e)*N(e);
+                ldofCommon = obj.ldofBC{e}(1:Ncommon);
+                ldofNew = setdiff(ldofInd, ldofCommon);
+                gdofE = zeros(1,length(ldofInd));
+                gdofE(ldofNew) = gdofNew; gdofE(ldofCommon) = gdofCommon;
+            end
+            obj.gdofOfLay{e} = gdofE;
+        end
+        obj.Ndof = numel(unique([obj.gdofOfLay{:}]));
+    end
+
+    function gdofBC = get.gdofBC(obj)
+        gdofBC = cell(length(obj.N), 1); % initialize
+        for e=1:length(obj.N) % loop over layers 
+            gdofE = obj.gdofOfLay{e};
+            gdofBC{e} = gdofE(obj.ldofBC{e});
         end
     end
 
