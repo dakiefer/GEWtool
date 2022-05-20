@@ -16,24 +16,20 @@ I = eye(size(cxx));
 
 %% discretize: 
 dom = [0 1];
-[y, w] = chebpts(2*N-1, dom, 2); % lobpts, legpts
+Ni = 2*N; % integration points (needs to be sufficient to integrate square basis functions)
+[yi, w] = chebpts(Ni, dom, 2); % lobpts, legpts
+Dy = diffmat(Ni, dom);
 % D1 = diffmat(N,1,[0 1],'chebkind2'); D2 = diffmat(N,2,[0 1],'chebkind2');
 % mesh = Geometry(dom, N, length(udof));
 % mesh.y{1} = y;
 
 Psi = chebpoly(0:N-1, dom);
-P = zeros(length(y), size(Psi,2));
+P = zeros(length(yi), size(Psi,2)); % each column is sampled polynomial 
 for i = 1:size(Psi, 2)
     Pi = Psi(:,i);
-    P(:,i) = Pi(y);
+    P(:,i) = Pi(yi);
 end
-
-Psid = diff(Psi);
-Pd = zeros(length(y), size(Psid,2));
-for i = 1:size(Psid, 2)
-    Pdi = Psid(:,i);
-    Pd(:,i) = Pdi(y);
-end
+Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials
 
 me = elemM(P,w);
 k2 = me;
@@ -60,33 +56,19 @@ guw.geom = Geometry([0, h],N,2);
 
 
 %% element matrices:
-function me = elemM(Psi, w) 
-    me = zeros(size(Psi,2));
-    for i = 1:size(Psi,2)
-        for j = i:size(Psi,2)
-            me(i,j) = w*(Psi(:,i).*Psi(:,j));
-            me(j,i) = me(i,j);
-        end
-    end
+function me = elemM(P, w) 
+    PtimesP = P.*permute(P,[1 3 2]);
+    me = squeeze( sum(w.'.*PtimesP,1) );
 end
 
-function le1 = elemK1(Psi, Psid, w) 
-    le1 = zeros(size(Psi,2));
-    for i = 1:size(Psi,2)
-        for j = 1:size(Psi,2)
-            le1(i,j) = w*(Psi(:,i).*Psid(:,j)); 
-        end
-    end
+function le1 = elemK1(P, Pd, w) 
+    PtimesPd = P.*permute(Pd,[1 3 2]);
+    le1 = squeeze( sum(w.'.*PtimesPd,1) );
 end
 
-function g0 = elemG0(Psid, w) 
-    g0 = zeros(size(Psid,2));
-    for i = 1:size(Psid,2)
-        for j = i:size(Psid,2)
-            g0(i,j) = -w*(Psid(:,i).*Psid(:,j));
-            g0(j,i) = g0(i,j);
-        end
-    end
+function g0 = elemG0(Pd, w) 
+    PdtimesPd = Pd.*permute(Pd,[1 3 2]);
+    g0 = squeeze( sum(-w.'.*PdtimesPd,1) );
 end
 
 
