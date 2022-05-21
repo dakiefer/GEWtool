@@ -3,7 +3,7 @@ classdef LayerPlate < Layer
     methods
         function obj = LayerPlate(mat, ys, N)
             % LayerPlate: constructor
-            obj = obj@Layer(mat, ys, N)
+            obj = obj@Layer(mat, ys, N);
         end
         
         function [L0, L1, L2] = stiffnessOp(obj, udof, varargin)
