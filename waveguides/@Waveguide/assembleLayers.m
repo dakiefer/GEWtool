@@ -12,12 +12,12 @@ for l = 1:geom.nLay
     dof = geom.gdofOfLay{l}; % global degrees of freedom for layer l
     [L0lay, L1lay, L2lay] = lay.stiffnessOp(udof, n);
     Mlay = lay.massOp(udof);
-    c0l = lay.mat.c(1,2,1,2); rho0l = lay.mat.rho; hl = lay.h; % normalization params
+    cl = lay.mat.c(1,2,1,2)/c0; rhol = lay.mat.rho/rho0; hl = lay.h/h0; % normalization params
     % assemble into global matrices:
-    L2(dof,dof) = L2(dof,dof) + L2lay*c0l/c0;
-    L1(dof,dof) = L1(dof,dof) + L1lay*c0l/c0*h0/hl;
-    L0(dof,dof) = L0(dof,dof) + L0lay*c0l/c0*(h0/hl)^2;
-     M(dof,dof) =  M(dof,dof) +  Mlay*rho0l/rho0;
+    L2(dof,dof) = L2(dof,dof) + L2lay*cl*hl;
+    L1(dof,dof) = L1(dof,dof) + L1lay*cl;
+    L0(dof,dof) = L0(dof,dof) + L0lay*cl/hl;
+     M(dof,dof) =  M(dof,dof) +  Mlay*rhol*hl;
 end
 
 % return as structure:
