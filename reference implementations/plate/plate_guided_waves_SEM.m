@@ -32,9 +32,9 @@ figure(1), hold on, plot(kkh(:)/h/1e3, real(fh(:))/h/1e6, '.');
 xlim([0, 12]), ylim([0, 6]),
 xlabel('k in rad/mm'), ylabel('f in MHz'),
 
-ind = find(imag(fh)~=0);
-figure(1), hold on, plot(kkh(ind)/h/1e3, real(fh(ind))/h/1e6, 'x');
-drawnow
+% ind = find(imag(fh)~=0);
+% figure(1), hold on, plot(kkh(ind)/h/1e3, real(fh(ind))/h/1e6, 'x');
+% drawnow
 
 %% solve for wavenumbers:
 fh = linspace(1e-2, 6, 300).'*1e6*h; % frequency*thickness

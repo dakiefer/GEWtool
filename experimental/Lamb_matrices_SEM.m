@@ -15,14 +15,24 @@ cyy = squeeze(cn(2,udof,udof,2));
 I = eye(size(cxx)); 
 
 %% discretize: 
-dom = [0 1];
-Ni = 2*N; % integration points (needs to be sufficient to integrate square basis functions)
-[yi, w] = chebpts(Ni, dom, 2); % lobpts, legpts
-Dy = diffmat(Ni, dom);
 
-Psi = chebpoly(0:N-1, dom);
-P = Psi(yi,:);
-Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials
+% % For Chebyshev polynomials with Chebyshev points use:
+% dom = [0 1];
+% Ni = 2*N; % integration points (needs to be sufficient to integrate P*P)
+% [yi, w] = chebpts(Ni, dom, 2);
+% Dy = diffmat(Ni, dom);
+% Psi = chebpoly(0:N-1, dom);
+% P = Psi(yi,:);
+% Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials
+
+% % For Lagrange polynomials on GLL points use:
+dom = [-1 1];
+[yi, w] = lobpts(N, [-1, 1]); % does only work on dom = [-1 1]!!!!
+w = w/2; yi = yi/2; % scale to [-1/2, 1/2]
+Psi = chebfun.lagrange(yi);
+Psid = diff(Psi);
+P = eye(length(yi)); % Psi(yi,:);
+Pd = Psid(yi,:);
 
 me = elemM(P,w);
 k2 = me;
