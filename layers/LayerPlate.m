@@ -14,12 +14,9 @@ classdef LayerPlate < Layer
             cxy = squeeze(cn(1,udof,udof,2)); 
             cyx = squeeze(cn(2,udof,udof,1));
             cyy = squeeze(cn(2,udof,udof,2));
-            % normalized element stiffness and flux:
-            k2 = obj.PP; k1 = obj.PPd; % element stiffness
-            g1 = -obj.PPd.'; g0 = obj.PdPd; % element flux
             % assemble:
-            K2 = kron(cxx, k2); K1 = kron(cxy, k1); 
-            G1 = kron(cyx, g1); G0 = kron(cyy, g0);
+            K2 = kron(cxx, obj.PP); K1 = kron(cxy, obj.PPd); % stiffness
+            [G0, G1] = obj.tractionOp(udof, varargin{:}); % flux
             % combine to polynomial of (ik):
             L0 = G0; L1 = K1 + G1; L2 = K2;
         end
@@ -32,7 +29,7 @@ classdef LayerPlate < Layer
             cyx = squeeze(cn(2,udof,udof,1));
             cyy = squeeze(cn(2,udof,udof,2));
             % assemble:
-            g1 = -obj.PPd.'; g0 = obj.PdPd; % normalized element flux
+            g1 = -obj.PPd.'; g0 = -obj.PdPd.'; % normalized element flux
             G1 = kron(cyx, g1); G0 = kron(cyy, g0); % assemble
         end
         

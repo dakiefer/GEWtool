@@ -35,12 +35,12 @@ classdef Layer
             M = kron(rhon,me); % assemble
         end
 
-        function U0 = displacementOp(obj, udof)
-            % displacementOp displacement operator (boundaries)
-            I = eye(length(udof));
-            Id = eye(obj.N);  
-            U0 = kron(I, Id([1, obj.N], :));
-        end
+%         function U0 = displacementOp(obj, udof)
+%             % displacementOp displacement operator (boundaries)
+%             I = eye(length(udof));
+%             Id = eye(obj.N);  
+%             U0 = kron(I, Id([1, obj.N], :));
+%         end
     end % methods
 
     methods (Static)
@@ -57,7 +57,7 @@ classdef Layer
         function g0 = elemPdPd(Pd, w) 
             % elemPdPd: integral of product matrix of ∫P'*P'dy (element flux)
             PdtimesPd = Pd.*permute(Pd,[1 3 2]);
-            g0 = squeeze( sum(-w.'.*PdtimesPd,1) );
+            g0 = squeeze( sum(w.'.*PdtimesPd,1) );
         end
 
         function [yi, wi] = nodes(N)
