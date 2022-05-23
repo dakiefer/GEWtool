@@ -42,8 +42,8 @@ methods
         % boundary condition nodes:
         for e=1:length(N) % length(N) == number of layers
             obj.ldofBC{e} = (0:Nudof(e)-1).'*N(e) + [1, N(e)];
-            etad = chebpts(N(e)); etad = flipud(etad);
-            obj.y{e} = (-obj.h(e)*etad + obj.yItf(e, 2) + obj.yItf(e, 1))/2;
+            etad = Layer.nodes(N(e)); etad = flipud(etad);
+            obj.y{e} = etad*obj.h(e) + obj.yItf(e, 1);
             if e == 1
                 gdofE = 1:Nudof(e)*N(e);
             else

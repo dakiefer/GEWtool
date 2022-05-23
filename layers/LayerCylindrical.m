@@ -31,13 +31,11 @@ classdef LayerCylindrical < Layer
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             % relevant material matrices: 
             cxx = squeeze(cn(1,udof,udof,1));
-            crr = squeeze(cn(2,udof,udof,2));
             cpp = squeeze(cn(3,udof,udof,3));
             crp = squeeze(cn(2,udof,udof,3));
             cpr = squeeze(cn(3,udof,udof,2));
             cxp = squeeze(cn(1,udof,udof,3));
             cpx = squeeze(cn(3,udof,udof,1));
-            crx = squeeze(cn(2,udof,udof,1));
             cxr = squeeze(cn(1,udof,udof,2));
             % differetiation in curvilinear coordinate system:
             A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; A = squeeze(A(udof, udof));
