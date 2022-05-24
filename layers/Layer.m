@@ -1,7 +1,8 @@
 classdef Layer 
 
     properties (Access = public)
-        y   % collocation points on domain of unit length
+        y   % nodal points in physical domain
+        eta % normalized nodal points
         h   % thickness in m
         N   % number of collocation points
         mat % material
@@ -22,6 +23,8 @@ classdef Layer
             
             % % element matrices:
             [yi, wi] = Layer.nodes(N);  % nodal coordinates and integration weights
+            obj.y = obj.h*yi + ylim(1);
+            obj.eta = yi;
             [P, Pd] = Layer.basis(yi);  % polynomial basis
             obj.PP = Layer.elemPP(P, wi);
             obj.PPd = Layer.elemPPd(P, Pd, wi);
@@ -77,7 +80,8 @@ classdef Layer
 %             Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials
 
             % % For Lagrange polynomials
-            Psi = chebfun.lagrange(yi);
+%             yn = 2*yi/(yi(end)-yi(1)) - 1; % scale to [-1 1]
+            Psi = chebfun.lagrange(yi); % works only for domain [-1 1] !!
             Psid = diff(Psi);
             P = eye(length(yi)); % Psi(yi,:);
             Pd = Psid(yi,:);

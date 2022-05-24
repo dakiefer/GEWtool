@@ -16,7 +16,7 @@ classdef LayerCylindrical < Layer
             % % element matrices specific to cylindrical coordinates:
             [yi, wi] = Layer.nodes(N);  % nodal coordinates and integration weights
             [P, Pd] = Layer.basis(yi);  % polynomial basis
-            rn = obj.r/obj.h; % radial coordinates normalized to thickness
+            rn = (obj.r)/obj.h; % radial coordinates normalized to thickness
             obj.PPr = LayerCylindrical.elemPPr(P, wi, rn);          % ∫1/r*P*P dr
             obj.PPr2 = LayerCylindrical.elemPPr2(P, wi, rn);        % ∫1/r^2*P*P dr 
             obj.PPdr = LayerCylindrical.elemPPdr(P, Pd, wi, rn);    % ∫1/r*P*P' dr 
