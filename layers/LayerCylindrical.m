@@ -39,19 +39,21 @@ classdef LayerCylindrical < Layer
             cxp = squeeze(cn(1,udof,udof,3));
             cpx = squeeze(cn(3,udof,udof,1));
             cxr = squeeze(cn(1,udof,udof,2));
-            crx = squeeze(cn(2,udof,udof,1));
-            crr = squeeze(cn(2,udof,udof,2));
             % differetiation in curvilinear coordinate system:
             A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; A = squeeze(A(udof, udof));
-%             B = [0, 0, 0; 0, 1,  0; 0, 0, 1]; B = squeeze(B(udof, udof));
-%             I = eye(size(A));
+            B = [0, 0, 0; 0, 1,  0; 0, 0, 1]; B = squeeze(B(udof, udof));
+            I = eye(size(A));
             
             % element stiffness:
             K2 = kron(cxx, obj.PPr);
-            K1 = kron(cxr, obj.PPdr) + kron(crx, obj.PPdr.') + kron(cxp*A + A'*cpx, obj.PP);
-            K0 = kron(crr, obj.PdPdr) + kron(A'*cpp*A, obj.PPInvr)...
-                 + kron(crp*A, obj.PPd.') + kron(A'*cpr, obj.PPd);
-            L2 = -K2; L1 = -K1; L0 = -K0;
+            K1 = kron(cxr, obj.PPdr) + kron( (cxp + cpx)*(1i*n*I + A) , obj.PP);
+            k0PPd = cpp + cpr*(1i*n*I + A); % first term in K0
+            k0PPInvr = -cpp*B - (crp + cpr)*(1i*n*I + A) + (1i*n)*cpp*2*A + (1i*n)^2*cpp; % second term in K0
+            K0 = kron(k0PPd, obj.PPd) + kron(k0PPInvr, obj.PPInvr);
+            % element flux:
+            [G0, G1] = obj.tractionOp(udof, n);
+            % combine to polynomial of (ik):
+            L2 = K2; L1 = K1 + G1; L0 = K0 + G0;
         end
 
         function M = massOp(obj, udof)
@@ -70,8 +72,8 @@ classdef LayerCylindrical < Layer
             A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; A = squeeze(A(udof, udof)); % differetiation in curvilinear coordinate system
             I = eye(size(A));
             % normalized element flux:
-            G1 = kron( crx , -obj.PPd.' );
-            G0 = kron( crr , -obj.PdPd.' )  +  kron( crp*(1i*n*I + A) , -obj.PPdr.' );
+            G1 = kron( crx , -obj.PPdr.' );
+            G0 = kron( crr , -obj.PdPdr.' )  +  kron( crp*(1i*n*I + A) , -obj.PPd.' );
         end
         
     end % methods
