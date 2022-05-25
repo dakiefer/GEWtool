@@ -12,10 +12,8 @@ classdef LayerPlate < Layer
             % relevant material matrices: 
             cxx = squeeze(cn(1,udof,udof,1));
             cxy = squeeze(cn(1,udof,udof,2)); 
-            cyx = squeeze(cn(2,udof,udof,1));
-            cyy = squeeze(cn(2,udof,udof,2));
             % assemble:
-            K2 = kron(cxx, obj.PP); K1 = kron(cxy, obj.PPd); % stiffness
+            K2 = kron(cxx, obj.PP/obj.h); K1 = kron(cxy, obj.PPd)/obj.h; % stiffness
             [G0, G1] = obj.tractionOp(udof, varargin{:}); % flux
             % combine to polynomial of (ik):
             L0 = G0; L1 = K1 + G1; L2 = K2;
@@ -28,9 +26,15 @@ classdef LayerPlate < Layer
             % relevant material matrices: 
             cyx = squeeze(cn(2,udof,udof,1));
             cyy = squeeze(cn(2,udof,udof,2));
-            % assemble:
-            g1 = -obj.PPd.'; g0 = -obj.PdPd.'; % normalized element flux
-            G1 = kron(cyx, g1); G0 = kron(cyy, g0); % assemble
+            % normalized element flux
+            G1 = kron(cyx, -obj.PPd.')/obj.h; G0 = kron(cyy, -obj.PdPd.')/obj.h; % assemble
+        end
+
+        function M = massOp(obj, udof)
+            % massOp mass operator 
+            rhon = eye(length(udof)); % normalized mass matrix (for each dof in u) 
+            me = obj.PP; % element mass
+            M = kron(rhon,me)/obj.h; % assemble
         end
         
     end % methods

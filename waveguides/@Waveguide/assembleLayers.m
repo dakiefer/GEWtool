@@ -14,10 +14,10 @@ for l = 1:geom.nLay
     Mlay = lay.massOp(udof);
     cl = lay.mat.c(1,2,1,2)/c0; rhol = lay.mat.rho/rho0; hl = lay.h/h0; % normalization params
     % assemble into global matrices:
-    L2(dof,dof) = L2(dof,dof) + L2lay*cl*hl;
-    L1(dof,dof) = L1(dof,dof) + L1lay*cl;
-    L0(dof,dof) = L0(dof,dof) + L0lay*cl/hl;
-     M(dof,dof) =  M(dof,dof) +  Mlay*rhol*hl;
+    L2(dof,dof) = L2(dof,dof) + L2lay*cl*hl^2;
+    L1(dof,dof) = L1(dof,dof) + L1lay*cl*hl;
+    L0(dof,dof) = L0(dof,dof) + L0lay*cl;
+     M(dof,dof) =  M(dof,dof) +  Mlay*rhol*hl^2;
 end
 
 % return as structure:

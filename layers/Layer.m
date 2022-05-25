@@ -15,19 +15,19 @@ classdef Layer
         function obj = Layer(mat, ylim, N)
             % LayerCylindrical: constructor
 
-            % properties:
-            obj.mat = mat; % material
-            obj.N = N; % polynomial order
-            obj.h = ylim(end) - ylim(1); % physical thickness
-            
             % % element matrices:
             [yi, wi] = Layer.nodes(N);  % nodal coordinates and integration weights
-            obj.y = obj.h*yi + ylim(1);
-            obj.eta = yi;
             [P, Pd] = Layer.basis(yi);  % polynomial basis
             obj.PP = Layer.elemPP(P, wi);
             obj.PPd = Layer.elemPPd(P, Pd, wi);
             obj.PdPd = Layer.elemPdPd(Pd, wi);
+
+            % % save coordinates and other properties:
+            obj.h = ylim(end) - ylim(1); % physical thickness
+            obj.y = obj.h*yi + ylim(1);
+            obj.eta = yi;
+            obj.mat = mat; % material
+            obj.N = N; % polynomial order
         end
 
         function M = massOp(obj, udof)
