@@ -1,11 +1,3 @@
-% reference data:
-load('data/disperse.mat')
-figure, hold on
-plot(disperse.k/1e-3, disperse.f*1e6, 'g.')
-xlim([0, 0.5]), ylim([0, 200])
-xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
-ax = gca; ax.ColorOrderIndex = 1; % reset color order 
-
 % parameters:
 a = 20; b = 21; h = b-a;
 rho=7932; mu=rho*3260^2; lbd=rho*5960^2-2*mu;	
@@ -18,6 +10,14 @@ cyl = Cylinder(mat, [a, b], N);
 n = 0;
 guw = cyl.fullyCoupled(n);
 dat = computeW(guw, k); 
+
+% plot against reference data:
+load('data/disperse.mat')
+figure, hold on
+plot(disperse.k/1e-3, disperse.f*1e6, 'g.')
+xlim([0, 0.5]), ylim([0, 200])
+xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
+ax = gca; ax.ColorOrderIndex = 1; % reset color order 
 hold on, plot(dat.k(:), dat.w(:)/2/pi, '.'); 
 legend({'disperse', 'n = 0'})
 

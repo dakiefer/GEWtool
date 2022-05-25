@@ -18,7 +18,6 @@ classdef Layer
             % properties:
             obj.mat = mat; % material
             obj.N = N; % polynomial order
-            obj.y = chebpts(N, ylim); % computing grid: defines polynomial order
             obj.h = ylim(end) - ylim(1); % physical thickness
             
             % % element matrices:
