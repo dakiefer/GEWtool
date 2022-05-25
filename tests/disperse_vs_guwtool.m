@@ -21,6 +21,12 @@ ax = gca; ax.ColorOrderIndex = 1; % reset color order
 hold on, plot(dat.k(:), dat.w(:)/2/pi, '.'); 
 legend({'disperse', 'n = 0'})
 
+n = 1;
+guw = cyl.fullyCoupled(n);
+dat = computeW(guw, k); 
+hold on, plot(dat.k(:), dat.w(:)/2/pi, '.'); 
+legend({'disperse', 'n = 0'})
+
 %% fist-order circumferential waves:
 % n = 1;
 % guw = cyl.fullyCoupled(n);

@@ -48,7 +48,7 @@ classdef LayerCylindrical < Layer
             K2 = kron(cxx, obj.PPr);
             K1 = kron(cxr, obj.PPdr) + kron( (cxp + cpx)*(1i*n*I + A) , obj.PP);
             k0PPd = cpp + cpr*(1i*n*I + A); % first term in K0
-            k0PPInvr = -cpp*B - (crp + cpr)*(1i*n*I + A) + (1i*n)*cpp*2*A + (1i*n)^2*cpp; % second term in K0
+            k0PPInvr = cpp*(1i*n*I + A)^2 - cpr*(1i*n*I + A); % second term in K0
             K0 = kron(k0PPd, obj.PPd) + kron(k0PPInvr, obj.PPInvr);
             % element flux:
             [G0, G1] = obj.tractionOp(udof, n);
