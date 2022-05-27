@@ -6,7 +6,7 @@ function [I] = chebintegrate(f, lim, dim)
 % - dim: dimension to integrate along (scalar, default: 1)
 
 if nargin<3, dim=1; end
-[~, w] = fclencurt(size(f,dim), lim(1), lim(2));
+[~, w] = fclencurt(size(f,dim), lim(1), lim(end));
 w = shiftdim(w, -dim+1);
 I = sum(w.*f, dim);
 
