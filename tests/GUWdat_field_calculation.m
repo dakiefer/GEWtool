@@ -11,8 +11,7 @@ data = plate.solveForFreq(freq, Nmodes);
 ff = freq.*ones(size(data.k)); % for plotting
 
 %% new implementation:
-clear mat plate
-mat = Material('brass');
+clear plate
 plate = Plate(mat, h, N);
 wguide = plate.Lamb;
 % k = linspace(1e-3, 15, 150)/h;

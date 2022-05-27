@@ -9,6 +9,7 @@ classdef Layer
         PP  % integral of product matrix of ansatz functions ∫P*Pdy
         PPd % integral of product matrix of ∫P*P'dy
         PdPd % integral of product matrix of ∫P'*P'dy
+        D1  % diff matrix on unit domain 
     end
 
     methods
@@ -17,7 +18,8 @@ classdef Layer
 
             % % element matrices:
             [yi, wi] = Layer.nodes(N);  % nodal coordinates and integration weights
-            [P, Pd] = Layer.basis(yi);  % polynomial basis
+            [P, Pd] = Layer.basis(yi, N);  % polynomial basis
+            obj.D1 = collocD(yi);       % differentiation matrix for given basis and nodes
             obj.PP = Layer.elemPP(P, wi);
             obj.PPd = Layer.elemPPd(P, Pd, wi);
             obj.PdPd = Layer.elemPdPd(Pd, wi);
@@ -69,20 +71,26 @@ classdef Layer
             % % For Lagrange polynomials with GLL points:
             [yi, wi] = lobpts(N, [-1, 1]); % does only work on dom = [-1 1]!!!!
             wi = wi/2; yi = yi/2 + 1/2; % scale to [0, 1]
+% % %             [yi, wi] = lglnodes(N-1); yi = flipud(yi);
+% % %             wi = wi.'/2; yi = yi/2 + 1/2; % scale to [0, 1]
         end
 
-        function [P, Pd] = basis(yi)
+        function [P, Pd] = basis(yi, N)
             % % For Chebyshev polynomials: 
+            if nargin < 2
+                N = length(yi); % polynomial order is equal to number of quadrature points
+            end
 %             Dy = diffmat(2*N, [0 1]); % differentiation matrix on integration grid yi
 %             Psi = chebpoly(0:N-1, [0 1]); % Chebyshev polynomials
 %             P = Psi(yi,:); % along 1st dim: samples at yi, along 2nd dim: polynomial order
 %             Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials
 
             % % For Lagrange polynomials
-%             yn = 2*yi/(yi(end)-yi(1)) - 1; % scale to [-1 1]
             Psi = chebfun.lagrange(yi); % works only for domain [-1 1] !!
             Psid = diff(Psi);
             P = eye(length(yi)); % Psi(yi,:);
+            % % Dy = collocD(yi);
+            % % Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials;
             Pd = Psid(yi,:);
         end
 
