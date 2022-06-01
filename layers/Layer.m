@@ -53,11 +53,13 @@ classdef Layer
             PtimesP = P.*permute(P,[1 3 2]);
             me = squeeze( sum(w.'.*PtimesP,1) );
         end
+
         function le1 = elemPPd(P, Pd, w) 
             % elemPPd: integral of product matrix of ∫P*P'dy (element stiffness and flux)
             PtimesPd = P.*permute(Pd,[1 3 2]);
             le1 = squeeze( sum(w.'.*PtimesPd,1) );
         end
+
         function g0 = elemPdPd(Pd, w) 
             % elemPdPd: integral of product matrix of ∫P'*P'dy (element flux)
             PdtimesPd = Pd.*permute(Pd,[1 3 2]);
@@ -66,34 +68,26 @@ classdef Layer
 
         function [yi, wi] = nodes(N)
             % % For Chebyshev polynomials on Chebyshev points: 
-            % [yi, wi] = chebpts(2*N, [0 1]); % integration weights: integrate exactly P*P
-
+%             [yi, wi] = chebpts(2*N, [0 1]); % integration weights: integrate exactly P*P
             % % For Lagrange polynomials with GLL points:
-            [yi, wi] = lobpts(N, [-1, 1]); % does only work on dom = [-1 1]!!!!
+            [yi, wi] = lglnodes(N-1); yi = flip(yi); wi = wi.';
             wi = wi/2; yi = yi/2 + 1/2; % scale to [0, 1]
-% % %             [yi, wi] = lglnodes(N-1); yi = flipud(yi);
-% % %             wi = wi.'/2; yi = yi/2 + 1/2; % scale to [0, 1]
         end
 
         function [P, Pd] = basis(yi, N)
-            % % For Chebyshev polynomials: 
             if nargin < 2
                 N = length(yi); % polynomial order is equal to number of quadrature points
             end
+            % % For Chebyshev polynomials: 
 %             Dy = diffmat(2*N, [0 1]); % differentiation matrix on integration grid yi
 %             Psi = chebpoly(0:N-1, [0 1]); % Chebyshev polynomials
 %             P = Psi(yi,:); % along 1st dim: samples at yi, along 2nd dim: polynomial order
 %             Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials
-
-            % % For Lagrange polynomials
-            Psi = chebfun.lagrange(yi); % works only for domain [-1 1] !!
-            Psid = diff(Psi);
+            % % Lagrange polynomials:
             P = eye(length(yi)); % Psi(yi,:);
-            % % Dy = collocD(yi);
-            % % Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials;
-            Pd = Psid(yi,:);
+            Dy = collocD(yi);
+            Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials;
         end
-
     end
 
     methods (Abstract)
