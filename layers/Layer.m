@@ -92,17 +92,6 @@ classdef Layer
             % % Dy = collocD(yi);
             % % Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials;
             Pd = Psid(yi,:);
-        function Dy = diffmatCoeff(yi, N)
-            % DIFFMATCOEFF differentiation matrix operating on the polynomial
-            % expantion coefficients.
-            % % For Chebyshev SEM
-%             Dy = diffmat([N, length(yi)], 1, [0 1]); % rectangular differentiation matrix
-%             Psi = chebpoly(0:N-1, [0 1]); % Chebyshev polynomials
-%             P = Psi(yi,:); % along 1st dim: samples at yi, along 2nd dim: polynomial order
-%             obj.D1 = Dy*P;
-
-            % % For Lagrange GLL-SEM:
-            Dy = collocD(yi);       % the same for samples or coeffs.
         end
 
     end
