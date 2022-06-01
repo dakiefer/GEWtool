@@ -10,23 +10,24 @@ classdef Layer
         PPd % integral of product matrix of ∫P*P'dy
         PdPd % integral of product matrix of ∫P'*P'dy
         D1  % diff matrix on unit domain 
+        w   % integration coeffs on unit domain
     end
 
     methods
         function obj = Layer(mat, ylim, N)
-            % LayerCylindrical: constructor
+            % Layer: constructor
 
             % % element matrices:
             [yi, wi] = Layer.nodes(N);  % nodal coordinates and integration weights
             [P, Pd] = Layer.basis(yi, N);  % polynomial basis
-            obj.D1 = collocD(yi);       % differentiation matrix for given basis and nodes
+            obj.D1 = collocD(yi);       % differentiation matrix for given basis and nodes (post-processing)
             obj.PP = Layer.elemPP(P, wi);
             obj.PPd = Layer.elemPPd(P, Pd, wi);
             obj.PdPd = Layer.elemPdPd(Pd, wi);
-
             % % save coordinates and other properties:
             obj.h = ylim(end) - ylim(1); % physical thickness
             obj.y = obj.h*yi + ylim(1);
+            obj.w = wi; % integration weights on unit domain (post-processing)
             obj.eta = yi;
             obj.mat = mat; % material
             obj.N = N; % polynomial order
@@ -38,13 +39,6 @@ classdef Layer
             me = obj.PP; % element mass
             M = kron(rhon,me); % assemble
         end
-
-%         function U0 = displacementOp(obj, udof)
-%             % displacementOp displacement operator (boundaries)
-%             I = eye(length(udof));
-%             Id = eye(obj.N);  
-%             U0 = kron(I, Id([1, obj.N], :));
-%         end
     end % methods
 
     methods (Static)
