@@ -31,6 +31,7 @@ cyy = squeeze(cn(2,udof,udof,2));
 I = eye(size(cxx)); 
 
 %% discretization 
+tic
 [~, Dy_dash] = chebdif(N, 2); 
 D1 = -2*Dy_dash(:,:,1); % differentiation on unit domain
 D2 = 4*Dy_dash(:,:,2);  % second order derivative
@@ -44,6 +45,7 @@ B1 = kron(cyx, Id([1, N], :)); B0 = kron(cyy, D1([1, N], :));
 % incorporate BCs:
 dofBC = [(0:length(udof)-1)*N+1; (1:length(udof))*N]; % [1, N, N+1, 2*N, 2*N+1, 3*N];
 L2(dofBC, :) = 0; L1(dofBC, :) = B1; L0(dofBC, :) = B0; M(dofBC, :) = 0;
+chron = toc; fprintf('assembling time: %g\n', chron);
 
 %% solve for frequency and plot:
 kh = linspace(1e-2, 15, 300); % wavenumber*thickness 

@@ -3,7 +3,7 @@ classdef LayerPlate < Layer
     methods
         function obj = LayerPlate(mat, ys, N)
             % LayerPlate: constructor
-            obj = obj@Layer(mat, ys, N)
+            obj = obj@Layer(mat, ys, N);
         end
         
         function [L0, L1, L2] = stiffnessOp(obj, udof, varargin)
@@ -12,27 +12,29 @@ classdef LayerPlate < Layer
             % relevant material matrices: 
             cxx = squeeze(cn(1,udof,udof,1));
             cxy = squeeze(cn(1,udof,udof,2)); 
-            cyx = squeeze(cn(2,udof,udof,1));
-            cyy = squeeze(cn(2,udof,udof,2));
-            % differentiation matrices on normalized domain:
-            D1 = obj.D1; D2 = obj.D2; 
-            Id = eye(size(D1)); % identity matrix for discretization
-            % operators:
-            L2 = kron(cxx, Id); L1 = kron(cxy + cyx, D1); L0 = kron(cyy, D2); 
+            % assemble:
+            K2 = kron(cxx, obj.PP/obj.h); K1 = kron(cxy, obj.PPd)/obj.h; % stiffness
+            [G0, G1] = obj.tractionOp(udof, varargin{:}); % flux
+            % combine to polynomial of (ik):
+            L0 = G0; L1 = K1 + G1; L2 = K2;
         end
         
-        function [B0, B1] = tractionOp(obj, udof, varargin)
+        function [G0, G1] = tractionOp(obj, udof, varargin)
             % tractionOp traction operator 
+            % TODO what is this good for?
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             % relevant material matrices: 
             cyx = squeeze(cn(2,udof,udof,1));
             cyy = squeeze(cn(2,udof,udof,2));
-            % differentiation matrices on normalized domain:
-            D1 = obj.D1; 
-            Id = eye(size(obj.D1)); % identity matrix for discretization
-            % operators:
-            B1 = kron(cyx, Id([1, obj.N], :)); 
-            B0 = kron(cyy, D1([1, obj.N], :));
+            % normalized element flux
+            G1 = kron(cyx, -obj.PPd.')/obj.h; G0 = kron(cyy, -obj.PdPd.')/obj.h; % assemble
+        end
+
+        function M = massOp(obj, udof)
+            % massOp mass operator 
+            rhon = eye(length(udof)); % normalized mass matrix (for each dof in u) 
+            me = obj.PP; % element mass
+            M = kron(rhon,me)/obj.h; % assemble
         end
         
         function decoupl = decouplesLambvsSH(obj)

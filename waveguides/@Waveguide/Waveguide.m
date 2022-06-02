@@ -34,7 +34,6 @@ methods
 		guw = obj;
         guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 3*ones(size(obj.geom.N))); % update 
 		guw.op = obj.assembleLayers(udof, n);
-		guw.op = obj.freeBCs(udof, n);
 	end
 
 	function guw = Lamb(obj, n)
@@ -45,7 +44,6 @@ methods
 		guw = obj;
 		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
 		guw.op = obj.assembleLayers(udof, n);
-		guw.op = obj.freeBCs(udof, n);
 	end
 
 	function obj = sh(obj, n)
@@ -56,7 +54,6 @@ methods
 		guw = obj;
 		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, ones(size(obj.geom.N)));
 		guw.op = obj.assembleLayers(udof, n);
-		guw.op = obj.freeBCs(udof, n);
     end
     
     function lin = isLinearizableInK2(obj)
