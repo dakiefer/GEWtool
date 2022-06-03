@@ -6,7 +6,7 @@
 %% calculate complex wavenumber spectrum at given frequency:
 mat = Material('aluminum');
 h = 1;
-N = 40; 
+N = 30; 
 fh = 8e3;
 kh = 1;
 
@@ -29,7 +29,7 @@ vm = permute(v, [2 1 3 4]); vn = v;
 txm = permute(tx, [2 1 3 4]); txn = tx;
 
 I = sum(-conj(vn).*txm - vm.*conj(txn), 4);
-Pmn = 1/4*chebintegrate(I, guw.geom.yItf, 3);
+Pmn = 1/4*GEWintegrate(guw, {I}, 3);
 Pmn = Pmn/max(abs(Pmn(:))); % normalize
 
 heatmap(log10(abs(Pmn)))
@@ -59,7 +59,7 @@ uxm = permute(u(:,:,:,1), [2 1 3 4]); uyn = u(:,:,:,2);
 txym = permute(tx(:,:,:,2), [2 1 3 4]); txxn = tx(:,:,:,1);
 
 I = uyn.*txym - uxm.*txxn;
-Dmn = chebintegrate(I,guw.geom.yItf,3);
+Dmn = GEWintegrate(guw, {I}, 3);
 Dmn = Dmn(1:end-4, 1:end-4);
 Dmnabs = abs(Dmn)/max(abs(Dmn(:)));
 
@@ -67,7 +67,7 @@ heatmap(log10(Dmnabs))
 caxis([-8 0]), %xlim([1, 2*N]), ylim([1, 2*N])
 title('Fraser orthogonality relation')
 % NOTES:
-% - with N=30 and fh=1e3 it is accurate for 11 modes
+% - with N=30 and fh=1e3 it is accurate for 11 modes -> better accuracy with SEM
 % - Seems to assume that k is purely real and bigger than zero
 
 

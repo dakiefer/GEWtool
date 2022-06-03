@@ -6,7 +6,7 @@ H = energyTotal(wguide, dat);
 ce = P./H;
 
 % NOTE: this function depends on basically all field calculation functions:
-% - chebintegrate
+% - GEWintegrate
 % - powerFlux
 %   - poyntingVec
 %       - velocity

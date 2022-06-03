@@ -18,7 +18,7 @@ for ik = 1:size(dat.k, 2)
     km = dat.k(indkm);
     [~, indkn] = min(abs(dat.k - conj(km.')), [], 2); % TODO: test if this works for multiple frequencies
     indkn = sub2ind(size(dat.k), 1:size(dat.k,1), indkn.');
-    Pmn = zeros(size(dat.k,1),1); % to accumulate layer contributions
+    Imn = cell(1, guw.geom.nLay);
     for l = 1:length(guw.lay)
 %         indkn = [indkn, (numel(dat.k)+1):numel(v{1})];
         vLay = v{l}; vLay = reshape(vLay, numel(dat.k), guw.geom.N(l), guw.geom.Nudof(l));
@@ -27,10 +27,9 @@ for ik = 1:size(dat.k, 2)
         vn = vLay(indkn,:,:);
         txm = permute(TLay(indkm,:,1,:), [1 2 4 3]); % traction ex.T = T'.ex of size [nF x nK x yi x tx]
         txn = permute(TLay(indkn,:,1,:), [1 2 4 3]); % traction ex.T = T'.ex of size [nF x nK x yi x tx]
-        I = sum(-conj(vn).*txm - vm.*conj(txn), 3); % power flux density
-        PmnLay = 1/4*chebintegrate(I, guw.geom.yItf(l,:), 2); % total power flux in layer l
-        Pmn = Pmn + PmnLay; % cumulate 
+        Imn{l} = sum(-conj(vn).*txm - vm.*conj(txn), 3); % power flux density
     end
+    Pmn = 1/4*GEWintegrate(guw, Imn, 2); % size: [nF]
     % normalize:
     for l = 1:length(guw.lay) 
         um = dat.u{l}(:,ik,:,:);

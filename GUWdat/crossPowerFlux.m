@@ -9,9 +9,9 @@ if any(dat.w ~= dat.w(:,1), 'all') % orthogonality for constant frequency!
 end
 
 s = size(dat.k); nF = s(1); nK = s(2);
-Pmn = zeros(nK, nK, nF); % allocate: for each frequency nF compute Pnm
 v = velocity(dat);
 T = stress(guw, dat);
+Imn = cell(1, guw.geom.nLay);
 for l = 1:length(guw.lay)
     vn = permute(v{l}, [5 2 1 3 4]); % order as: [singleton x nK x nF x yi x v]
     TLay = permute(T{l}, [6 2 1 3 5 4]); % order as: [singleton x nK x nF x yi x T']
@@ -20,10 +20,9 @@ for l = 1:length(guw.lay)
     vm = permute(vn, [2 1 3 4 5]); % transpose: [nK x singleton x nF x yi x v]
     txm = permute(txn, [2 1 3 4 5]); % transpose: [nK x singleton x nF x yi x T']
     
-    I = sum(-conj(vn).*txm - vm.*conj(txn), 5); % power flux density
-    PmnLay = 1/4*chebintegrate(I, guw.geom.yItf(l,:), 4); % total power flux in layer l
-    Pmn = Pmn + PmnLay; % cumulate 
+    Imn{l} = sum(-conj(vn).*txm - vm.*conj(txn), 5); % cross power flux density
 end
 
+Pmn = 1/4*GEWintegrate(guw, Imn, 4); % size: [nK, nK, nF]
 
 end
