@@ -17,13 +17,29 @@ c = lbd*II + mu*(permute(II, [1 3 4 2]) + permute(II, [1 3 2 4])); % stiffness t
 steel.c = c; steel.rho = rho; % material 
 plate = Plate(steel, h, N); % create waveguide description 
 
-%% compute and plot:
+%% compute frequencies and plot:
 guw = plate.Lamb; % assembles matrices for the specified waves
 dat = computeW(guw, k); 
-figure, plot(dat.k(:), dat.w(:)/2/pi, '.'); ylim([0, 6e3]/h);
+figure, h0 = plot(dat.k(:), dat.w(:)/2/pi, 'ko'); ylim([0, 6e3]/h);
+ax = gca; ax.ColorOrderIndex = 1; % reset color order index
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 
+%% compute symmetric/anti-symmetric waves separately:
+guws = plate.LambSA; % assembles matrices for both the sym/anti-sym Lamb waves
+datSA = computeW(guws, k);
+
+datS = datSA(1); % symmetric waves
+hold on, h1 = plot(datS.k(:), datS.w(:)/2/pi, '.'); 
+datA = datSA(2); % anti-symmetric waves
+hold on, h2 = plot(datA.k(:), datA.w(:)/2/pi, '.'); ylim([0, 6e3]/h);
+xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
+legend([h0, h1, h2], {'coupled (reference)', 'symmetric', 'anti-symmetric'}, 'Location', 'southeast')
+
 %% compute wavenumbers and plot:
-freq = linspace(1e-3, 6, 200).'*1e6;
+freq = linspace(1e-3, 6, 100).'*1e6;
 dat = computeK(guw, 2*pi*freq);
-hold on, plot(real(dat.k(:)), dat.w(:)/2/pi, '.'); xlim([0, max(k)])
+hold on, h3 = plot(real(dat.k(:)), dat.w(:)/2/pi, '.'); xlim([0, max(k)])
+legend([h0, h1, h2, h3], {'coupled (reference)', 'symmetric', 'anti-symmetric'...
+    'complex k'}, 'Location', 'southeast')
+
+
