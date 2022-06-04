@@ -31,13 +31,21 @@ methods
     function guw = LambS(obj)
         n = 0;
         obj = obj.symmetrizeGeometry;
-        guw = LambS@Waveguide(obj, n);
+        udof = 1:2;
+		guw = obj;
+		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
+		guw.op = obj.assembleLayers(udof, n);
+        guw = guw.fixGdof(guw.geom.gdofBC{1}(2,2));
     end
     
     function guw = LambA(obj)
         n = 0;
         obj = obj.symmetrizeGeometry;
-        guw = LambA@Waveguide(obj, n);
+        udof = 1:2;
+		guw = obj;
+		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
+		guw.op = obj.assembleLayers(udof, n);
+        guw = guw.fixGdof(guw.geom.gdofBC{1}(1,2));
     end
     
     function guws = LambSA(obj)
