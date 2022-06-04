@@ -76,7 +76,7 @@ classdef LayerCylindrical < Layer
         
         function decoupl = decouplesLambvsSH(obj)
             if length(obj) > 1
-                error('GUWTool:decouplesLambvsSH() needs a scalar layer object.');
+                error('GEWTOOL:decouplesLambvsSH:notimplementedyet', 'Multilayer waveguides do not support this operation at the moment.');
             end
             % stiffnessOp stiffness operator 
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor

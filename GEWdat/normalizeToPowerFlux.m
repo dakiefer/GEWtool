@@ -7,7 +7,7 @@ function dat = normalizeToPowerFlux(guw, dat)
 % Malabar: Krieger Publishing Company, 1990.
 
 if any(dat.w ~= dat.w(:,1), 'all') % orthogonality for constant frequency! 
-    error('GUWtool: cross power flux must be computed for wavenumbers at constant frequency.');
+    error('GEWTOOL:crossPowerFlux:nonconstfreq', 'Cross power flux must be computed for wavenumbers at constant frequency.');
 end
 
 v = velocity(dat);
