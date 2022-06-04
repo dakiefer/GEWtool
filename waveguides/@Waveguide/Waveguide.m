@@ -45,6 +45,27 @@ methods
 		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
 		guw.op = obj.assembleLayers(udof, n);
 	end
+    
+    function guw = LambS(obj, n)
+        udof = 1:2;
+		guw = obj;
+		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
+		guw.op = obj.assembleLayers(udof, n);
+        guw = guw.fixGdof(guw.geom.gdofBC{1}(2,2));
+    end
+    
+    function guw = LambA(obj, n)
+        udof = 1:2;
+		guw = obj;
+		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
+		guw.op = obj.assembleLayers(udof, n);
+        guw = guw.fixGdof(guw.geom.gdofBC{1}(1,2));
+    end
+    
+    function guws = LambSA(obj, n)
+        guws(1) = obj.LambS(n);
+        guws(2) = obj.LambA(n);
+    end
 
 	function obj = sh(obj, n)
         if ~obj.decouplesLambvsSH
@@ -85,6 +106,24 @@ methods
             end
         end
         decoupl = true;
+    end
+    
+    function obj = fixGdof(obj, gdof)
+        if isempty(obj.op)
+            warning('GEWTOOL:Waveguide:notassembled', 'Define the waveguide problem first by calling, e.g., fullyCoupled().');
+            return
+        end
+        ops = fields(obj.op);
+        for i=1:length(ops)
+            opName = ops{i};
+            obj.op.(opName)(gdof,:) = []; % remove row
+            obj.op.(opName)(:,gdof) = []; % remove column
+        end
+        for l=1:obj.geom.nLay
+%             obj.geom.gdofOfLay{l} = setdiff(obj.geom.gdofOfLay{l}, gdof);
+%             obj.geom.gdofBC{l} = setdiff(obj.geom.gdofBC{l}, gdof);
+        end
+        obj.geom.gdofDBC = [obj.geom.gdofDBC(:) gdof(:).'];
     end
 
 	[op] = assembleLayers(obj, udof, n)

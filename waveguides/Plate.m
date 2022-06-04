@@ -27,10 +27,42 @@ methods
         n = 0;
         guw = Lamb@Waveguide(obj, n);
     end
+    
+    function guw = LambS(obj)
+        n = 0;
+        obj = obj.symmetrizeGeometry;
+        guw = LambS@Waveguide(obj, n);
+    end
+    
+    function guw = LambA(obj)
+        n = 0;
+        obj = obj.symmetrizeGeometry;
+        guw = LambA@Waveguide(obj, n);
+    end
+    
+    function guws = LambSA(obj)
+        guws(1) = obj.LambS;
+        guws(2) = obj.LambA;
+    end
 
     function guw = sh(obj)
         n = 0;
         guw = sh@Waveguide(obj, n);
+    end
+    
+    function guw = symmetrizeGeometry(obj)
+        % TODO verify symmetry
+        lMid = ceil(obj.geom.nLay/2);
+        lays = obj.lay(lMid:end);
+        Ns = obj.geom.N(lMid:end);
+        Ns = ceil(Ns/2); % use smaller matrices
+        yItfList = [obj.geom.yItf(lMid:end,1).' obj.geom.yItf(end,end)];
+        if mod(obj.geom.nLay,2) == 1
+            hmid = yItfList(2) - yItfList(1);
+            yItfList(1) = yItfList(2) - hmid/2; % half the thickness for middle layer
+        end
+        yItfList = yItfList - yItfList(1); % zero coordinate at center
+        guw = Plate([lays.mat], yItfList, Ns);
     end
 
 end % methods

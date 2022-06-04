@@ -10,6 +10,7 @@ properties
     h            % thickness for each layer in meter
     % nodesOfElem  % connectivity map: row e contains left and right node num of elem e -> TODO not being used
     ldofBC       % cell array of local dofs at boundaries: e.g. [1, N; N+1, 2*N] -> [upper, lower]
+    gdofDBC      % fixed degrees of freedom
     gdofOfLay    % cell array with global dofs assigned to layers
     Ndof         % total number of degrees of freedom
 end
