@@ -16,7 +16,7 @@ properties
 end
 
 properties (Dependent)
-    gdofBC      % a link to all gdofOfLay(ldofBC) assembled into one array
+    gdofBC      % a link to all gdofOfLay(ldofBC) assembled into one array: size [ui, 2 (bottom/top)]
 end
 
 methods

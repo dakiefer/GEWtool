@@ -35,7 +35,7 @@ methods
 		guw = obj;
 		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
 		guw.op = obj.assembleLayers(udof, n);
-        guw = guw.fixGdof(guw.geom.gdofBC{1}(2,2));
+        guw = guw.fixGdof(guw.geom.gdofBC{1}(2,1)); % fix uy-displacement at bottom (y=0)
     end
     
     function guw = LambA(obj)
@@ -45,7 +45,7 @@ methods
 		guw = obj;
 		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
 		guw.op = obj.assembleLayers(udof, n);
-        guw = guw.fixGdof(guw.geom.gdofBC{1}(1,2));
+        guw = guw.fixGdof(guw.geom.gdofBC{1}(1,1)); % fix ux-displacement at bottom (y=0)
     end
     
     function guws = LambSA(obj)
