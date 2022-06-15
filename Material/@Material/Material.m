@@ -59,8 +59,7 @@ methods
             data.symmetry = 'isotropic';
         end
         if strcmp(data.symmetry, 'isotropic') 
-            II = eye(3).*shiftdim(eye(3), -2); % 4th order "unit tensor"
-            data.c = data.lambda*II + data.mu*(permute(II, [1 3 4 2]) + permute(II, [1 3 2 4]));
+            data.c = MaterialIsotropic.lame2stiffnessTensor(data.lambda, data.mu);
         elseif isfield(data, 'C') 
             data.c = voigt2tensor(data.C);
         end
