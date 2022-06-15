@@ -22,10 +22,25 @@ classdef MaterialIsotropic < Material
             mu = obj.C(4,4);
         end
         function E = get.E(obj)
-            E = obj.mu*(3*obj.lambda + 2*obj.mu)/(obj.lambda + obj.mu);
+            [E, ~] = MaterialIsotropic.lame2Enu(obj.lambda, obj.mu);
         end
         function nu = get.nu(obj)
-            nu = obj.lambda/(2*(obj.lambda + obj.mu));
+            [~, nu] = MaterialIsotropic.lame2Enu(obj.lambda, obj.mu);
+        end
+    end
+
+    methods (Static)
+        function [lbd, mu] = Enu2lame(E, nu)
+        % Enu2lame Convert Young's modulus and Poisson ratio to Lamé parameters lambda
+        % and mu.
+            lbd = nu*E/((1+nu)*(1-2*nu));
+            mu = E/(2*(1+nu));
+        end
+        function [E, nu] = lame2Enu(lbd, mu)
+        % lame2Enu Convert Lamé parameters lambda and mu to Young's modulus E
+        % and Poisson ratio nu.
+            E = mu*(3*lbd + 2*mu)/(lbd + mu);
+            nu = lbd/(2*(lbd + mu));
         end
     end
 end
