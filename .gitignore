@@ -2,3 +2,5 @@
 
 adamou.m
 *.asv
+tests/data/ThurstonRod.png
+tests/data/disperseRod.csv
