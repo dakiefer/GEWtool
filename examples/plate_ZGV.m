@@ -5,14 +5,14 @@
 % 
 
 %% specify parameters:
-mat = Material('aluminum');
+mat = Material('triclinic');
 h = 1e-3; % thickness 
-N = 12; % number of discretization points
-k = linspace(1e-2, 40, 700)/h; % wavenumbers to plot dispersion curves
+N = 15; % number of discretization points
+k = linspace(1e-2, 40, 600)/h; % wavenumbers to plot dispersion curves
 
 %% material and waveguide description:
 plate = Plate(mat, h, N); % create waveguide description 
-gew = plate.Lamb; % assembles matrices for the specified waves
+gew = plate.fullyCoupled; % assembles matrices for the specified waves
 dat = computeW(gew, k); % dispersion curves will be plotted as reference 
 
 %% compute ZGV points
@@ -22,18 +22,18 @@ w0 = dat.w(find(sigChange));
 k0 = dat.k(find(sigChange));
 addpath('~/Projekte/ZGVProjekt/ZGVcomputation/code/')
 tic
-% zgv = computeZGVCloseTo(gew, w0, k0);
-zgv = computeZGV(gew);
+zgv = computeZGVCloseTo(gew, w0, k0);
+% zgv = computeZGV(gew);
 toc
 
 % plot
-figure(1), clf, hold on, ylim([0, 20e3]/h);
+figure(1), clf, hold on, ylim([0, 10e3]/h);
 plot(dat.k.', dat.w.'/2/pi, 'k'); ax = gca; ax.ColorOrderIndex = 1; 
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 plot(zgv.k(:), zgv.w(:)/2/pi, 'r*');
 
-figure(2), clf, hold on, xlim([0, 20e3]/h); 
-plot(dat.w.'/2/pi, cg.', 'k'); ax = gca; ax.ColorOrderIndex = 1; 
+figure(2), clf, hold on, xlim([0, 10e3]/h); 
+plot(real(dat.w).'/2/pi, real(cg).', 'k'); ax = gca; ax.ColorOrderIndex = 1; 
 xlabel('frequency f in Hz'), ylabel('group vel in m/s')
 plot(zgv.w(:)/2/pi, zeros(size(zgv.w(:))), 'r*')
 

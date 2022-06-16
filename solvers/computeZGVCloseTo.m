@@ -12,13 +12,13 @@ for i=1:numel(w0)
     k0i = k0(i)*gew.np.h0;
     mu = w0i^2;
     lambda = 1i*k0i;
-    [lambdaZGV,muZGV,u,~,flag,err] = ZGV_Lamb_Newton(L0, L1, L2, M, lambda, mu);
+    [lambdaZGV,muZGV,u] = ZGV_Lamb_Newton_Hermitian(L0, L1, L2, M, lambda, mu);
     kzgv(i) = -1i*lambdaZGV/gew.np.h0;
     wzgv(i) = sqrt(muZGV)*gew.np.fh0/gew.np.h0;
     [row, col] = ind2sub(size(wzgv), i);
     uzgv(row, col, :) = u;
 end
 
-dat.k = kzgv; dat.w = wzgv; dat.u = uzgv;
+dat.k = real(kzgv); dat.w = real(wzgv); dat.u = uzgv;
 
 end
