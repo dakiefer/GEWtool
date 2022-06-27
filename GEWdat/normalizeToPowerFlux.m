@@ -33,7 +33,7 @@ for ik = 1:size(dat.k, 2)
     % normalize:
     for l = 1:length(guw.lay) 
         um = dat.u{l}(:,ik,:,:);
-        dat.u{l}(:,ik,:,:) = um./sqrt(abs(real(Pmn))); % should be real anyways. ignore sign.
+        dat.u{l}(:,ik,:,:) = um./sqrt(abs(Pmn)); % should be real anyways. ignore sign.
     end
 end
 
