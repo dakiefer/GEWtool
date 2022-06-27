@@ -1,5 +1,8 @@
 %% Dispersion calculation in a generally anisotropic elastic plate
-% 
+% Implements the spectral element method to solve for guided waves.
+% Depends on chebfun (https://www.chebfun.org) to represent interpolation
+% functions and perform differentiation/integration.
+%
 % 2022 - Daniel A. Kiefer
 % Institut Langevin, Paris, France
 % 
@@ -24,19 +27,19 @@ cyy = squeeze(cn(2,udof,udof,2));
 I = eye(size(cxx)); 
 
 %% discretize: 
-% % using Lagrange polynomials on GLL points use:
-[yi, w] = lobpts(N, [-1, 1]); % does only work on dom = [-1 1]!!!!
-w = w/2; yi = yi/2; % scale to [-1/2, 1/2]
+% % using Lagrange polynomials on GLL points:
+[yi] = lobpts(N, [-1, 1]); % does only work on dom = [-1 1]!!!!
+yi = yi/2; % scale to [-1/2, 1/2]
 Psi = chebfun.lagrange(yi);
 Psid = diff(Psi);
-P = eye(length(yi)); % Psi(yi,:);
-Pd = Psid(yi,:);
 
-me = elemM(P,w);
+% % "element" matrices for one displacement component:
+me = elemM(Psi);
 k2 = me;
-k1 = elemK1(P, Pd, w);
+k1 = elemK1(Psi, Psid);
 g1 = -k1.';
-g0 = elemG0(Pd, w);
+g0 = -elemG0(Psid);
+% % assemble for the displacement components:
 M  = kron(rhon*I,me);
 K2 = kron(cxx, k2);
 K1 = kron(cxy, k1);
@@ -46,14 +49,14 @@ G0 = kron(cyy, g0);
 L2 = K2; L1 = K1 + G1; L0 = G0;
 
 %% solve for frequency and plot:
-kh = linspace(1e-2, 15, 300); % wavenumber*thickness 
+kh = linspace(1e-2, 15, 200); % wavenumber*thickness 
 whn = nan(size(M, 2), length(kh)); tic 
 for ii = 1:length(kh)
     kh0 = kh(ii);
-    [wh2] = eig((1i*kh0)^2*L2 + (1i*kh0)*L1 + L0, -M, 'chol'); 
+    [wh2] = eig((1i*kh0)^2*L2 + (1i*kh0)*L1 + L0, -M); 
     whn(:,ii) = sqrt(wh2);
 end
-fh = whn/2/pi*fh0; fh(fh == 0) = nan;
+fh = whn/2/pi*fh0;
 chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(fh, 1), size(fh, 2), chron, chron/length(fh(:))*1e3);
 
 % % plot wavenumbers:
@@ -63,13 +66,14 @@ xlim([0, 12]), ylim([0, 6]),
 xlabel('k in rad/mm'), ylabel('f in MHz'),
 
 %% solve for wavenumbers:
-fh = linspace(1e-2, 6, 300).'*1e6*h; % frequency*thickness
+fh = linspace(1e-2, 6, 200).'*1e6*h; % frequency*thickness
 kh = nan(length(fh), size(M, 2)*2); tic
 for ii = 1:length(fh)
     whn = 2*pi*fh(ii)/fh0; % current frequency-thickness (normalized)
     [un, khi] = polyeig(L0 + whn^2*M, L1, L2); 
     kh(ii, :) = -1i*khi;
 end
+kh(abs(kh) >= 12) = nan; % only small wavenumbers are numerically accurate
 chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(kh, 1), size(kh, 2), chron, chron/length(kh(:))*1e3);
 
 % % plot wave numbers:
@@ -77,22 +81,40 @@ ffh = fh.*ones(size(kh));
 figure(2), hold on, scatter(real(kh(:))/h/1e3, ffh(:)/h/1e6, 8, abs(imag(kh(:))), 'filled'), 
 caxis([0, 0.12]), xlim([0, 12]), ylim([0, fh(end)/h/1e6])
 xlabel('k in rad/mm'), ylabel('f in MHz')
-
+% plot3(real(kh(:))/h/1e3, imag(kh(:))/h/1e3, ffh(:)/h/1e6, 'k.'), xlim([-12, 12]), ylim([-12, 12])
+% xlabel('real k in rad/mm'), ylabel('imag k in rad/mm'), zlabel('f in MHz')
 
 
 %% element matrices:
-function me = elemM(P, w) 
-    PtimesP = P.*permute(P,[1 3 2]);
-    me = squeeze( sum(w.'.*PtimesP,1) );
+function me = elemM(P) 
+    N = size(P,2);
+    me = zeros(N);
+    for i = 1:N
+        for j = i:N
+            me(i,j) = sum(P(:,i)*P(:,j));
+            me(j,i) = me(i,j);
+        end
+    end
 end
 
-function le1 = elemK1(P, Pd, w) 
-    PtimesPd = P.*permute(Pd,[1 3 2]);
-    le1 = squeeze( sum(w.'.*PtimesPd,1) );
+function k1 = elemK1(P, Pd) 
+    N = size(P,2);
+    k1 = zeros(N);
+    for i = 1:N
+        for j = 1:N
+            k1(i,j) = sum(P(:,i)*Pd(:,j));
+        end
+    end
 end
 
-function g0 = elemG0(Pd, w) 
-    PdtimesPd = Pd.*permute(Pd,[1 3 2]);
-    g0 = squeeze( sum(-w.'.*PdtimesPd,1) );
+function g0 = elemG0(Pd) 
+    N = size(Pd,2);
+    g0 = zeros(N);
+    for i = 1:N
+        for j = 1:N
+            g0(i,j) = sum(Pd(:,i)*Pd(:,j));
+            g0(j,i) = g0(i,j);
+        end
+    end
 end
 
