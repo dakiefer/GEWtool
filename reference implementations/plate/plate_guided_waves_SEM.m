@@ -30,23 +30,20 @@ I = eye(size(cxx));
 % % using Lagrange polynomials on GLL points:
 [yi] = lobpts(N, [-1, 1]); % does only work on dom = [-1 1]!!!!
 yi = yi/2; % scale to [-1/2, 1/2]
-Psi = chebfun.lagrange(yi);
-Psid = diff(Psi);
+P = chebfun.lagrange(yi);
+Pd = diff(P);
 
 % % "element" matrices for one displacement component:
-me = elemM(Psi);
-k2 = me;
-k1 = elemK1(Psi, Psid);
+m = elemM(P);
+k2 = m;
+k1 = elemK1(P, Pd);
 g1 = -k1.';
-g0 = -elemG0(Psid);
+g0 = elemG0(Pd);
 % % assemble for the displacement components:
-M  = kron(rhon*I,me);
-K2 = kron(cxx, k2);
-K1 = kron(cxy, k1);
-G1 = kron(cyx, g1);
-G0 = kron(cyy, g0);
-
-L2 = K2; L1 = K1 + G1; L0 = G0;
+M  = kron(rhon*I,m);
+L2 = kron(cxx, k2);
+L1 = kron(cxy, k1) + kron(cyx, g1);
+L0 = kron(cyy, g0);
 
 %% solve for frequency and plot:
 kh = linspace(1e-2, 15, 200); % wavenumber*thickness 
@@ -86,13 +83,13 @@ xlabel('k in rad/mm'), ylabel('f in MHz')
 
 
 %% element matrices:
-function me = elemM(P) 
+function m = elemM(P) 
     N = size(P,2);
-    me = zeros(N);
-    for i = 1:N
-        for j = i:N
-            me(i,j) = sum(P(:,i)*P(:,j));
-            me(j,i) = me(i,j);
+    m = zeros(N);
+    for A = 1:N
+        for B = A:N
+            m(A,B) = sum(P(:,A)*P(:,B));
+            m(B,A) = m(A,B);
         end
     end
 end
@@ -100,9 +97,9 @@ end
 function k1 = elemK1(P, Pd) 
     N = size(P,2);
     k1 = zeros(N);
-    for i = 1:N
-        for j = 1:N
-            k1(i,j) = sum(P(:,i)*Pd(:,j));
+    for A = 1:N
+        for B = 1:N
+            k1(A,B) = sum(P(:,A)*Pd(:,B));
         end
     end
 end
@@ -110,10 +107,10 @@ end
 function g0 = elemG0(Pd) 
     N = size(Pd,2);
     g0 = zeros(N);
-    for i = 1:N
-        for j = 1:N
-            g0(i,j) = sum(Pd(:,i)*Pd(:,j));
-            g0(j,i) = g0(i,j);
+    for A = 1:N
+        for B = 1:N
+            g0(A,B) = -sum(Pd(:,A)*Pd(:,B));
+            g0(B,A) = g0(A,B);
         end
     end
 end
