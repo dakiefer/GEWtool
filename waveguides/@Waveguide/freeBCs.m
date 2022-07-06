@@ -1,4 +1,6 @@
 function [op] = freeBCs(obj, udof, n)
+% freeBCs - Implement traction-free boundary conditions. This is a reminecent of
+% the spectral collocation implementation.
 
 geom = obj.geom; lays = obj.lay;
 op = obj.op;

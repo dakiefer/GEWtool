@@ -1,20 +1,35 @@
 classdef Waveguide < matlab.mixin.Copyable
+% Waveguide - Represents guided waves in plates or cylinders.
+% Usually, you do not need to use this class directly. For simpler interfacing, use 
+% the derived classes "Plate" or "Cylinder" instead.
+% 
+% See also Plate, Cylinder.
+% 
+% 2022 - Daniel A. Kiefer
+% Institut Langevin, Paris, France
+% 
 
 properties (Access = public)
-	geom
-	mat
-	lay Layer = LayerPlate.empty
-	op = [] 	% operators 
-	np  		% normalization parameters (material, geom)
+	geom        % geometry object describing the discretized, multilayered structure
+	mat         % materials [1 x Nlay]
+	lay Layer = LayerPlate.empty   % layers [1 x Nlay]
+	op = [] 	% operators describing the wave propagation
+	np  		% normalization parameters (material parameters, geometry)
 end % properties
 
 properties (Dependent)
-	h0  		% short hand for obj.np.h0
+	h0  		% unit thickness: short hand for obj.np.h0
 end % properties Dependent
 
 
 methods 
 	function obj = Waveguide(mats, rs, Ns, Nudof)
+        % Waveguide - Create a waveguide object.
+        % Arguments: 
+        % - mats:  material objects [1 x Nlay]
+        % - rs:    coordinates of interfaces of the layered structure in m [1 x Nlay+1]
+        % - Ns:    discretization orders [1 x Nlay], each entry corresponds to one layer
+        % - Nudof: displacement digrees of freedom [1 x Nlay], each entry corresponds to one layer
 		if nargin < 4, Nudof = 3*ones(size(Ns)); end
 		obj.geom = Geometry(rs, Ns, Nudof);
 		obj.mat = mats;
@@ -30,6 +45,7 @@ methods
 	end
 
 	function guw = fullyCoupled(obj, n)
+        % fullyCoupled - Assemble wave operators describing the coupled set of Lamb- and SH-polarized waves.
 		udof = 1:3;
 		guw = obj;
         guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 3*ones(size(obj.geom.N))); % update 
@@ -37,6 +53,7 @@ methods
 	end
 
 	function guw = Lamb(obj, n)
+        % Lamb - Assemble wave operators describing the Lamb polarized waves (in-plane).
         if ~obj.decouplesLambvsSH
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
@@ -47,6 +64,7 @@ methods
     end
 
 	function obj = sh(obj, n)
+        % sh - Assemble wave operators describing the shear-horizontal (SH) polarized waves (out-of-plane).
         if ~obj.decouplesLambvsSH
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
@@ -57,6 +75,7 @@ methods
     end
     
     function lin = isLinearizableInK2(obj)
+        % isLinearizableInK2 - Test if the problem can be linearized in k without increasing the problem size.
         if obj.geom.Nudof < 2, lin = false; return; end % TODO look at SH waves
         if obj.geom.nLay > 1, lin = false; return; end  % TODO implement for multiple layers
         if isempty(obj.op), warning('Setup problem first.'); end
@@ -69,6 +88,12 @@ methods
     end
     
     function obj = linearizeInK2(obj)
+        % linearizeInK2 - Linearizes the problem in the wavenumber k without increasing size. 
+        % The matrices are manipulated without increasing their size. Use this before passing 
+        % to the solver for faster computation of wavenumbers.
+        if ~obj.isLinearizableInK2
+            warning('GEWTOOL:Waveguide:nonlinearizable', 'This problem is not linearizable as intended.');
+        end
         L2 = obj.op.L2; L1 = obj.op.L1; L0 = obj.op.L0;
         N = obj.geom.N;
         dofx = 1:N; dofy = N+1:2*N;
@@ -78,6 +103,7 @@ methods
     end
     
     function decoupl = decouplesLambvsSH(obj)
+        % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves decouple.
         lays = obj.lay;
         for l = lays % test each of the layers
             if ~l.decouplesLambvsSH
@@ -88,6 +114,7 @@ methods
     end
     
     function obj = fixGdof(obj, gdof)
+        % fixGdof - Homogeneous Dirichlet BCs: Fixes the specified degrees of freedom.
         if isempty(obj.op)
             warning('GEWTOOL:Waveguide:notassembled', 'Define the waveguide problem first by calling, e.g., fullyCoupled().');
             return
