@@ -133,8 +133,6 @@ methods
     end
 
 	[op] = assembleLayers(obj, udof, n)
-	[op] = freeBCs(obj, udof, n)
-
 end
 
 end % class
