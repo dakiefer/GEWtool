@@ -1,7 +1,13 @@
 classdef Cylinder < Waveguide
 % Cylinder - Represents axially guided waves in cylinders.
-% Mechanical displacement ansatz: u(x,r,phi,t) = u(r)*exp(i k x + i n phi - i w t)
+% Displacement ansatz: u(x,r,phi,t) = u(r)*exp(i k x + i n phi - i w t)
 % 
+% Example:
+% mat = Material('steel'); % load material data
+% r = [5e-3, 6e-3]; % radial coordiantes in m
+% N = 20; % discretization (number of nodal points)
+% cyl = Cylinder(mat, r, N);
+%
 % See also Cylinder.Cylinder, Plate, Waveguide.
 % 
 % 2022 - Daniel A. Kiefer

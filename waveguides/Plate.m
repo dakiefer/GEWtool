@@ -1,6 +1,12 @@
 classdef Plate < Waveguide
 % Plate - Represents guided waves in Plates.
-% Mechanical displacement ansatz: u(x,y,z,t) = u(y)*exp(i k x - i w t)
+% Displacement ansatz: u(x,y,z,t) = u(y)*exp(i k x - i w t)
+% 
+% Example:
+% mat = Material('steel'); % load material data
+% h = 1e-3; % thickness in m
+% N = 20; % discretization (number of nodal points)
+% plate = Plate(mat, h, N); % create waveguide description
 % 
 % See also Plate.Plate, Cylinder, Waveguide.
 % 
