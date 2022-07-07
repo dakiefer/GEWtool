@@ -1,4 +1,8 @@
 classdef Geometry
+% Geometry - Describes a 1D layered geometry (mesh).
+% Collects all quantities describing the geometry and mesh. Maps local degrees of 
+% freedom to global ones. Remembers boundary condition setup.
+% This could probably be replaced by a standard finite element mesh.
     
 properties 
     nLay         % number of layers
@@ -22,6 +26,15 @@ end
 methods
 
     function obj = Geometry(yItf, N, Nudof)
+        % Geometry - Create a Geometry object for a 1D layered structure (mesh).
+        % Arguments:
+        % - yItf:  coordinates of interface in meter
+        %          Can be a vector or of size [Nlay x 2] (lower/upper limit for 
+        %          every layer).
+        % - N:     discretization order for each layer [1 x Nlay]
+        % - Nudof: displacement digrees of freedom for each layer [1 x Nlay].
+        %          (optional, default per layer: 3)
+
         % mesh parameters:
         if nargin < 3, Nudof = 3*ones(size(N)); end
         if ~isvector(yItf)
