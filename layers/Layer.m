@@ -1,4 +1,13 @@
 classdef Layer 
+% Layer - Class to represent one layer of a multi-layered waveguide.
+% There is usually no need to use this class explicitly (used internally by 
+% Waveguide).
+%
+% See also Plate, Cylinder, Waveguide.
+% 
+% 2022 - Daniel A. Kiefer
+% Institut Langevin, Paris, France
+% 
 
     properties (Access = public)
         y   % nodal points in physical domain
@@ -15,7 +24,12 @@ classdef Layer
 
     methods
         function obj = Layer(mat, ylim, N)
-            % Layer: constructor
+            % Layer - Create a Layer object.
+            % Arguments:
+            % - mat:   [1 x 1] material of class "Material" or struct
+            %          with mat.rho [1 x 1] and mat.c [3 x 3 x 3 x 3].
+            % - ylim:  [1 x 2] coordinates of lower and upper interface.
+            % - N:     discretization order [1 x 1] (number of nodal points)
 
             % % element matrices:
             [yi, wi] = Layer.nodes(N);  % nodal coordinates and integration weights
@@ -43,24 +57,26 @@ classdef Layer
 
     methods (Static)
         function me = elemPP(P, w) 
-            % elemPP: integral of product matrix of ansatz functions ∫P*Pdy (element mass)
+            % elemPP - integral ∫P*Pdy of basis functions P (element mass)
             PtimesP = P.*permute(P,[1 3 2]);
             me = squeeze( sum(w.'.*PtimesP,1) );
         end
 
         function le1 = elemPPd(P, Pd, w) 
-            % elemPPd: integral of product matrix of ∫P*P'dy (element stiffness and flux)
+            % elemPPd - integral ∫P*P'dy of basis functions P (element stiffness and flux)
             PtimesPd = P.*permute(Pd,[1 3 2]);
             le1 = squeeze( sum(w.'.*PtimesPd,1) );
         end
 
         function g0 = elemPdPd(Pd, w) 
-            % elemPdPd: integral of product matrix of ∫P'*P'dy (element flux)
+            % elemPdPd - integral ∫P'*P'dy of basis functions P (element flux)
             PdtimesPd = Pd.*permute(Pd,[1 3 2]);
             g0 = squeeze( sum(w.'.*PdtimesPd,1) );
         end
 
         function [yi, wi] = nodes(N)
+            % nodes - nodal coordinates and integration weights.
+
             % % For Chebyshev polynomials on Chebyshev points: 
 %             [yi, wi] = chebpts(2*N, [0 1]); % integration weights: integrate exactly P*P
             % % For Lagrange polynomials with GLL points:
@@ -69,6 +85,7 @@ classdef Layer
         end
 
         function [P, Pd] = basis(yi, N)
+            % basis - ansatz functions and their derivatives sampled at nodes.
             if nargin < 2
                 N = length(yi); % polynomial order is equal to number of quadrature points
             end

@@ -1,13 +1,22 @@
 classdef LayerPlate < Layer
+% LayerPlate - Class to represent one layer of a multi-layered plate.
+% There is usually no need to use this class explicitly (used internally by 
+% Plate).
+%
+% See also Plate, Waveguide.
+% 
+% 2022 - Daniel A. Kiefer
+% Institut Langevin, Paris, France
+% 
     
     methods
         function obj = LayerPlate(mat, ys, N)
-            % LayerPlate: constructor
+            % LayerPlate - Create a LayerPlate object.
             obj = obj@Layer(mat, ys, N);
         end
         
         function [L0, L1, L2] = stiffnessOp(obj, udof, varargin)
-            % stiffnessOp stiffness operator 
+            % stiffnessOp - stiffness operators L0, L1, L2
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             % relevant material matrices: 
             cxx = squeeze(cn(1,udof,udof,1));
@@ -20,8 +29,7 @@ classdef LayerPlate < Layer
         end
         
         function [G0, G1] = tractionOp(obj, udof, varargin)
-            % tractionOp traction operator 
-            % TODO what is this good for?
+            % tractionOp - traction operator (flux, used internally)
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             % relevant material matrices: 
             cyx = squeeze(cn(2,udof,udof,1));
@@ -31,13 +39,14 @@ classdef LayerPlate < Layer
         end
 
         function M = massOp(obj, udof)
-            % massOp mass operator 
+            % massOp - mass operator M
             rhon = eye(length(udof)); % normalized mass matrix (for each dof in u) 
             me = obj.PP; % element mass
             M = kron(rhon,me)/obj.h; % assemble
         end
         
         function decoupl = decouplesLambvsSH(obj)
+            % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves decouple.
             xy = [1 2]; % Lamb polarization
             z =  3; % SH polarization 
             c1test = obj.mat.c(xy,xy,z,xy); 

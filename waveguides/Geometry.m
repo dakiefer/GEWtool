@@ -1,8 +1,15 @@
 classdef Geometry
 % Geometry - Describes a 1D layered geometry (mesh).
 % Collects all quantities describing the geometry and mesh. Maps local degrees of 
-% freedom to global ones. Remembers boundary condition setup.
+% freedom to global ones. Remembers boundary condition setup. There is usually no 
+% need to use this class explicitly (used internally by Waveguide).
 % This could probably be replaced by a standard finite element mesh.
+%
+% See also Plate, Cylinder, Waveguide.
+% 
+% 2022 - Daniel A. Kiefer
+% Institut Langevin, Paris, France
+% 
     
 properties 
     nLay         % number of layers

@@ -1,4 +1,13 @@
 classdef LayerCylindrical < Layer
+% LayerCylindrical - Class to represent one layer of a multi-layered cylinder.
+% There is usually no need to use this class explicitly (used internally by 
+% Cylinder).
+%
+% See also Cylinder, Waveguide.
+% 
+% 2022 - Daniel A. Kiefer
+% Institut Langevin, Paris, France
+% 
     properties 
         PPr     % integral of weighted product matrix of ansatz functions ∫P*P r dr
         PPInvr  % integral of weighted product matrix of ansatz functions ∫P*P 1/r dr 
@@ -6,12 +15,12 @@ classdef LayerCylindrical < Layer
         PdPdr   % integral of weighted product matrix of ansatz functions ∫P'*P' r dr 
     end
     properties (Dependent)
-        r
+        r % alias to the nodal coordinates obj.y
     end
 
     methods
         function obj = LayerCylindrical(mat, rs, N)
-            % LayerCylindrical: constructor
+            % LayerCylindrical - Create a LayerCylindrical object.
             obj = obj@Layer(mat, rs, N);
 
             % % element matrices specific to cylindrical coordinates:
@@ -29,7 +38,7 @@ classdef LayerCylindrical < Layer
         end
 
         function [L0, L1, L2] = stiffnessOp(obj, udof, n)
-            % stiffnessOp stiffness operator 
+            % stiffnessOp - stiffness operators L0, L1, L2
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             % relevant material matrices: 
             cxx = squeeze(cn(1,udof,udof,1));
@@ -55,13 +64,13 @@ classdef LayerCylindrical < Layer
         end
 
         function M = massOp(obj, udof)
-            % massOp mass operator 
+            % massOp - mass operator M
             rhon = eye(length(udof)); % normalized mass matrix (for each dof in u) 
             M = kron(rhon, obj.PPr); % assemble
         end
 
         function [G0, G1] = tractionOp(obj, udof, n)
-            % tractionOp traction operator 
+            % tractionOp - traction operators (flux, used internally)
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             % relevant material matrices: 
             crx = squeeze(cn(2,udof,udof,1));
@@ -75,6 +84,7 @@ classdef LayerCylindrical < Layer
         end
         
         function decoupl = decouplesLambvsSH(obj)
+            % decouplesLambvsSH - Tests whether the xr- and phi-polarized waves decouple.
             if length(obj) > 1
                 error('GEWTOOL:decouplesLambvsSH:notimplementedyet', 'Multilayer waveguides do not support this operation at the moment.');
             end
@@ -105,25 +115,25 @@ classdef LayerCylindrical < Layer
 
     methods (Static)
         function ppr = elemPPr(P, w, r) 
-            % elemPPr: integral ∫P*P*1/r dr of basis functions P
+            % elemPPr - integral ∫P*P*1/r dr of basis functions P
             PtimesP = P.*permute(P,[1 3 2]); % size: [nodal points, len P, len P]
             PtimesPr = r(:).*PtimesP;
             ppr = squeeze( sum(w.'.*PtimesPr,1) );
         end
         function ppri = elemPPInvr(P, w, r) 
-            % elemPPr: integral ∫P*P*1/r dr of basis functions P
+            % elemPPInvr - integral ∫P*P*1/r dr of basis functions P
             PtimesP = P.*permute(P,[1 3 2]); % size: [nodal points, len P, len P]
             PtimesPr = (1./r(:)).*PtimesP;
             ppri = squeeze( sum(w.'.*PtimesPr,1) );
         end
         function ppdr = elemPPdr(P, Pd, w, r) 
-            % elemPPdr: integral ∫P*P'*1/r dr of basis functions P
+            % elemPPdr - integral ∫P*P'*1/r dr of basis functions P
             PtimesPd = P.*permute(Pd,[1 3 2]); % size: [nodal points, len P, len P]
             PtimesPdr = r(:).*PtimesPd;
             ppdr = squeeze( sum(w.'.*PtimesPdr,1) );
         end
         function ppdr = elemPdPdr(Pd, w, r) 
-            % elemPPdr: integral ∫P*P'*1/r dr of basis functions P
+            % elemPdPdr - integral ∫P*P'*1/r dr of basis functions P
             PdtimesPd = Pd.*permute(Pd,[1 3 2]); % size: [nodal points, len P, len P]
             PdtimesPdr = r(:).*PdtimesPd;
             ppdr = squeeze( sum(w.'.*PdtimesPdr,1) );
