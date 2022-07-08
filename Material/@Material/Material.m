@@ -1,9 +1,18 @@
 classdef Material
-% MATERIAL represent and load material data.
+% Material - Represent mechanical material data (generally anisotropic).
+% Stores and manipulates elasticity moduli, density and derived quantities.
+% It stores the full 4th order stiffness tensor c as a [3x3x3x3] array.
+% It interfaces to a simple material database that allows to load data by name.
+% 
+% Examples:
+% mat = Material('steel')   % load from steel.json (anywhere on path)
+% similarMat = Material('anyName', mat.C, 1.1*mat.rho);   % based on steel
+% 
+% See also: Material.Material, MaterialIsotropic.
 %
-% 2022 - Daniel Kiefer
+% 2022 - Daniel A. Kiefer
 % Institut Langevin, Paris, France
-
+% 
 properties
     name        % name for the material: string
     symmetry    % symmetry class: e.g., "isotropic": string

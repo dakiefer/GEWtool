@@ -1,5 +1,19 @@
 classdef MaterialIsotropic < Material
-    %MaterialIsotropic specialization for isotropic materials.
+% MaterialIsotropic - Represent isotropic mechanical material data.
+% Subclass of "Material". It represents material in the same way but enables
+% to access and manipulate the common isotropic elasticity parameters.
+% Also provides static methods for conversion between different set of material
+% parameters.
+% 
+% Example:
+% mat = MaterialIsotropic('steel')   % load from steel.json (anywhere on path)
+% heavierMat = MaterialIsotropic('anyName', mat.lambda, mat.mu, 1.1*mat.rho);
+%
+% See also: MaterialIsotropic.MaterialIsotropic, Material.
+%
+% 2022 - Daniel A. Kiefer
+% Institut Langevin, Paris, France
+% 
 
     properties (Dependent)
         lambda      % first Lamé parameter
