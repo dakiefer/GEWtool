@@ -1,4 +1,27 @@
 function dat = computeK(guws, w, nModes)
+    % computeK - Obtain complex wavenumbers k for specified frequencies w.
+    % Solves the polynomial eigenvalue problem [(ik)^2*L2 + ik*L1 + L0(w)]*u = 0.
+    %
+    % Arguments:
+    % - guws:    Waveguide object(s), either a scalar or vector.
+    %            Describes the eigenproblem, i.e., the matrices Li.
+    %            If guws is a vector, computeW solves one problem after another 
+    %            and returns a vector of results "dat" of same length.
+    % - w:       Angular frequencies to specify in rad/s. Vector valued.
+    % - nModes:  (optional) Number of modes to save (discards the highest wavenumbers).
+    %
+    % Return value:
+    % - dat:     A data structure containing 
+    %            - w: the angular frequencies in rad/s, expanded to [nF x nK]
+    %            - k: the wavenumbers in rad/m [nF x nK]
+    %            - u: the displacement eigenvectors as a 
+    %                 cell array describing the layers, elements are [nF x nK x N x Nudof]
+    % 
+    % See also computeW, Waveguide.
+    % 
+    % 2022 - Daniel A. Kiefer
+    % Institut Langevin, Paris, France
+    % 
     if ~isvector(w), error('Angular frequencies should be a [Nx1] array.'); end
     w = w(:); % column vector
     for i = 1:length(guws) % solve for a list of waveguide objects
