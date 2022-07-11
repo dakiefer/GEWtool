@@ -1,6 +1,18 @@
 function [cs, eu] = wavespeeds(obj, ek)
-    % WAVESPEEDS Compute the wave speeds by solving the Kelvin-Christoffel
-    % equation (eigenvalue problem for cl, ct1, ct2).
+    % WAVESPEEDS - Compute the wave speeds by solving the Kelvin-Christoffel equation
+    % (eigenvalue problem for cl, ct1, ct2).
+    %
+    % Arguments: 
+    % - obj:   Material object 
+    % - ek:    propagation direction of phases [3x1] (default: [1; 0; 0])
+    %
+    % Return values:
+    % - cs:    wave speeds descending in magnitude [3x1]
+    % - eu:    the columns are the polarization vectors [3x3]
+    % 
+    % 2022 - Daniel A. Kiefer
+    % Institut Langevin, Paris, France
+    % 
     if nargin < 2, ek = [1; 0; 0]; end
     validateattributes(ek, {'numeric'}, {'vector', 'numel', 3});
     ek = ek(:)/norm(ek(:)); % normalized column vector

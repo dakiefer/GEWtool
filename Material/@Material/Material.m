@@ -22,13 +22,23 @@ end
 
 properties (Dependent)
     C double % Voigt notated stiffness [6x6]
-    cl       % (quasi)-longitudinal waves speed
-    ct       % (quasi)-transverse waves speed 1
-    ct2      % (quasi)-transverse waves speed 2
+    cl       % (quasi)-longitudinal wave speed in x-direction
+    ct       % first (quasi)-transverse wave speed in x-direction
+    ct2      % second (quasi)-transverse waves speed in x-direction
 end
 
 methods
     function obj = Material(varargin)
+        % Material - Create a Material object. 
+        %
+        % Usage:
+        % mat = Material('steel');   % load from file "steel.json" (somewhere on path)
+        % mat = Material('name', C, rho);  % from 6x6 Voigt stiffness and density
+        % mat = Material('name', c, rho);  % from 3x3x3x3 stiffness and density
+        % mat = Material('name', lbd, mu, rho);  % from lamé parameters and density
+        % mat = Material(param); % from structure param with fields "name", "C" or "c", "rho"
+        % mat = Material(mat); % from Material object "mat" (conversion from subclasses)
+        %
         if nargin == 1 && (isa(varargin{1}, 'Material') || isa(varargin{1}, 'struct')) % convert from subclasses to superclass
             data = varargin{1};
         elseif nargin == 1 && (ischar(varargin{1}) || isstring(varargin{1}))  % load by name
@@ -98,9 +108,11 @@ methods
     end
 
     function obj = permute(obj, perm)
-        % PERMUTE Permute the material coordinate system. The default
-        % transformation is ex-ey-ez -> ez-ex-ey, i.e. 
+        % permute - Permute the material coordinate system. 
+        % The default transformation is ex-ey-ez -> ez-ex-ey, i.e. 
         % 3->1, 1->2, 2->3, 6->4, 4->5, 5->6, given by perm = [3,1,2,6,4,5].
+        % Argument:
+        % - perm:   [6x1]-vector indicating the permutation 1:6 -> perm.
         if nargin < 2
             perm = [3,1,2,6,4,5]; % 3->1, 1->2, 2->3, 6->4, 4->5, 5->6
         end
@@ -108,6 +120,7 @@ methods
     end
     
     function decoupl = decouplesXYvsZ(obj)
+        % decouplesXYvsZ - Test if displacements in the xy-plane decouple from z-displ.
         xy = [1 2]; % Lamb polarization
         z =  3; % SH polarization 
         c1test = obj.c(xy,xy,z,xy); 
@@ -121,12 +134,18 @@ methods
 
     %% overload operators: 
     function ret = eq(a, b)
+        % eq - Test if stiffness c and density rho are the same for materials a and b.
+        % Usage: 
+        % isEq = eq(a, b);
+        % isEq = a == b;
         ret = ~any(a.c ~= b.c, 'all') && a.rho == b.rho;
     end
     function ret = ne(a, b)
         ret = ~eq(a, b);
     end
     function plot(varargin)
+        % plot - plot the slowness curve around the axis ex.
+        % Alias to plotSlownessCurve(varargin{:});
         plotSlownessCurve(varargin{:});
     end
     

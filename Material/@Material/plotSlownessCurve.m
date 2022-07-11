@@ -1,5 +1,17 @@
 function plotSlownessCurve(varargin)
-    % SLOWNESSCURVE plot the slowness curve around axis erot. 
+    % plotSlownessCurve - plot the slowness curve around axis erot. 
+    % Iteratively calls "wavespeeds()" for different propagation directions and
+    % plots the result into a polar plot.
+    %
+    % Usage:
+    % plotSlownessCurve(mat) % rotate around z-axis
+    % plotSlownessCurve(mat, erot) % rotate around erot [3x1]
+    % 
+    % See also: wavespeeds, Material.
+    %
+    % 2022 - Daniel A. Kiefer
+    % Institut Langevin, Paris, France
+    % 
     if nargin==1
         obj = varargin{1}; erot = [0;0;1];
     elseif nargin>=2

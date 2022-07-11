@@ -24,6 +24,15 @@ classdef MaterialIsotropic < Material
 
     methods
         function obj = MaterialIsotropic(varargin)
+            % MATERIALISOTROPIC - Create an isotropic material object.
+            % 
+            % Usage:
+            % mat = MaterialIsotropic('steel');   % load from file "steel.json" (somewhere on path)
+            % mat = MaterialIsotropic('name', lbd, mu, rho);  % from lamé parameters and density
+            % mat = MaterialIsotropic(param); % from structure param with fields "name", "lambda", "mu" and "rho"
+            % mat = MaterialIsotropic(mat); % from Material object "mat" (conversion from subclasses)
+            %
+            
             obj = obj@Material(varargin{:});
             if ~strcmp(obj.symmetry, 'isotropic') 
                 error('Given material data is anisotrpic.');
@@ -59,18 +68,26 @@ classdef MaterialIsotropic < Material
 
     methods (Static)
         function [lbd, mu] = Enu2lame(E, nu)
-        % Enu2lame Convert Young's modulus and Poisson ratio to Lamé parameters lambda
+        % Enu2lame - Convert Young's modulus E and Poisson ratio nu to Lamé parameters lambda
         % and mu.
+        % Input: scalars E and nu
+        % Output: scalars lbd, mu
             lbd = nu*E/((1+nu)*(1-2*nu));
             mu = E/(2*(1+nu));
         end
         function [E, nu] = lame2Enu(lbd, mu)
-        % lame2Enu Convert Lamé parameters lambda and mu to Young's modulus E
+        % lame2Enu - Convert Lamé parameters lambda and mu to Young's modulus E
         % and Poisson ratio nu.
+        % Input: scalars lbd, mu
+        % Output: scalars E, nu
             E = mu*(3*lbd + 2*mu)/(lbd + mu);
             nu = lbd/(2*(lbd + mu));
         end
         function c = lame2stiffnessTensor(lbd, mu)
+            % lame2stiffnessTensor - Convert Lamé parameters lambda and mu to c 
+            % (4th order stiffness tensor).
+            % Input: scalars lbd, mu
+            % Output: c [3x3x3x3]
             II = eye(3).*shiftdim(eye(3), -2); % 4th order "unit tensor"
             c = lbd*II + mu*(permute(II, [1 3 4 2]) + permute(II, [1 3 2 4])); % stiffness tensor
         end

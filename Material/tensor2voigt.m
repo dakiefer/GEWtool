@@ -1,12 +1,13 @@
 function C = tensor2voigt(c)
-% TENSOR2VOIGT returns the 6x6 Voigt notated stiffness corresponding to the 
+% TENSOR2VOIGT - returns the 6x6 Voigt notated stiffness corresponding to the 
 % 4th order stiffness tensor c.
 % 
 % see also: D. Royer and T. Valier-Brasier, Ondes élastiques dans les solides 
 % % (Elastic waves in solids), vol. 1, 2 vols. London: ISTE éditions, 2021.
 %
-% 2022 - Daniel Kiefer
+% 2022 - Daniel A. Kiefer
 % Institut Langevin, Paris, France
+% 
 
 validateattributes(c,{'numeric'},{'size',[3 3 3 3]});
 C = zeros(6, 6);

@@ -1,4 +1,21 @@
 function S = save(obj,file)
+    % save - Save Material object into a json-formatted text file.
+    %
+    % Arguments:
+    % - obj:   Material object.
+    % - file:  (optional) file name as a string or char array. Default: database folder.
+    %
+    % Return value:
+    % - s:     The json-formatted string that has been saved.
+    %
+    % If "file" exists already, a window will prompt the user where to save instead 
+    % (re-select to overwrite). Note that save() preservers the properties "name", "rho" and
+    % either "C" (anisotropic) or "lambda" and "mu" (isotropic).
+    % 
+    % 2022 - Daniel A. Kiefer
+    % Institut Langevin, Paris, France
+    % 
+
     % determine where to save:
     if nargin < 2
         path = fileparts(which('aluminum.json'));
