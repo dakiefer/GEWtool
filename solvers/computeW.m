@@ -29,7 +29,7 @@ function dat = computeW(guws, k, nModes)
         if nargin < 3, nModes = size(guw.op.M,1); end
         kh = k*guw.np.h0;
         M = guw.op.M; L0 = guw.op.L0; L1 = guw.op.L1; L2 = guw.op.L2;
-        whn = nan(size(M, 2), length(kh));
+        whn = nan(nModes, length(kh));
         u = nan(nModes, length(kh), guw.geom.Ndof);
         gdoffree = setdiff([guw.geom.gdofOfLay{:}], guw.geom.gdofDBC(:).');
         for n = 1:length(kh)
