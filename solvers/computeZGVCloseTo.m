@@ -1,6 +1,19 @@
-function [dat] = computeZGVCloseTo(gew, w0, k0)
+function [dat] = computeZGVCloseTo(gew, varargin)
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
+
+if nargin == 2 % initial guess (w0, k0) where cg changes sign
+    dat = varargin{1};
+    cg = groupVel(gew, dat);
+    sigChange = diff(sign(real(cg)),1,2); % detect where the sign changes
+    w0 = dat.w(find(sigChange));
+    k0 = dat.k(find(sigChange));
+elseif nargin == 3 % initial guess (w0, k0) has been provided
+    w0 = varargin{1};
+    k0 = varargin{2};
+else
+    error('GEWTOOL:computeZGVCloseTo:wrongNumberOfArguments', 'Wrong number of input arguments.');
+end
 
 L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 

@@ -15,6 +15,7 @@ for l = 1:gew.geom.nLay % convert structured u into unstructured u
     ulay = reshape(dat.u{l}, size(k,1), size(k,2), []);
     u(:,:,gdofNew) = ulay(:,:,ldofNew);
 end
+u(:,:,gew.geom.gdofDBC) = []; % remove homogeneous DBC nodes
 % v = conj(u); % left eigenvectors;
 % u = permute(u, [1 2 4 3]); % right eigenvectors (contract with second dim of M,L2,L1)
 cg = zeros(size(k)); 
