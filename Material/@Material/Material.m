@@ -118,6 +118,27 @@ methods
         end
         obj.C = obj.C(perm,perm);
     end
+
+    function obj = rotateEuler(obj, a, b, g)
+        % ROTATEEULER - Rotate stiffness tensor sequentially around x-y-z.
+        % Extrinsic, passive rotation around x-y-z (in that order). Thereby, 
+        % x-y-z is the original fixed coordinate system.
+        % For more details see: https://en.wikipedia.org/wiki/Euler_angles
+        %
+        % Arguments:
+        % - obj:     Material object.
+        % - a,b,g:   Euler/Cardan angles of rotation (around x-y-z, respectively).
+        obj.c = rotateEuler(obj.c, a, b, g);
+    end
+
+    function obj = transformBasis(obj, Q)
+        % TRANSFORMBASIS - Change of basis "Q" applied to stiffness tensor.
+        % 
+        % Arguments:
+        % - obj: Material object.
+        % - Q:   Orthogonal matrix discribing the transformation, e.g., a rotation.
+        obj.c = transformBasis(obj.c, Q);
+    end
     
     function decoupl = decouplesXYvsZ(obj)
         % decouplesXYvsZ - Test if displacements in the xy-plane decouple from z-displ.
