@@ -1,0 +1,12 @@
+{
+"name":"alpha-iodic acid",
+"rho":4640,
+"C":[[3.01E+10,1.61E+10,1.11E+10,0,0,0],
+    [1.61E+10,5.8E+10,8.0E+9,0,0,0],
+    [1.11E+10,8.0E+9,4.29E+10,0,0,0],
+    [0,0,0,1.69E+10,0,0],
+    [0,0,0,0,2.06E+10,0],
+    [0,0,0,0,0,1.58E+10]],
+"symmetry":"orthotropic",
+"source":"D. Royer and E. Dieulesaint, Elastic Waves in Solids I: Free and Guided Propagation. Springer Science & Business Media, 1999."
+}

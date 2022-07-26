@@ -1,0 +1,12 @@
+{
+"name":"austenitic steel",
+"rho":7840,
+"C":[[250e9,112e9, 180e9, 0,    0,     0 ],
+    [ 112e9,250e9, 138e9, 0,    0,     0 ],
+    [ 180e9,138e9, 250e9, 0,    0,     0],
+    [0,     0,     0,     117e9,0,     0],
+    [0,     0,     0,     0,    91.5e9,0],
+    [0,     0,     0,     0,    0,     70e9]],
+"symmetry":"orthotropic",
+"source":"D. Royer and T. Valier-Brasier, Elastic Waves in Solids 1: Propagation. ISTE and John Wiley & Sons, 2022."
+}
