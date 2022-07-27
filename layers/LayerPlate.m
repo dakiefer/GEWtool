@@ -53,6 +53,14 @@ classdef LayerPlate < Layer
             c2test = obj.mat.c(xy,z,xy,xy);
             decoupl = all(c1test(:) == 0) & all(c2test(:) == 0);
         end
+
+        %% overload operators: 
+        function ret = eq(a, b)
+            ret = eq@Layer(a, b);
+        end
+        function ret = ne(a, b)
+            ret = ne@Layer(a, b);
+        end
         
     end % methods
 end % class

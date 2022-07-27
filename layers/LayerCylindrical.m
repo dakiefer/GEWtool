@@ -111,6 +111,20 @@ classdef LayerCylindrical < Layer
             test = ~(L2(xy,z) | L2(z,xy).' | L1(xy,z) | L1(z,xy).' | L0(xy,z) | L0(z,xy).');
             decoupl = any(test(:));
         end
+
+        %% overload operators: 
+        function ret = eq(a, b)
+            % eq - Test if the layers a and b are physically the same.
+            % True if the layers are of same thickness and material.
+            % Usage: 
+            % isEq = eq(a, b);
+            % isEq = a == b;
+            ret = eq@Layer(a, b);
+        end
+        function ret = ne(a, b)
+            ret = ne@Layer(a, b);
+        end
+        
     end % methods
 
     methods (Static)

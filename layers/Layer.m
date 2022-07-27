@@ -99,6 +99,26 @@ classdef Layer
             Dy = collocD(yi);
             Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials;
         end
+
+
+        %% overload operators: 
+        function ret = eq(a, b)
+            % eq - Test if the layers a and b are physically the same.
+            % True if the layers are of same thickness and material.
+            % Usage: 
+            % eq(a, b);
+            % a == b;
+            ret = a.mat == b.mat && a.h == b.h;
+        end
+        function ret = ne(a, b)
+            % ne - Test if the layers a and b are physically different.
+            % True if the layers are of different thickness or material.
+            % Usage: 
+            % ne(a, b);
+            % a ~= b;
+            ret = ~eq(a, b);
+        end
+
     end
 
     methods (Abstract)
