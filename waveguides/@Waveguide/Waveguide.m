@@ -45,17 +45,17 @@ methods
 		h0 = obj.np.h0;
 	end
 
-	function guw = fullyCoupled(obj, n)
+	function gew = fullyCoupled(obj, n)
         % fullyCoupled - Assemble wave operators describing the coupled set of Lamb- and SH-polarized waves.
         % 
         % See also: Lamb, sh, decouplesLambvsSH.
 		udof = 1:3;
-		guw = obj;
-        guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 3*ones(size(obj.geom.N))); % update 
-		guw.op = obj.assembleLayers(udof, n);
+		gew = obj;
+        gew.geom = Geometry(obj.geom.yItf, obj.geom.N, 3*ones(size(obj.geom.N))); % update 
+		gew.op = obj.assembleLayers(udof, n);
 	end
 
-	function guw = Lamb(obj, n)
+	function gew = Lamb(obj, n)
         % Lamb - Assemble wave operators describing the Lamb polarized waves (in-plane).
         % 
         % See also: sh, fullyCoupled, decouplesLambvsSH.
@@ -63,12 +63,12 @@ methods
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
 		udof = 1:2;
-		guw = obj;
-		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
-		guw.op = obj.assembleLayers(udof, n);
+		gew = obj;
+		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
+		gew.op = obj.assembleLayers(udof, n);
     end
 
-	function obj = sh(obj, n)
+	function gew = sh(obj, n)
         % sh - Assemble wave operators describing the shear-horizontal (SH) polarized waves (out-of-plane).
         %
         % See also: Lamb, fullyCoupled, decouplesLambvsSH.
@@ -76,9 +76,9 @@ methods
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
 		udof = 3;
-		guw = obj;
-		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, ones(size(obj.geom.N)));
-		guw.op = obj.assembleLayers(udof, n);
+		gew = obj;
+		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, ones(size(obj.geom.N)));
+		gew.op = obj.assembleLayers(udof, n);
     end
     
     function lin = isLinearizableInK2(obj)

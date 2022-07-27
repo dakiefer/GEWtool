@@ -47,45 +47,77 @@ methods
 		end
     end
 
-    function guw = fullyCoupled(obj)
+    function gew = fullyCoupled(obj)
         n = 0;
-        guw = fullyCoupled@Waveguide(obj, n);
+        gew = fullyCoupled@Waveguide(obj, n);
     end
 
-    function guw = Lamb(obj)
+    function gew = fullyCoupledA(obj)
+        % fullyCoupledA - Assemble operators for the anti-symmetric waves.
+        % If your plate is not symmetric, use Plate.fullyCoupled instead.
+        % 
+        % See also: fullyCoupled, fullyCoupledS.
+        
+        obj = obj.symmetrizeGeometry;
+        udof = 1:3;
+		gew = obj;
+		gew.op = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
+        gew = gew.fixGdof(gew.geom.gdofBC{1}(1,1)); % fix ux-displacement at bottom (y=0)
+    end
+
+    function gew = fullyCoupledS(obj)
+        % fullyCoupledS - Assemble operators for the symmetric waves.
+        % If your plate is not symmetric, use Plate.fullyCoupled instead.
+        % 
+        % See also: fullyCoupled, fullyCoupledA.
+        
+        obj = obj.symmetrizeGeometry;
+        udof = 1:3;
+		gew = obj;
+		gew.op = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
+        gew = gew.fixGdof(gew.geom.gdofBC{1}(2,1)); % fix uy-displacement at bottom (y=0)
+    end
+
+    function gew = Lamb(obj)
         n = 0;
-        guw = Lamb@Waveguide(obj, n);
+        gew = Lamb@Waveguide(obj, n);
     end
     
-    function guw = LambS(obj)
+    function gew = LambS(obj)
         % LambS - Assemble operators for the symmetric Lamb polarized waves.
         % If your plate is not symmetric, use Plate.Lamb instead.
         % 
         % See also: LambA, LambSA, Lamb, sh, fullyCoupled.
-        n = 0;
+
+        if ~obj.decouplesLambvsSH
+            warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
+        end
         obj = obj.symmetrizeGeometry;
         udof = 1:2;
-		guw = obj;
-		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
-		guw.op = obj.assembleLayers(udof, n);
-        guw = guw.fixGdof(guw.geom.gdofBC{1}(2,1)); % fix uy-displacement at bottom (y=0)
+		gew = obj;
+		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
+		gew.op = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
+        gew = gew.fixGdof(gew.geom.gdofBC{1}(2,1)); % fix uy-displacement at bottom (y=0)
     end
     
-    function guw = LambA(obj)
+    function gew = LambA(obj)
         % LambA - Assemble operators for the anti-symmetric Lamb polarized waves.
         % If your plate is not symmetric, use Plate.Lamb instead.
         % 
         % See also: LambS, LambSA, Lamb, sh, fullyCoupled.
-        n = 0;
+        
+        if ~obj.decouplesLambvsSH
+            warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
+        end
         obj = obj.symmetrizeGeometry;
         udof = 1:2;
-		guw = obj;
-		guw.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
-		guw.op = obj.assembleLayers(udof, n);
-        guw = guw.fixGdof(guw.geom.gdofBC{1}(1,1)); % fix ux-displacement at bottom (y=0)
+		gew = obj;
+		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
+		gew.op = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
+        gew = gew.fixGdof(gew.geom.gdofBC{1}(1,1)); % fix ux-displacement at bottom (y=0)
     end
     
-    function guws = LambSA(obj)
+    function gews = LambSA(obj)
         % LambSA - Assemble operators for the symmetric and the anti-symmetric Lamb polarized waves.
         % The operators for symmetric (S) and anti-symmetric (A) waves are assembled separately.
         % If your plate is not symmetric, use Plate.Lamb instead.
@@ -95,23 +127,61 @@ methods
         %       - guws(2) describes the symmetric waves
         % 
         % See also: Lamb, LambA, LambS, sh, fullyCoupled.
-        guws(1) = obj.LambS;
-        guws(2) = obj.LambA;
+
+        gews(1) = obj.LambS;
+        gews(2) = obj.LambA;
     end
 
-    function guw = sh(obj)
+    function gew = sh(obj)
         n = 0;
-        guw = sh@Waveguide(obj, n);
+        gew = sh@Waveguide(obj, n);
+    end
+
+    function decoupl = decouplesSA(obj, verb)
+        % decouplesSA - Tests whether symmetric and antisymmetric waves decouple.
+        % Usage: 
+        % decoupl = decouplesSA;       Returns true if SA waves decouple.
+        % decoupl = decouplesSA('v');  Throw warning indicating reason.
+        % 
+        % See also: decouplesLambvsSH.
+
+        % verify symmetry of materials:
+        mats = obj.mat; % array of materials for each layer
+        for m = mats
+            if ~m.decouplesSA
+                decoupl = false; 
+                if nargin == 2 && strcmp(verb, 'v')
+                    warning('GEWTOOL:decouplesSA:matSym', 'The stiffness tensor is not invariant to reflexion ey -> -ey.');
+                end
+                return;
+            end
+        end
+        % verify that the layers are distributed symmetrically:
+        lMid = ceil(obj.geom.nLay/2);
+        for l = 1:lMid
+            if obj.lay(l) ~= obj.lay(end-(l-1))
+                decoupl = false; 
+                if nargin == 2 && strcmp(verb, 'v')
+                    warning('GEWTOOL:decouplesSA:laySym', 'The layered structure is not symmetric.');
+                end
+                return;
+            end
+        end
+        decoupl = true;
     end
     
-    function guw = symmetrizeGeometry(obj)
+    function gew = symmetrizeGeometry(obj)
         % symmetrizeGeometry - upper symmetric half of the original plate.
         % Creates a new Plate object describing only the upper symmetric half 
-        % of the original Plate object. The input plate should be symmetric in 
-        % geometry and materials. This function is used by LambS, LambA, LambSA
-        % and you will usually not need to call it explicitly.
+        % of the original Plate object. 
+        % Throws a warning if the plate is not symmetric in geometry and materials. 
+        % This function is used by LambS, LambA, LambSA, etc., and you will 
+        % usually not need to call it explicitly.
 
-        % TODO verify symmetry
+        if ~obj.decouplesSA('v') % 'v' verbose: throw warning indicating reason
+            warning('GEWTOOL:symmetrizeGeometry:SAdecoupl', 'You are doing bêtises! S/A waves do not decouple. I will proceed anyways.');
+        end
+        % create new waveguide object reduced to only the symmetric half:
         lMid = ceil(obj.geom.nLay/2);
         lays = obj.lay(lMid:end);
         Ns = obj.geom.N(lMid:end);
@@ -122,7 +192,7 @@ methods
             yItfList(1) = yItfList(2) - hmid/2; % half the thickness for middle layer
         end
         yItfList = yItfList - yItfList(1); % zero coordinate at center
-        guw = Plate([lays.mat], yItfList, Ns);
+        gew = Plate([lays.mat], yItfList, Ns);
     end
 
 end % methods
