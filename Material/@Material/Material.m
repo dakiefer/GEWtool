@@ -111,6 +111,7 @@ methods
         % permute - Permute the material coordinate system. 
         % The default transformation is ex-ey-ez -> ez-ex-ey, i.e. 
         % 3->1, 1->2, 2->3, 6->4, 4->5, 5->6, given by perm = [3,1,2,6,4,5].
+        %
         % Argument:
         % - perm:   [6x1]-vector indicating the permutation 1:6 -> perm.
         if nargin < 2
@@ -123,23 +124,52 @@ methods
         % ROTATEEULER - Rotate stiffness tensor sequentially around x-y-z.
         % Extrinsic, passive rotation around x-y-z (in that order). Thereby, 
         % x-y-z is the original fixed coordinate system.
+        % The result is rounded to 14 digits accuracy. 
         % For more details see: https://en.wikipedia.org/wiki/Euler_angles
         %
         % Arguments:
         % - obj:     Material object.
         % - a,b,g:   Euler/Cardan angles of rotation (around x-y-z, respectively).
         obj.c = rotateEuler(obj.c, a, b, g);
+        Cn = norm(obj.C);
+        obj.c = round(obj.c/Cn*1e14)/1e14*Cn; % round to 14 digits precision
+    end
+
+    function obj = reflect(obj, ax)
+        % REFLECT - Reflection of material along axis 'ax'.
+        %
+        % Arguments:
+        % - obj:   Material object
+        % - ax:    axis as a scalar integer 1 = x, 2 = y, or 3 = z.
+        Qx = [-1,  0,   0;
+              0,   1,   0;
+              0,   0,   1]; % reflexion ex -> -ex
+        Q = circshift(Qx, [ax-1, ax-1]);
+        obj = obj.transformBasis(Q);
     end
 
     function obj = transformBasis(obj, Q)
         % TRANSFORMBASIS - Change of basis "Q" applied to stiffness tensor.
-        % 
+        %
         % Arguments:
         % - obj: Material object.
         % - Q:   Orthogonal matrix discribing the transformation, e.g., a rotation.
         obj.c = transformBasis(obj.c, Q);
     end
     
+    function sym = isSymmetricOnAxis(obj, ax)
+        % ISSYMMETRICONAXIS - test if invariant to reflection along axis 'ax'.
+        % 
+        % Arguments:
+        % - obj:   Material object.
+        % - ax:    axis as a scalar integer 1 = x, 2 = y, or 3 = z. (Default: 2)
+        if nargin < 2
+            ax = 2; % default is y-axis
+        end
+        matR = obj.reflect(ax);
+        sym = ~any(obj.c - matR.c, 'all'); % all zero -> true
+    end
+
     function decoupl = decouplesXYvsZ(obj)
         % decouplesXYvsZ - Test if displacements in the xy-plane decouple from z-displ.
         xy = [1 2]; % Lamb polarization
@@ -147,6 +177,12 @@ methods
         c1test = obj.c(xy,xy,z,xy); 
         c2test = obj.c(xy,z,xy,xy);
         decoupl = all(c1test(:) == 0) & all(c2test(:) == 0);
+    end
+
+    function decoupl = decouplesSA(obj)
+        % DECOUPLESSA - test if invariant to reflection along y-axis.
+        % Basically an alias to isSymmetricOnAxis().
+        decoupl = obj.isSymmetricOnAxis(2);
     end
 
     plotSlownessCurve(varargin)
