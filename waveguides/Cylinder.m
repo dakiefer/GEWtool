@@ -30,10 +30,10 @@ methods
         % cyl = Cylinder(mat, r, N);
         %
         % See also: Cylinder, Plate.
-		obj = obj@Waveguide(mats, rs, Ns);
+		obj = obj@Waveguide(mats, rs, Ns);% converts mats 
         obj.lay = LayerCylindrical.empty; % initialize with correct class
-		for ii = 1:length(mats)
-			obj.lay(ii) = LayerCylindrical(mats(ii), rs(ii:ii+1), Ns(ii));
+		for ii = 1:length(obj.mat)
+			obj.lay(ii) = LayerCylindrical(obj.mat(ii), rs(ii:ii+1), Ns(ii));
 		end
 	end
 end % methods

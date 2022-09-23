@@ -32,6 +32,13 @@ methods
         % - Ns:    discretization order [1 x Nlay], each entry corresponds to one layer
         % - Nudof: displacement digrees of freedom [1 x Nlay], each entry corresponds to one layer
 		if nargin < 4, Nudof = 3*ones(size(Ns)); end
+        if isstruct(mats) % convert from struct to objects of Material class
+            matsObj = Material.empty(0, length(mats)); % initialize
+            for i = 1:length(mats)
+                matsObj(i) = Material(mats(i));
+            end
+            mats = matsObj;
+        end
 		obj.geom = Geometry(rs, Ns, Nudof);
 		obj.mat = mats;
 		np.c0 = mats(1).c(1,2,1,2); 

@@ -40,10 +40,10 @@ methods
         elseif length(ys) ~= length(mats)+1
             error('GEWTOOL:Plate:wrongArguments','Provide either a thickness for each layer or the coordinates of the interfaces.');
         end
-		obj = obj@Waveguide(mats, ys, Ns);
+		obj = obj@Waveguide(mats, ys, Ns); % converts mats 
         obj.lay = LayerPlate.empty; % initialize with correct class
-		for ii = 1:length(mats)
-			obj.lay(ii) = LayerPlate(mats(ii), ys(ii:ii+1), Ns(ii));
+		for ii = 1:length(obj.mat)
+			obj.lay(ii) = LayerPlate(obj.mat(ii), ys(ii:ii+1), Ns(ii));
 		end
     end
 
@@ -147,9 +147,9 @@ methods
 
         % verify symmetry of materials:
         mats = obj.mat; % array of materials for each layer
+        decoupl = false; 
         for m = mats
             if ~m.decouplesSA
-                decoupl = false; 
                 if nargin == 2 && strcmp(verb, 'v')
                     warning('GEWTOOL:decouplesSA:matSym', 'The stiffness tensor is not invariant to reflexion ey -> -ey.');
                 end
@@ -160,7 +160,6 @@ methods
         lMid = ceil(obj.geom.nLay/2);
         for l = 1:lMid
             if obj.lay(l) ~= obj.lay(end-(l-1))
-                decoupl = false; 
                 if nargin == 2 && strcmp(verb, 'v')
                     warning('GEWTOOL:decouplesSA:laySym', 'The layered structure is not symmetric.');
                 end
