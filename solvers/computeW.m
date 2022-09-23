@@ -26,7 +26,11 @@ function dat = computeW(guws, k, nModes)
     k = k(:).'; % row vector
     for i=1:length(guws) % solve for a list of waveguide objects
         guw = guws(i);
-        if nargin < 3, nModes = size(guw.op.M,1); end
+        if nargin < 3, nModes = size(guw.op.M,1); end % default
+        if nModes > size(guw.op.M,1)
+            warning('GEWTOOL:computeW:tooManyModes', 'More modes requested than available. Resetting nModes to the matrix size.')
+            nModes = size(guw.op.M,1);
+        end
         kh = k*guw.np.h0;
         M = guw.op.M; L0 = guw.op.L0; L1 = guw.op.L1; L2 = guw.op.L2;
         whn = nan(nModes, length(kh));

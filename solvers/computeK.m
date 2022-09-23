@@ -31,6 +31,10 @@ function dat = computeK(guws, w, nModes)
         if nargin < 3
             nModes = size(guw.op.M,1);  % for now we dont distinguish between linearized and quadratic EVP
         end
+        if nModes > size(guw.op.M,1)
+            warning('GEWTOOL:computeK:tooManyModes', 'More modes requested than available. Resetting nModes to the matrix size.')
+            nModes = size(guw.op.M,1);
+        end
         kh = nan(length(wh), nModes);
         u = nan(length(wh), nModes, guw.geom.Ndof);
         gdoffree = setdiff([guw.geom.gdofOfLay{:}], guw.geom.gdofDBC(:).');
