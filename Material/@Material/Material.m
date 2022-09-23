@@ -39,18 +39,26 @@ methods
         % mat = Material(param); % from structure param with fields "name", "C" or "c", "rho"
         % mat = Material(mat); % from Material object "mat" (conversion from subclasses)
         %
-        if nargin == 1 && (isa(varargin{1}, 'Material') || isa(varargin{1}, 'struct')) % convert from subclasses to superclass
-            data = varargin{1};
-        elseif nargin == 1 && (ischar(varargin{1}) || isstring(varargin{1}))  % load by name
-            matname = varargin{1};
-            filename = [matname '.json'];
-            data = jsondecode(fileread(filename));
-            if ~isfield(data, 'symmetry') % add field if not in json file
+        if nargin == 1
+            if isa(varargin{1}, 'Material') || isa(varargin{1}, 'struct') % convert from subclasses to superclass
+                data = varargin{1};
+            elseif ischar(varargin{1}) || isstring(varargin{1})  % load by name
+                matname = varargin{1};
+                filename = [matname '.json'];
+                data = jsondecode(fileread(filename));
+            else
+                error('GEWTOOL:Material:unknownArgument', 'Provide filename to load or structure describing material.');
+            end
+            % add missing fields:
+            if isstruct(data) && ~isfield(data, 'symmetry') % add field default value
                 if isfield(data, 'lambda') && isfield(data, 'mu')
                     data.symmetry = 'isotropic';
                 else
                     data.symmetry = 'unknown'; % might still be isotropic... 
                 end
+            end
+            if isstruct(data) && ~isfield(data, 'name') % add field default value
+                data.name = 'unnamed';
             end
         elseif nargin == 3  % name, C or c, rho 
             validateattributes(varargin{1},{'char'},{'vector'},1); % name
