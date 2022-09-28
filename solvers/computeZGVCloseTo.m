@@ -34,7 +34,9 @@ for i=1:numel(w0)
     k0i = k0(i)*gew.np.h0;
     [ki,wi,u] = ZGV_NewtonBeta(L0, L1, L2, M, k0i, w0i, [], opts); %wi = sqrt(mui);
 %     ki = ki/gew.np.h0; wi = sqrt(mui)*gew.np.fh0/gew.np.h0;
-    if isempty(find(abs(kzgv/ki-1) < 1e-12, 1)) && isempty(find(abs(wzgv/wi-1) < 1e-12, 1))  % not yet in list
+    isCutOff = (ki/k0i) < 1e-12;
+    notInList = isempty(find(abs(kzgv/ki-1) < 1e-12, 1)) && isempty(find(abs(wzgv/wi-1) < 1e-12, 1));  % not yet in list
+    if ~isCutOff && notInList
         kzgv(i) = ki;
         wzgv(i) = wi;
         [row, col] = ind2sub(size(wzgv), i);
