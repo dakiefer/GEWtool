@@ -20,18 +20,31 @@ L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 kzgv = nan(size(k0));
 wzgv = nan(size(w0));
 uzgv = nan([size(w0), size(M,1)]);
+opts.beta_corr = true; % algorithm options
+opts.show = false;
+opts.maxsteps = 10;
+w = warning('query', 'MATLAB:nearlySingularMatrix');
+warning('off', 'MATLAB:nearlySingularMatrix')
 for i=1:numel(w0)
+    if isnan(w0(i)) || isnan(k0(i)) || isinf(w0(i)) || isinf(k0(i))
+        warning('GEWTOOL:computeZGVCloseTo:ignoringInitialGuess', 'Ignoring NaN or Inf initial guess.');
+        continue; % ignore nan and inf entries
+    end
     w0i = w0(i)*gew.np.h0/gew.np.fh0;
     k0i = k0(i)*gew.np.h0;
-    mu = w0i^2;
-    lambda = 1i*k0i;
-    [lambdaZGV,muZGV,u] = ZGV_Lamb_Newton_Hermitian(L0, L1, L2, M, lambda, mu);
-    kzgv(i) = -1i*lambdaZGV/gew.np.h0;
-    wzgv(i) = sqrt(muZGV)*gew.np.fh0/gew.np.h0;
-    [row, col] = ind2sub(size(wzgv), i);
-    uzgv(row, col, :) = u;
+    [ki,wi,u] = ZGV_NewtonBeta(L0, L1, L2, M, k0i, w0i, [], opts); %wi = sqrt(mui);
+%     ki = ki/gew.np.h0; wi = sqrt(mui)*gew.np.fh0/gew.np.h0;
+    if isempty(find(abs(kzgv/ki-1) < 1e-12, 1)) && isempty(find(abs(wzgv/wi-1) < 1e-12, 1))  % not yet in list
+        kzgv(i) = ki;
+        wzgv(i) = wi;
+        [row, col] = ind2sub(size(wzgv), i);
+        uzgv(row, col, :) = u;
+    end
 end
+if strcmp(w.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
 
-dat.k = real(kzgv); dat.w = real(wzgv); dat.u = uzgv;
+dat.k = real(kzgv)/gew.np.h0; 
+dat.w = real(wzgv)*gew.np.fh0/gew.np.h0; 
+dat.u = uzgv;
 
 end
