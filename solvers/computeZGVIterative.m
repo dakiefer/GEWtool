@@ -1,6 +1,24 @@
-function [dat] = computeZGVCloseTo(gew, varargin)
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
+function [dat] = computeZGVIterative(gew, varargin)
+% computeZGVIterative - Computes ZGV points.
+% Determines zero-group-velocity (ZGV) points (k, w) on the dispersion curves via a
+% Netwon-type iteration implemented in "ZGV_NewtonBeta.m". If initial values (k0, w0) 
+% are not provided, you should provide a corresponding waveguide solution "dat", from 
+% where intial values will be guessed from. 
+% 
+% dat = computeZGVIterative(gew, dat): Provide waveguide description object
+% "gew" and dispersion curve solution "dat". computeZGVIterative will compute
+% the group velocity dispersion curves. For each zero-crossing, a ZGV point is
+% searched. Only true ZGV points with k > 0 are kept. 
+% 
+% dat = computeZGVIterative(gew, w0, k0): Provide waveguide description object
+% "gew" and an initial guess w0 (angular frequency), k0 (wavenumber) for the ZGV point.
+% w0 and k0 can be vectors of initial guesses. At each point [w0(i), k0(i)] a
+% ZGV point is searched.
+%
+% See also computeZGVDirect, ZGV_NewtonBeta, Waveguide.
+% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 
 
 if nargin == 2 % initial guess (w0, k0) where cg changes sign
     dat = varargin{1};

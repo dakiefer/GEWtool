@@ -1,4 +1,4 @@
-function [dat] = computeZGV(gew)
+function [dat] = computeZGVDirect(gew)
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
 
