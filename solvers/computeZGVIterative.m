@@ -63,6 +63,12 @@ for i=1:numel(w0)
 end
 if strcmp(w.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
 
+if nargin == 2 % remove nan entries when initial guess vector was not provided manually
+    ind = ~isnan(wzgv); wzgv = wzgv(ind); kzgv = kzgv(ind);
+    ind = ~isnan(kzgv); wzgv = wzgv(ind); kzgv = kzgv(ind);
+    [wzgv, ind] = sort(wzgv); kzgv = kzgv(ind);
+end
+
 dat.k = real(kzgv)/gew.np.h0; 
 dat.w = real(wzgv)*gew.np.fh0/gew.np.h0; 
 dat.u = uzgv;
