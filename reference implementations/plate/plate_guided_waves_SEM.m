@@ -3,9 +3,14 @@
 % Depends on chebfun (https://www.chebfun.org) to represent interpolation
 % functions and perform differentiation/integration.
 %
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
+% see also:
+% D. A. Kiefer, "Elastodynamic quasi-guided waves for transit-time ultrasonic flow
+% metering", ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, 
+% vol. 42. Erlangen: FAU University Press, 2022, doi: 10.25593/978-3-96147-550-6
 % 
+% 2022 - Daniel A. Kiefer
+% Institut Langevin, ESPCI Paris, France
+%
 
 h = 1e-3;   % thickness in m
 N = 10;     % discretization: polynomial order of interpolants
@@ -14,9 +19,8 @@ rho = 7900; lbd = 1.1538e11; mu = 7.6923e10; % steel material
 % define and normalize parameters:
 II = eye(3).*shiftdim(eye(3), -2); % 4th order "unit tensor"
 c = lbd*II + mu*(permute(II, [1 3 4 2]) + permute(II, [1 3 2 4])); % stiffness tensor
-c0 = c(1,2,1,2); h0 = h; % normalization parameters
-rho0 = rho; fh0 = sqrt(c0/rho0); % normalization parameters
-rhon = rho/rho0; cn = c/c0;
+c0 = c(1,2,1,2); rho0 = rho; fh0 = sqrt(c0/rho0);  % normalization parameters
+rhon = rho/rho0; cn = c/c0; % normalize
 
 % relevant material matrices: 
 udof = 1:2; % Lamb and/or SH
@@ -26,7 +30,7 @@ cyx = squeeze(cn(2,udof,udof,1));
 cyy = squeeze(cn(2,udof,udof,2));
 I = eye(size(cxx)); 
 
-%% discretize: 
+% % discretize: 
 % % using Lagrange polynomials on GLL points:
 [yi] = lobpts(N, [-1, 1]); % does only work on dom = [-1 1]!!!!
 yi = yi/2; % scale to [-1/2, 1/2]
@@ -34,83 +38,83 @@ P = chebfun.lagrange(yi);
 Pd = diff(P);
 
 % % "element" matrices for one displacement component:
-m = elemM(P);
-k2 = m;
-k1 = elemK1(P, Pd);
-g1 = -k1.';
-g0 = elemG0(Pd);
+pp = elemPP(P);         % ∫ Pi*Pj dy
+pd = elemPPd(P, Pd);   % ∫ Pi*Pj' dy
+dd = elemPdPd(Pd);    % ∫ Pi'*Pj' dy
 % % assemble for the displacement components:
-M  = kron(rhon*I,m);
-L2 = kron(cxx, k2);
-L1 = kron(cxy, k1) + kron(cyx, g1);
-L0 = kron(cyy, g0);
+M  = kron(rhon*I,pp);
+L2 = kron(cxx, pp);
+L1 = kron(cxy, pd) - kron(cyx, pd.');
+L0 = kron(cyy, dd);
 
 %% solve for frequency and plot:
-kh = linspace(1e-2, 15, 200); % wavenumber*thickness 
+kh = linspace(1e-2, 15, 300); % wavenumber*thickness 
 whn = nan(size(M, 2), length(kh)); tic 
 for ii = 1:length(kh)
     kh0 = kh(ii);
-    [wh2] = eig((1i*kh0)^2*L2 + (1i*kh0)*L1 + L0, -M); 
-    whn(:,ii) = sqrt(wh2);
+    [wh2] = eig(-(1i*kh0)^2*L2 - (1i*kh0)*L1 - L0, M, 'chol');  % use Cholesky: positive definite B
+    whn(:,ii) = sort(sqrt(wh2));
 end
 fh = whn/2/pi*fh0;
 chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(fh, 1), size(fh, 2), chron, chron/length(fh(:))*1e3);
 
 % % plot wavenumbers:
 kkh = kh.*ones(size(fh));
-figure(1), hold on, plot(kkh(:)/h/1e3, real(fh(:))/h/1e6, '.');
+figure(1), clf, hold on, plot(kkh(:)/h/1e3, real(fh(:))/h/1e6, '.');
 xlim([0, 12]), ylim([0, 6]),
 xlabel('k in rad/mm'), ylabel('f in MHz'),
 
 %% solve for wavenumbers:
-fh = linspace(1e-2, 6, 200).'*1e6*h; % frequency*thickness
+fh = linspace(1e-2, 6, 300).'*1e6*h; % frequency*thickness
 kh = nan(length(fh), size(M, 2)*2); tic
 for ii = 1:length(fh)
     whn = 2*pi*fh(ii)/fh0; % current frequency-thickness (normalized)
     [un, khi] = polyeig(L0 + whn^2*M, L1, L2); 
     kh(ii, :) = -1i*khi;
 end
-kh(abs(kh) >= 12) = nan; % only small wavenumbers are numerically accurate
+kh(abs(kh) >= 14.3) = nan; % only small wavenumbers are numerically accurate
 chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(kh, 1), size(kh, 2), chron, chron/length(kh(:))*1e3);
 
 % % plot wave numbers:
 ffh = fh.*ones(size(kh));
-figure(2), hold on, scatter(real(kh(:))/h/1e3, ffh(:)/h/1e6, 8, abs(imag(kh(:))), 'filled'), 
-caxis([0, 0.12]), xlim([0, 12]), ylim([0, fh(end)/h/1e6])
-xlabel('k in rad/mm'), ylabel('f in MHz')
-% plot3(real(kh(:))/h/1e3, imag(kh(:))/h/1e3, ffh(:)/h/1e6, 'k.'), xlim([-12, 12]), ylim([-12, 12])
-% xlabel('real k in rad/mm'), ylabel('imag k in rad/mm'), zlabel('f in MHz')
+figure(3), clf, hold on,
+scatter3(real(kh(:))/h/1e3, imag(kh(:))/h/1e3, ffh(:)/h/1e6, 8, abs(imag(kh(:))), 'filled'), 
+caxis([0, 0.01]), xlim([-12, 12]), ylim([-12, 12]), view(0,0);
+xlabel('real k in rad/mm'), ylabel('imag k in rad/mm'), zlabel('f in MHz')
 
 
 %% element matrices:
-function m = elemM(P) 
+function pp = elemPP(P) 
+    % elemPP - integral ∫P*Pdy of basis functions P (element mass)
     N = size(P,2);
-    m = zeros(N);
-    for A = 1:N
-        for B = A:N
-            m(A,B) = sum(P(:,A)*P(:,B));
-            m(B,A) = m(A,B);
+    pp = zeros(N);
+    for i = 1:N
+        for j = i:N
+            pp(i,j) = sum(P(:,i)*P(:,j));
+            pp(j,i) = pp(i,j);
         end
     end
 end
 
-function k1 = elemK1(P, Pd) 
+function pd = elemPPd(P, Pd) 
+    % elemPPd - integral ∫P*P'dy of basis functions P (element stiffness and flux)
     N = size(P,2);
-    k1 = zeros(N);
-    for A = 1:N
-        for B = 1:N
-            k1(A,B) = sum(P(:,A)*Pd(:,B));
+    pd = zeros(N);
+    for i = 1:N
+        for j = 1:N
+            pd(i,j) = sum(P(:,i)*Pd(:,j));
         end
     end
 end
 
-function g0 = elemG0(Pd) 
+function dd = elemPdPd(Pd)
+    % elemPdPd - integral ∫P'*P'dy of basis functions P (element flux)
     N = size(Pd,2);
-    g0 = zeros(N);
-    for A = 1:N
-        for B = 1:N
-            g0(A,B) = -sum(Pd(:,A)*Pd(:,B));
-            g0(B,A) = g0(A,B);
+    dd = zeros(N);
+    for i = 1:N
+        for j = 1:N
+            dd(i,j) = -sum(Pd(:,i)*Pd(:,j));
+            dd(j,i) = dd(i,j);
         end
     end
 end
