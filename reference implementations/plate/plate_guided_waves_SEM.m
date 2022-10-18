@@ -1,5 +1,5 @@
 %% Dispersion calculation in a generally anisotropic elastic plate
-% Implements the spectral element method to solve for guided waves.
+% Implements the spectral element method to compute guided elastic waves.
 % Depends on chebfun (https://www.chebfun.org) to represent interpolation
 % functions and perform differentiation/integration.
 %
@@ -39,8 +39,8 @@ Pd = diff(P);
 
 % % "element" matrices for one displacement component:
 pp = elemPP(P);         % ∫ Pi*Pj dy
-pd = elemPPd(P, Pd);   % ∫ Pi*Pj' dy
-dd = elemPdPd(Pd);    % ∫ Pi'*Pj' dy
+pd = elemPPd(P, Pd);    % ∫ Pi*Pj' dy
+dd = elemPdPd(Pd);      % ∫ Pi'*Pj' dy
 % % assemble for the displacement components:
 M  = kron(rhon*I,pp);
 L2 = kron(cxx, pp);
@@ -82,6 +82,34 @@ scatter3(real(kh(:))/h/1e3, imag(kh(:))/h/1e3, ffh(:)/h/1e6, 8, abs(imag(kh(:)))
 caxis([0, 0.01]), xlim([-12, 12]), ylim([-12, 12]), view(0,0);
 xlabel('real k in rad/mm'), ylabel('imag k in rad/mm'), zlabel('f in MHz')
 
+%% Group velocity:
+% % solve for frequencies as previously but save also the eigenvectors:
+kh = linspace(1e-2, 15, 300); % wavenumber*thickness 
+whn = nan(size(M, 2), length(kh));
+u = nan([size(whn), size(M, 1)]); tic 
+for ii = 1:length(kh)
+    kh0 = kh(ii); 
+    [ui, wh2] = eig(-(1i*kh0)^2*L2 - (1i*kh0)*L1 - L0, M, 'chol', 'vector');  % use Cholesky: positive definite B
+    whn(:,ii) = sqrt(wh2);
+    u(:,ii,:) = ui.';
+end
+fh = whn/2/pi*fh0;
+chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(fh, 1), size(fh, 2), chron, chron/length(fh(:))*1e3);
+
+% % compute group velocity:
+kkh = kh.*ones(size(fh)); % expand wavenumbers to matrix of same size as fh
+cgn = zeros(size(kkh));
+for i = 1:size(kkh,1)
+    for j = 1:size(kkh,2)
+        u0 = squeeze(u(i,j,:));
+        cgn(i,j) = (u0'*(2*kkh(i,j).*L2 - 1i*L1)*u0) ./ (u0'*2*whn(i,j)*M*u0);
+    end
+end
+cg = real(cgn)*fh0;
+
+figure(15), clf, hold on
+plot(fh(:)/h/1e6, cg(:)/1e3, '.'), ylim([-2, 6]), xlim([0, 6])
+xlabel('f in MHz'), ylabel('cg in mm/us')
 
 %% element matrices:
 function pp = elemPP(P) 
