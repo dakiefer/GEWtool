@@ -50,9 +50,9 @@ whn = nan(size(M, 2), length(kh)); tic
 for ii = 1:length(kh)
     kh0 = kh(ii);
     [wh2] = polyeig((1i*kh0)^2*L2 + (1i*kh0)*L1 + L0, M); 
-    whn(:,ii) = sqrt(wh2);
+    whn(:,ii) = sort(sqrt(wh2));
 end
-fh = real(whn/2/pi*fh0); fh(fh == 0) = nan;
+fh = whn/2/pi*fh0; % fh(abs(fh) == inf) = nan;  %fh(fh == 0) = nan; % zero for real part only
 chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n', size(fh, 1), size(fh, 2), chron, chron/length(fh(:))*1e3);
 
 % plot wavenumbers:
