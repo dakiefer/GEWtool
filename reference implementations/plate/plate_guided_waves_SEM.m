@@ -52,7 +52,8 @@ kh = linspace(1e-2, 15, 300); % wavenumber*thickness
 whn = nan(size(M, 2), length(kh)); tic 
 for ii = 1:length(kh)
     kh0 = kh(ii);
-    [wh2] = eig(-(1i*kh0)^2*L2 - (1i*kh0)*L1 - L0, M, 'chol');  % use Cholesky: positive definite B
+%     [wh2] = polyeig((1i*kh0)^2*L2 + (1i*kh0)*L1 + L0, M); % complex due to numerical precision 
+    [wh2] = eig(-(1i*kh0)^2*L2 - (1i*kh0)*L1 - L0, M, 'chol');  % real when Cholesky solver: positive definite B required
     whn(:,ii) = sort(sqrt(wh2));
 end
 fh = whn/2/pi*fh0;
@@ -69,7 +70,7 @@ fh = linspace(1e-2, 6, 300).'*1e6*h; % frequency*thickness
 kh = nan(length(fh), size(M, 2)*2); tic
 for ii = 1:length(fh)
     whn = 2*pi*fh(ii)/fh0; % current frequency-thickness (normalized)
-    [un, khi] = polyeig(L0 + whn^2*M, L1, L2); 
+    [khi] = polyeig(L0 + whn^2*M, L1, L2); 
     kh(ii, :) = -1i*khi;
 end
 kh(abs(kh) >= 14.3) = nan; % only small wavenumbers are numerically accurate
