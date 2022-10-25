@@ -14,8 +14,8 @@ if Ndof>30
 end
 
 opts.MaxPoints = 50;
-opts.MaxIter = 15;
-opts.ZeroShift = 1;
+opts.MaxIter = 20;
+opts.ZeroShift = 1e-3; % start searching close to k = 0
 opts.ShiftFactor = 1.1;
 opts.Neigs = 8;
 [k, w] = ZGV_MFRDScan(L0,L1,L2,M,opts);

@@ -33,7 +33,7 @@ if isfield(opts,'MaxPoints'),       MaxPoints = opts.MaxPoints;          else, M
 if isfield(opts,'MaxIter'),         MaxIter = opts.MaxIter;              else, MaxIter = 10;       end
 if isfield(opts,'ShiftFactor'),     ShiftFactor = opts.ShiftFactor;      else, ShiftFactor = 1.1; end
 if isfield(opts,'DeltaPert'),       DeltaPert = opts.DeltaPert;          else, DeltaPert = 1e-6;   end
-if isfield(opts,'ZeroShift'),       ZeroShift = opts.ZeroShift;          else, ZeroShift = 1;      end
+if isfield(opts,'ZeroShift'),       ZeroShift = opts.ZeroShift;          else, ZeroShift = 0.5;      end
 if ~isfield(opts,'show'),           opts.show = false;    end
 
 % matrices for the linearization of the perturbed pair into a 3P eigenvalue problem
@@ -64,9 +64,9 @@ warning('off', 'MATLAB:nearlySingularMatrix')
 while found<MaxPoints && iter<MaxIter
     iter = iter + 1;
     [X,D] = eigs(Delta1,Delta0,Neigs,1i*shift);
-    lambdas = diag(D);
-    ks = -1i*lambdas;
-    ind = intersect(find(real(ks)>ZeroShift),find(abs(imag(ks))<1e-6)); % candidates are solutions that are real
+    ks = -1i*diag(D);
+    ind = find(abs(imag(ks))<1e-4 & real(ks) > 1e-6); % candidates are solutions that are real and positive
+    ind = intersect(ind, find(real(ks)>ZeroShift)); % candidates have larger wavenumber than what we have already found
     for j = ind'
         k = real(ks(j));
         mu = (X(:,j)'*Delta2*X(:,j))/(X(:,j)'*Delta0*X(:,j)); % Rayleight quotient estimation for mu
@@ -75,7 +75,7 @@ while found<MaxPoints && iter<MaxIter
             w = real(sqrt(mu));
             [kR,wR,~,flag] = ZGV_NewtonBeta(full(L0), full(L1), full(L2), full(M), k, w, [], opts);
             muR = wR^2;
-            if (flag==1) && (real(kR)>ZeroShift) && (abs(imag(muR))<1e-6) 
+            if (flag==true) && (kR>ZeroShift)
                 dif = 1e10*norm([kR muR]);
                 if ~isempty(pairs)
                     tmp = pairs - [kR muR];
@@ -90,10 +90,14 @@ while found<MaxPoints && iter<MaxIter
             end
         end
     end
-    shift = max(shift,max(real(ks)))*ShiftFactor;
+    if shift < 1e-1, shift = 0.8; end   % avoid getting stuck for initial shift close to 0
+    if ~isempty(ks(ind))    % max of empty array is an empty array
+        shift = max(shift,max(real(ks)))*ShiftFactor; 
+    else
+        shift = shift*ShiftFactor;
+    end
 end
 if strcmp(warningStatus.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
-iter
 
 k = real(pairs(:,1));
 w = real(pairs(:,2));
