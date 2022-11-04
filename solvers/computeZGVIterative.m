@@ -15,7 +15,7 @@ function [dat] = computeZGVIterative(gew, varargin)
 % w0 and k0 can be vectors of initial guesses. At each point [w0(i), k0(i)] a
 % ZGV point is searched.
 %
-% See also computeZGVScan, computeZGVDirect, ZGV_NewtonBeta, Waveguide.
+% See also computeZGVScan, computeZGVDirect, ZGVNewtonBeta, Waveguide.
 % 
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 % 
@@ -50,7 +50,7 @@ for i=1:numel(w0)
     end
     w0i = w0(i)*gew.np.h0/gew.np.fh0;
     k0i = k0(i)*gew.np.h0;
-    [ki,wi,u] = ZGVNewtonBeta(L0, L1, L2, M, k0i, w0i, [], opts); %wi = sqrt(mui);
+    [ki,wi,u] = ZGVNewtonBeta(L2, L1, L0, M, k0i, w0i, [], opts); %wi = sqrt(mui);
 %     ki = ki/gew.np.h0; wi = sqrt(mui)*gew.np.fh0/gew.np.h0;
     isCutOff = (ki/k0i) < 1e-12;
     notInList = isempty(find(abs(kzgv/ki-1) < 1e-12, 1)) && isempty(find(abs(wzgv/wi-1) < 1e-12, 1));  % not yet in list

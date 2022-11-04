@@ -73,7 +73,7 @@ while found<MaxPoints && iter<MaxIter
         if abs(imag(mu))<1e-3 
             % we refine and verify the solution using Gauss-Newton method
             w = real(sqrt(mu));
-            [kR,wR,~,flag] = ZGV_NewtonBeta(full(L0), full(L1), full(L2), full(M), k, w, [], opts);
+            [kR,wR,~,flag] = ZGVNewtonBeta(full(L2), full(L1), full(L1), full(M), k, w, [], opts);
             muR = wR^2;
             if (flag==true) && (kR>ZeroShift)
                 dif = 1e10*norm([kR muR]);

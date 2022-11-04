@@ -1,4 +1,4 @@
-function [k,w,u,isConverged,err] = ZGVNewtonBeta(L0, L1, L2, M, k, w, u, opts)
+function [k,w,u,isConverged,err] = ZGVNewtonBeta(L2, L1, L0, M, k, w, u, opts)
 % ZGVNewtonBeta - Newton-type iteration to locate ZGV points. 
 % Computes a ZGV point given an initial guess (w0, k0) and optionally u0. 
 % A Newton-type method with complex correction is used for this end [1]. If the
@@ -15,7 +15,7 @@ function [k,w,u,isConverged,err] = ZGVNewtonBeta(L0, L1, L2, M, k, w, u, opts)
 %    - err: norm of the residual
 %
 % Input: 
-%    - L0, L1, L2, M: square matrices such that L0, 1i*L1 and L2 are Hermitian
+%    - L2, L1, L0, M: square matrices such that L2, 1i*L1 and L1 are Hermitian
 %    - k, w: initial approximation for the ZGV point
 %    - u (optional): initial approximation for the right eigenvector, if
 %      not provided or empty then the singular vectors corresponding to the 
