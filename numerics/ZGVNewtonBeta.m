@@ -1,5 +1,5 @@
-function [k,w,u,isConverged,err] = ZGV_NewtonBeta(L0, L1, L2, M, k, w, u, opts)
-% ZGV_NewtonBeta - Newton-type iteration to locate ZGV points. 
+function [k,w,u,isConverged,err] = ZGVNewtonBeta(L0, L1, L2, M, k, w, u, opts)
+% ZGVNewtonBeta - Newton-type iteration to locate ZGV points. 
 % Computes a ZGV point given an initial guess (w0, k0) and optionally u0. 
 % A Newton-type method with complex correction is used for this end [1]. If the
 % iteration converges, the solutions (k, w, u) satisfies: 

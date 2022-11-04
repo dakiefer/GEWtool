@@ -1,21 +1,21 @@
 function [dat] = computeZGVIterative(gew, varargin)
 % computeZGVIterative - Computes ZGV points.
 % Determines zero-group-velocity (ZGV) points (k, w) on the dispersion curves via a
-% Netwon-type iteration implemented in "ZGV_NewtonBeta.m". If initial values (k0, w0) 
+% Netwon-type iteration implemented in "ZGVNewtonBeta.m". If initial values (k0, w0) 
 % are not provided, you should provide a corresponding waveguide solution "dat", from 
 % where intial values will be guessed from. 
 % 
-% dat = computeZGVIterative(gew, dat): Provide waveguide description object
+% dat = computeZGVIterative(gew, dat): Provide guided-wave-description object
 % "gew" and dispersion curve solution "dat". computeZGVIterative will compute
-% the group velocity dispersion curves. For each zero-crossing, a ZGV point is
-% searched. Only true ZGV points with k > 0 are kept. 
+% the group velocity dispersion curves. For each zero-crossing of cg(w), a ZGV point 
+% is searched. Only true ZGV points with k > 0 are kept. 
 % 
 % dat = computeZGVIterative(gew, w0, k0): Provide waveguide description object
 % "gew" and an initial guess w0 (angular frequency), k0 (wavenumber) for the ZGV point.
 % w0 and k0 can be vectors of initial guesses. At each point [w0(i), k0(i)] a
 % ZGV point is searched.
 %
-% See also computeZGVDirect, ZGV_NewtonBeta, Waveguide.
+% See also computeZGVScan, computeZGVDirect, ZGV_NewtonBeta, Waveguide.
 % 
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 % 
@@ -50,7 +50,7 @@ for i=1:numel(w0)
     end
     w0i = w0(i)*gew.np.h0/gew.np.fh0;
     k0i = k0(i)*gew.np.h0;
-    [ki,wi,u] = ZGV_NewtonBeta(L0, L1, L2, M, k0i, w0i, [], opts); %wi = sqrt(mui);
+    [ki,wi,u] = ZGVNewtonBeta(L0, L1, L2, M, k0i, w0i, [], opts); %wi = sqrt(mui);
 %     ki = ki/gew.np.h0; wi = sqrt(mui)*gew.np.fh0/gew.np.h0;
     isCutOff = (ki/k0i) < 1e-12;
     notInList = isempty(find(abs(kzgv/ki-1) < 1e-12, 1)) && isempty(find(abs(wzgv/wi-1) < 1e-12, 1));  % not yet in list
