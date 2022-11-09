@@ -1,5 +1,6 @@
 function datZGV = computeZGVIterative(gew, varargin)
 % computeZGVIterative - Computes ZGV point iteratively from initial guess.
+%
 % Determines zero-group-velocity (ZGV) points (k, w) on the dispersion curves via a
 % Netwon-type iteration implemented in "ZGVNewtonBeta.m". If initial values (k0, w0) 
 % are not provided, you should provide a corresponding waveguide solution "dat", from 
@@ -16,9 +17,8 @@ function datZGV = computeZGVIterative(gew, varargin)
 % ZGV point is searched.
 %
 % See also computeZGVScan, computeZGVDirect, ZGVNewtonBeta, Waveguide.
-% 
+%
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
-% 
 
 if nargin == 2 % initial guess (w0, k0) where cg changes sign
     dat = varargin{1};

@@ -1,42 +1,47 @@
-function [k, w] = ZGV_MFRDScan(L2, L1, L0, M, opts)
-
-% Returns ZGV points (kh, omega) with the smallest kh for a twoparameter pencil 
-% (K0 + kh*K1 + kh^2*K2 + mu*C)x = 0, where mu = 2*pi*omega^2/f0
+function [kzgv, wzgv] = ZGV_MFRDScan(L2, L1, L0, M, opts)
+% ZGV_MFRDScan - Compute ZGV points via iterative shift and search.
+%
+% Returns ZGV points (k, w) with the smallest k for 
+% (k^2*L2 + k*L1 + L0 + mu*M)*u = 0, where mu = w^2.
+% The Method of Fixed Relative Distance (MFRD) proposed by Jarlebring, Kvall and
+% Michiels [1] is used for this end. The method computes candidate wavenumbers close 
+% to a shift k0 and refines them with a Newton-type iteration. By iteratively adapting
+% the shift k0, a wavenumber range [kmin, kmax] is searched. Details can be found in [2].
+%
 % It is important that matrix M is nonsingular amd that system is
-% transformed in such way that kh and mu are real.
+% transformed in such way that k and mu are real.
 % Input:
-%    - L0,L1,L2,M: matrices of the model (for larger than 50 x 50, use sparse matrices)
-%    - f0: model parameter to compute omega from mu
+%    - L2,L1,L0,M: matrices of the model (for larger than 50 x 50, use sparse matrices)
 %    - options in opts:
 %         - Neigs: (8) how many eigenvalues we compute using eigs for one shift
-%         - MaxPoints: (20) how many ZGV points we want
-%         - MaxIter: (10) how many iterations with different shift
-%         - ShiftFactor: (1.05), factor for shift increment for next iteration
+%         - MaxPoints: (20) maximum number ofZGV points we want
+%         - MaxIter: (10) maximum number of iterations with different shift
+%         - ShiftFactor: (1.1), factor for shift increment for next iteration
 %         - DeltaPert: (1e-6), factor for perturbation is 1+DeltaPert
-%         - ZeroShift: (1): initial shift for kh
+%         - kStart: (1): initial shift for normalized wavenumber k
 %
-% We start scanning with kh = ZeroShift, compute candidates for the ZGV
-% points using eigs on the corresponding Delta matrices from quadratic 
-% two-parameter eigenvalue problem linearized as a three-parameter 
-% eigenvalue problem. Each candidate is refined with Gauss-Newton method
+% [1] E. Jarlebring, S. Kvaal, and W. Michiels, "Computing all Pairs (λ,μ) Such that 
+% λ is a Double Eigenvalue of A+μB," SIAM J. Matrix Anal. Appl., vol. 32, no. 3, 
+% pp. 902–927, Jul. 2011, doi: 10.1137/100783157.
 %
-% We use solutions of the original and the perturbed equation similar to
-% the method by Jarlebring, Kvaal, Michiels
+% [2] D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, "Computing 
+% zero-group-velocity points in anisotropic elastic waveguides: globally and locally 
+% convergent methods." arXiv, Nov. 03, 2022. doi: 10.48550/arXiv.2211.01995.
 %
 % 2022 - Bor Plestenjak, adapted by Daniel A. Kiefer
 
 narginchk(4, 5);
 if nargin < 5, opts = []; end
 
-if isfield(opts,'Neigs'),           Neigs = opts.Neigs;                  else, Neigs = 8;          end
-if isfield(opts,'MaxPoints'),       MaxPoints = opts.MaxPoints;          else, MaxPoints = 20;     end
-if isfield(opts,'MaxIter'),         MaxIter = opts.MaxIter;              else, MaxIter = 10;       end
-if isfield(opts,'ShiftFactor'),     ShiftFactor = opts.ShiftFactor;      else, ShiftFactor = 1.1;  end
-if isfield(opts,'DeltaPert'),       DeltaPert = opts.DeltaPert;          else, DeltaPert = 1e-6;   end
-if isfield(opts,'kStart'),          kStart = opts.kStart;                else, kStart = 0.5;    end
-if ~isfield(opts,'show'),           opts.show = false;    end
+if isfield(opts,'Neigs'),        Neigs = opts.Neigs;              else, Neigs = 8;          end
+if isfield(opts,'MaxPoints'),    MaxPoints = opts.MaxPoints;      else, MaxPoints = 20;     end
+if isfield(opts,'MaxIter'),      MaxIter = opts.MaxIter;          else, MaxIter = 10;       end
+if isfield(opts,'ShiftFactor'),  ShiftFactor = opts.ShiftFactor;  else, ShiftFactor = 1.1;  end
+if isfield(opts,'DeltaPert'),    DeltaPert = opts.DeltaPert;      else, DeltaPert = 1e-6;   end
+if isfield(opts,'kStart'),       kStart = opts.kStart;            else, kStart = 1;    end
+if ~isfield(opts,'show'),        opts.show = false;    end
 
-% matrices for the linearization of the perturbed pair into a 3P eigenvalue problem
+% mats for the linearization of the perturbed pair into a 3P eigenvalue problem
 A1 = [0 0; 0 1];
 B1 = [0 -1;-1 0];
 C1 = [0 0; 0 0];
@@ -56,47 +61,50 @@ D3 = L2*(1+DeltaPert)^2;
 
 found = 0;   % number of ZGV points found
 k0 = kStart; % wavenumber shift close to which we compute candidates
+kmin = 1e-8; % search candidates above this value
 iter = 0;    % number of iterations
-zgvs = [];  % ZGV points as [k, w]-pairs
-opts.beta_corr = true; opts.show = false; opts.maxsteps = 10; % options for ZGVNewtonBeta()
+% zgvs = [];  % ZGV points as [k, w]-pairs
+kzgv = []; wzgv = []; % ZGV wavenumbers and frequencies
+optsNewton.beta_corr = true; optsNewton.show = false; optsNewton.maxsteps = 10; % options for ZGVNewtonBeta()
 warningStatus = warning('query', 'MATLAB:eigs:NotAllEigsConverged');
 warning('off', 'MATLAB:eigs:NotAllEigsConverged')
 while found<MaxPoints && iter<MaxIter
     iter = iter + 1;
+    % compute candidates:
     [z,lbd] = eigs(Delta1,Delta0,Neigs,1i*k0); % compute candidates
-    ks = -1i*diag(lbd); % wavenumber candidates
-    ind = find(abs(imag(ks))<1e-4 & real(ks) > kStart); % candidates are solutions that are real
+    ks = -1i*diag(lbd); % wavenumber candidates (nondimensions)
+    ind = find(abs(imag(ks))<1e-4 & real(ks) > kmin); % candidates are solutions that are real
+    % for each candidate in ks(ind), compute mu = w^2 and apply Newton iteration: 
     for j = ind.'
         mu = (z(:,j)'*Delta2*z(:,j))/(z(:,j)'*Delta0*z(:,j)); % Rayleight quotient estimation for mu
-        if abs(imag(mu))<1e-3 % refine solution using Gauss-Newton method
-            w = real(sqrt(mu));
-            [kR,wR,~,isConverged] = ZGVNewtonBeta(full(L2), full(L1), full(L0), full(M), real(ks(j)), w, [], opts);
-            if isConverged && (kR>kStart) % add to saved list of ZGV points
-                if isempty(zgvs)
-                    zgvs = [kR, wR]; found = 1;
+        if abs(imag(mu))<1e-3 % refine solution using Newton-type method
+            w = real(sqrt(mu)); % angular frequency (nondimensional)
+            [kR,wR,~,isConverged] = ZGVNewtonBeta(full(L2), full(L1), full(L0), full(M),...
+                real(ks(j)), w, [], optsNewton);
+            % add converged solutions to list of ZGV points:
+            if isConverged && (kR>kmin) 
+                if isempty(kzgv)
+                    kzgv = kR; wzgv = wR; found = 1;
                 else % only add if not yet in list
-                    dif = zgvs - [kR, wR];
-                    minNormDif = sqrt(min(dif(:,1).^2 + dif(:,2).^2));
-                    if minNormDif > 1e-8*sqrt(kR^2 + wR^2)
-                        zgvs = [zgvs; [kR wR]];
-                        found = found + 1;
+                    difSquare = (kzgv - kR).^2 + (wzgv - wR).^2; % zgvs - [kR, wR];
+                    minNormDif = sqrt(min(difSquare));
+                    if minNormDif > 1e-8*sqrt(kR^2 + wR^2) % relative to norm [kR, wR]
+                        kzgv = [kzgv; kR]; wzgv = [wzgv; wR]; found = found + 1;
                     end
                 end
             end
         end
     end
+    if opts.show
+        fprintf('%d. finished search at k0*h=%g: found %d ZGV points.\n', iter, k0, found);
+    end
+    % updated shift k0 and minimum kmin for next search: 
     if k0 < 1e-1, k0 = 0.8; end   % avoid getting stuck for initial shift close to 0
-    if ~isempty(ks(ind))    % max of empty array is an empty array
-        k0 = max(k0,max(real(ks)))*ShiftFactor; 
+    if ~isempty(ks(ind)) % avoid error: max of empty array is an empty array
+        kmin = max(real(ks(ind))); % update kmin
+        k0 = max(k0,kmin)*ShiftFactor; % update shift
     else
-        k0 = k0*ShiftFactor;
+        k0 = k0*ShiftFactor; % update shift
     end
 end
 if strcmp(warningStatus.state, 'on'), warning('on', 'MATLAB:eigs:NotAllEigsConverged'); end
-
-% return values:
-if ~isempty(zgvs)
-    k = real(zgvs(:,1)); w = real(zgvs(:,2));
-else
-    k = []; w = [];
-end
