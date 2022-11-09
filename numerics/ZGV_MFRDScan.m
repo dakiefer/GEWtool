@@ -41,23 +41,16 @@ if isfield(opts,'DeltaPert'),    DeltaPert = opts.DeltaPert;      else, DeltaPer
 if isfield(opts,'kStart'),       kStart = opts.kStart;            else, kStart = 1;    end
 if ~isfield(opts,'show'),        opts.show = false;    end
 
-% mats for the linearization of the perturbed pair into a 3P eigenvalue problem
-A1 = [0 0; 0 1];
-B1 = [0 -1;-1 0];
-C1 = [0 0; 0 0];
-D1 = [1 0; 0 0];
-
-A2 = L0;
-B2 = L1;
-C2 = M;
-D2 = L2;
-
-A3 = L0;
-B3 = L1*(1+DeltaPert);
-C3 = M;
-D3 = L2*(1+DeltaPert)^2;
-
-[Delta0,Delta1,Delta2,~] = threepar_delta(-A1,B1,C1,D1,-A2,B2,C2,D2,-A3,B3,C3,D3);
+% matrices for the three-parameter eigenvalue problem:
+L2p = L2*(1+DeltaPert)^2;
+L1p = L1*(1+DeltaPert);
+C2 = [1 0; 0 0];
+C1 = [0 -1;-1 0];
+C0 = [0 0; 0 1];
+% assemble corresponding Delta-matrices (operator determinants):
+Delta0 = deltaMatrix(L2, L1, M, L2p, L1p, M, C2, C1, 0*C0);
+Delta1 = -1*deltaMatrix(L2, L0, M, L2p, L0, M, C2, C0, 0*C0);
+DeltaM = -1*deltaMatrix(L2, L1, L0, L2p, L1p, L0, C2, C1, C0);
 
 found = 0;   % number of ZGV points found
 k0 = kStart; % wavenumber shift close to which we compute candidates
@@ -76,7 +69,7 @@ while found<MaxPoints && iter<MaxIter
     ind = find(abs(imag(ks))<1e-4 & real(ks) > kmin); % candidates are solutions that are real
     % for each candidate in ks(ind), compute mu = w^2 and apply Newton iteration: 
     for j = ind.'
-        mu = (z(:,j)'*Delta2*z(:,j))/(z(:,j)'*Delta0*z(:,j)); % Rayleight quotient estimation for mu
+        mu = (z(:,j)'*DeltaM*z(:,j))/(z(:,j)'*Delta0*z(:,j)); % Rayleight quotient estimation for mu
         if abs(imag(mu))<1e-3 % refine solution using Newton-type method
             w = real(sqrt(mu)); % angular frequency (nondimensional)
             [kR,wR,~,isConverged] = ZGVNewtonBeta(full(L2), full(L1), full(L0), full(M),...
@@ -108,3 +101,16 @@ while found<MaxPoints && iter<MaxIter
     end
 end
 if strcmp(warningStatus.state, 'on'), warning('on', 'MATLAB:eigs:NotAllEigsConverged'); end
+
+end % ZGV_MFRDScan
+
+% helper function:
+function Delta = deltaMatrix(A2, A1, A0, B2, B1, B0, C2, C1, C0)
+    Delta = kron(A2, kron(B1, C0)) + kron(A1, kron(B0, C2)) + kron(A0, kron(B2, C1))...
+        - kron(A0, kron(B1, C2)) - kron(A2, kron(B0, C1)) - kron(A1, kron(B2, C0));
+    % when C0 = 0-matrix, this might be faster:
+    % Delta0 = kron(L1, kron(M,C2)) + kron(M, kron(L2p,C1))...
+    %     - kron(M, kron(L1p, C2)) - kron(L2, kron(M, C1));
+    % Delta1 = -1*( kron(L0, kron(M, C2)) + kron(M, kron(L2p, C0))...
+    %     - kron(M, kron(L0, C2)) - kron(L2, kron(M, C0)) );
+end
