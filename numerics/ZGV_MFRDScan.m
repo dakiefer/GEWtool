@@ -59,8 +59,8 @@ k0 = kStart; % wavenumber shift close to which we compute candidates
 iter = 0;    % number of iterations
 zgvs = [];  % ZGV points as [k, w]-pairs
 opts.beta_corr = true; opts.show = false; opts.maxsteps = 10; % options for ZGVNewtonBeta()
-warningStatus = warning('query', 'MATLAB:nearlySingularMatrix');
-warning('off', 'MATLAB:nearlySingularMatrix')
+warningStatus = warning('query', 'MATLAB:eigs:NotAllEigsConverged');
+warning('off', 'MATLAB:eigs:NotAllEigsConverged')
 while found<MaxPoints && iter<MaxIter
     iter = iter + 1;
     [z,lbd] = eigs(Delta1,Delta0,Neigs,1i*k0); % compute candidates
@@ -92,7 +92,7 @@ while found<MaxPoints && iter<MaxIter
         k0 = k0*ShiftFactor;
     end
 end
-if strcmp(warningStatus.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
+if strcmp(warningStatus.state, 'on'), warning('on', 'MATLAB:eigs:NotAllEigsConverged'); end
 
 % return values:
 if ~isempty(zgvs)
