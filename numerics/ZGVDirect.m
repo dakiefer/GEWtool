@@ -1,5 +1,5 @@
-function [k, w] = ZGV_TwoParamEVP(L0,L1,L2,M,opts)
-
+function [k, w] = ZGVDirect(L0,L1,L2,M,opts)
+% ZGVDirect - Compute ZGV points by solving the singular three-parameter EVP.
 % [lambda, mu] = ZGV_QEP(K0,K1,K2,M) finds points (lambda,mu) for the
 % eigenvalue problem (K0 + lambda*K1 + lambda^2*K2 + mu*M)x = 0, 
 % where the curve mu(lambda) is flat, i.e., derivative mu'(lambda)=0

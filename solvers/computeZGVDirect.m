@@ -10,7 +10,7 @@ if ~isfield(opts,'showrank'),  opts.showrank=1;   end
 if ~isfield(opts,'rrqr'),      opts.rrqr=1;       end
 if ~isfield(opts,'membtol'),   opts.membtol=1e-4; end
 
-[k, w] = ZGV_TwoParamEVP(L0,L1,L2,M,opts);
+[k, w] = ZGVDirect(L0,L1,L2,M,opts);
 
 dat.k = k/gew.np.h0; 
 dat.w = w*gew.np.fh0/gew.np.h0;
