@@ -1,6 +1,6 @@
 %% Compute ZGV points of guided elastic waves in a plate
 % 
-% 2022 Daniel Kiefer
+% 2022 Daniel A. Kiefer
 % Institut Langevin, ESPCI Paris, France
 % 
 
@@ -8,20 +8,23 @@
 mat = Material('steel_austenitic');
 mat = mat.rotateEuler(90/180*pi, 90/180*pi, 0);
 h = 1e-3; % thickness 
-N = 25; % number of discretization points
-k = linspace(1e-2, 40, 400)/h; % wavenumbers to plot dispersion curves
+N = 32; % number of discretization points
+k = linspace(1e-2, 50, 150)/h; % wavenumbers to plot dispersion curves
 
 % % material and waveguide description:
 plate = Plate(mat, h, N); % create waveguide description 
-gew = plate.Lamb; % assembles matrices for the specified waves
+gew = plate.LambA; % assembles matrices for the specified waves
 dat = computeW(gew, k); % dispersion curves will be plotted as reference 
 cg = groupVel(gew, dat); % compute group velocity for plotting
 
+% k0 = [0.3392    0.3496    0.7085    0.2491    0.0680]*1e4;
+% w0 = [0.2883    0.5216    0.6940    0.7191    0.7512]*1e8;
 %% compute ZGV points
 tic
-zgv = computeZGVIterative(gew, dat);
+zgv = computeZGVDirect(gew);
 toc
 
+nZGV = length(zgv.w(zgv.w < 2*pi*25e6))
 % plot
 figure(1), clf, hold on, ylim([0, 25e3]/h); xlim([0, 25e3])
 plot(dat.k.', dat.w.'/2/pi, '-k'); ax = gca; ax.ColorOrderIndex = 1; 
