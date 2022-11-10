@@ -1,49 +1,48 @@
-function [k, w] = ZGVDirect(L0,L1,L2,M,opts)
+function [k, w] = ZGVDirect(L2,L1,L0,M,opts)
 % ZGVDirect - Compute ZGV points by solving the singular three-parameter EVP.
-% [lambda, mu] = ZGV_QEP(K0,K1,K2,M) finds points (lambda,mu) for the
-% eigenvalue problem (K0 + lambda*K1 + lambda^2*K2 + mu*M)x = 0, 
-% where the curve mu(lambda) is flat, i.e., derivative mu'(lambda)=0
 %
-% The problem is transformed into a singular two-parameter eigenvalue 
-% problem and solved using the function singtwopar. 
-
-% Keep the size of the problem small, i.e., matrices should not be larger
-% than 20 x 20.
-
-% Bor Plestenjak 2022
+% Returns ZGV points (k, w) of the dispersion curves defined by 
+% [ (i*k)^2*L2 + i*k*L1 + L0 + w^2*M ]*u = 0 . 
+% A second eigenvalue problem describes the exceptional mode that appears at the
+% ZGV points. These two coupled problems form a singular two-parameter eigenvalue
+% problem that is quadratic in i*k. To avoid increasing the problem size when
+% linearizing, a singular three-parameter eigenvalue problem is finally solved
+% as described in [1].
+%
+% Literature:
+% [1] D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, "Computing 
+% zero-group-velocity points in anisotropic elastic waveguides: globally and locally 
+% convergent methods." arXiv, Nov. 2022. doi: 10.48550/arXiv.2211.01995.
+%
+% 2022 - Bor Plestenjak, adapted by Daniel A. Kiefer
 
 if nargin<5, opts=[]; end
-
 class_t = superiorfloat(L0,L1,L2,M);
-
 n = size(L0,2);
+if ~exist('threepar_delta', 'file') % check if function is on Matlab path
+    error('GEWtool:installMultiParEig',...
+        'This functionality requires you to first install MultiParEig from\nhttps://www.mathworks.com/matlabcentral/fileexchange/47844-multipareig');
+end
+
+% define matrices of three-parameter EVP:
 Z = zeros(n, class_t);
+L2d = [L2 Z; Z L2];
+L1d = [L1 Z; 2*L2 L1];
+L0d = [L0 Z; L1 L0];
+Md  = [M Z; Z M];
+C2  = [1 0; 0 0];
+C1  = [0 -1;-1 0];
+C0  = [0 0;0 1];
 
-A1 = [0 0;0 1];
-B1 = [0 -1;-1 0];
-C1 = [0 0; 0 0];
-D1 = [1 0; 0 0];
+% assemble Delta-matrices (operator determinants):
+[Delta0,Delta1,Delta2,Delta3] = threepar_delta(-C0,C1,0*C0,C2,-L0d,L1d,Md,L2d,-L0,L1,M,L2);
 
-A3 = L0;
-B3 = L1;
-C3 = M;
-D3 = L2;
-
-A2 = [L0 Z; L1 L0];
-B2 = [L1 Z; 2*L2 L1];
-C2 = [M Z; Z M];
-D2 = [L2 Z; Z L2];
-
-[Delta0,Delta1,Delta2,Delta3] = threepar_delta(-A1,B1,C1,D1,-A2,B2,C2,D2,-A3,B3,C3,D3);
-
-lambda = numeric_t([],class_t); 
-mu = numeric_t([],class_t); 
-
-if isfield(opts,'sc_steps'), sc_steps = opts.sc_steps; else, sc_steps=2;      end
-if isfield(opts,'membtol'),  membtol = opts.membtol;   else, membtol = 1e-6;  end
-if ~isfield(opts,'showrank'), opts.showrank = 1;    end
-if ~isfield(opts,'rrqr'),      opts.rrqr=1;       end
-if ~isfield(opts,'method'),  opts.method = 'project';  end
+% define algorithm options to be used in the following:
+if isfield(opts,'sc_steps'),  sc_steps = opts.sc_steps;  else, sc_steps=2;      end
+if isfield(opts,'membtol'),   membtol = opts.membtol;    else, membtol = 1e-6;  end
+if ~isfield(opts,'showrank'), opts.showrank = 1;         end
+if ~isfield(opts,'rrqr'),     opts.rrqr=1;               end
+if ~isfield(opts,'method'),   opts.method = 'project';   end
 
 % optional initial staircase reduction of singular pencils
 if sc_steps>0
@@ -54,16 +53,19 @@ if sc_steps>0
     Delta0 = Delta{1}; Delta1 = Delta{2}; % we only need Delta0 and Delta1
 end
 
-% We solve a singular two-parameter eigenvalue problem by first applying
-% singgep to the pencil (Delta1,Delta0) and then by inserting computed
-% lambda's in the GEP and checking the ZGV criteria for the computed mu's. 
+% We solve a singular three-parameter eigenvalue problem by first applying singgep
+% to the pencil (Delta1,Delta0) to obtain lambda = 1i*k. The frequencies w are then 
+% obtained by inserting the lambda-values into the guided-wave problem. Solutions are
+% only those where indeed cg=0 and k>0.
+lambda = numeric_t([],class_t); % lambda = 1i*k
+mu = numeric_t([],class_t);     % mu = w^2
 lambdaCand = singgep(Delta1,Delta0,opts);
 for i = 1:length(lambdaCand)
-    L = L0 + lambdaCand(i)*L1 + lambdaCand(i)^2*L2;
-    [X,muCand,Y] = eig(L,-M, 'vector'); % return eigenvalues muCand as vector
+    L = lambdaCand(i)^2*L2 + lambdaCand(i)*L1 + L0;
+    [X,muCand,Y] = eig(-L,M, 'vector'); % return square-frequencies muCand as vector
     for j = 1:length(muCand)
-        Ld = L1 + 2*lambdaCand(i)*L2;
-        if ~isinf(muCand(j)) && abs(Y(:,j)'*Ld*X(:,j))/(norm(Y(:,j))*norm(X(:,j)))<membtol
+        iWd = 1i*2*lambdaCand(i)*L2 + 1i*L1; % note that 1i*Wd is Hermitean
+        if ~isinf(muCand(j)) && abs(Y(:,j)'*iWd*X(:,j))/(norm(Y(:,j))*norm(X(:,j)))<membtol
            lambda = [lambda; lambdaCand(i)];
            mu = [mu; muCand(j)];
         end
@@ -71,8 +73,8 @@ for i = 1:length(lambdaCand)
 end
 
 % extract meaningful solutions - lambda should be imaginary
-ind = intersect(find(abs(real(lambda))<1e-3),find(imag(lambda)>1e-1));
-ind = intersect(ind, find(isfinite(mu)));
+isImag = imag(lambda)>1e-3 & ( abs(real(lambda)) < abs(imag(lambda))/1e4 );
+ind = isImag & isfinite(mu);
 k = real(-1i*lambda(ind));
 w = sqrt(real(mu(ind)));
 

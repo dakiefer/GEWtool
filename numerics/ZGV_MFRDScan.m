@@ -2,7 +2,7 @@ function [kzgv, wzgv] = ZGV_MFRDScan(L2, L1, L0, M, opts)
 % ZGV_MFRDScan - Compute ZGV points via iterative shift and search.
 %
 % Returns ZGV points (k, w) with the smallest k for 
-% (k^2*L2 + k*L1 + L0 + mu*M)*u = 0, where mu = w^2.
+% [ (i*k)^2*L2 + i*k*L1 + L0 + mu*M ]*u = 0, where mu = w^2.
 % The Method of Fixed Relative Distance (MFRD) proposed by Jarlebring, Kvall and
 % Michiels [1] is used for this end. The method computes candidate wavenumbers close 
 % to a shift k0 and refines them with a Newton-type iteration. By iteratively adapting
