@@ -57,6 +57,5 @@ kzgv = k/gew.np.h0;
 wzgv = w*gew.np.fh0/gew.np.h0; 
 ind = wzgv <= wmax;
 dat.k = kzgv(ind); dat.w = wzgv(ind);
-% dat.u = uzgv;
 
 end

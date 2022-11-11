@@ -23,16 +23,15 @@ function [dat] = computeZGVDirect(gew, opts)
 L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 
 if nargin<2, opts=[]; end
-if ~isfield(opts,'sc_steps'),  opts.sc_steps=2;      end
-if ~isfield(opts,'showrank'),  opts.showrank=false;  end
-if ~isfield(opts,'show'),      opts.show=false;      end
-if ~isfield(opts,'rrqr'),      opts.rrqr=1;          end
-if ~isfield(opts,'membtol'),   opts.membtol=1e-4;    end
+if ~isfield(opts,'sc_steps'),  opts.sc_steps=2;      end % number of staircase reduction steps
+if ~isfield(opts,'showrank'),  opts.showrank=false;  end % show rank during staircase red.
+if ~isfield(opts,'show'),      opts.show=false;      end % show output while calculating
+if ~isfield(opts,'rrqr'),      opts.rrqr=1;          end % staircase red. option
+if ~isfield(opts,'membtol'),   opts.membtol=1e-4;    end % tolerance for ZGV-condition
 
 [k, w] = ZGVDirect(L2,L1,L0,M,opts);
 
 dat.k = k/gew.np.h0; 
 dat.w = w*gew.np.fh0/gew.np.h0;
-% dat.u = uzgv;
 
 end
