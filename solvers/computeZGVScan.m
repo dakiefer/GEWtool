@@ -13,7 +13,7 @@ function [dat] = computeZGVScan(gew, wmax, opts)
 % zero-group-velocity points in anisotropic elastic waveguides: globally and locally 
 % convergent methods." arXiv, Nov. 2022. doi: 10.48550/arXiv.2211.01995.
 %
-% See also computeZGVIterative, computeZGVDirect, ZGV_MFRDScan, ZGVNewtonBeta, Waveguide.
+% See also computeZGV, computeZGVDirect, ZGV_MFRDScan, ZGVNewtonBeta, Waveguide.
 % 
 % Design of ZGV_MFRDScan(): B. Plestenjak, University of Ljubljana, Slovenia
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

@@ -5,7 +5,7 @@ function [dat] = computeZGVDirect(gew, opts)
 % The method guarantees to find all ZGV points without the need for initial guesses. 
 % This comes at rather high computational 
 % cost. The method should only be used for problems with small matrix size (~40x40),
-% otherwise use computeZGVScan() or computeZGVIterative(). 
+% otherwise use computeZGVScan() or computeZGV(). 
 % The method is implemented in ZGVDirect() and relies on the "MultiParEig" Toolbox 
 % by Bor Plestenjak. Get version 2.6 or later here:
 % https://www.mathworks.com/matlabcentral/fileexchange/47844-multipareig
@@ -15,7 +15,7 @@ function [dat] = computeZGVDirect(gew, opts)
 % zero-group-velocity points in anisotropic elastic waveguides: globally and locally 
 % convergent methods." arXiv, Nov. 2022. doi: 10.48550/arXiv.2211.01995.
 %
-% See also computeZGVIterative, computeZGVScan, ZGVDirect, Waveguide.
+% See also computeZGV, computeZGVScan, ZGVDirect, Waveguide.
 % 
 % Design of ZGVDirect(): B. Plestenjak, University of Ljubljana, Slovenia
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

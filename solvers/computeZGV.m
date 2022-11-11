@@ -1,17 +1,17 @@
-function datZGV = computeZGVIterative(gew, varargin)
-% computeZGVIterative - Computes ZGV point iteratively from initial guess.
+function datZGV = computeZGV(gew, varargin)
+% computeZGV - Computes ZGV point iteratively from initial guess.
 %
 % Determines zero-group-velocity (ZGV) points (k, w) on the dispersion curves via a
 % Netwon-type iteration implemented in "ZGVNewtonBeta.m". If initial values (k0, w0) 
 % are not provided, you should provide a corresponding waveguide solution "dat", from 
 % where intial values will be guessed from. 
 % 
-% dat = computeZGVIterative(gew, dat): Provide guided-wave-description object
-% "gew" and dispersion curve solution "dat". computeZGVIterative will compute
+% dat = computeZGV(gew, dat): Provide guided-wave-description object
+% "gew" and dispersion curve solution "dat". computeZGV will compute
 % the group velocity dispersion curves. For each zero-crossing of cg(w), a ZGV point 
 % is searched. Only ZGV points with k > 0 are kept, i.e., no cutoff frequencies. 
 % 
-% dat = computeZGVIterative(gew, w0, k0): Provide guided-wave-description object
+% dat = computeZGV(gew, w0, k0): Provide guided-wave-description object
 % "gew" and an initial guess w0 (angular frequency), k0 (wavenumber) for the ZGV point.
 % w0 and k0 can be vectors of initial guesses. At each point [w0(i), k0(i)] a
 % ZGV point is searched.
@@ -34,7 +34,7 @@ elseif nargin == 3 % initial guess (w0, k0) has been provided
     w0 = varargin{1}(:); % column vector
     k0 = varargin{2}(:); % column vector
 else
-    error('GEWTOOL:computeZGVIterative:wrongNumberOfArguments',...
+    error('GEWTOOL:computeZGV:wrongNumberOfArguments',...
         'Wrong number of input arguments.');
 end
 L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
@@ -52,7 +52,7 @@ warn = warning('query', 'MATLAB:nearlySingularMatrix');
 if ~opts.show, warning('off', 'MATLAB:nearlySingularMatrix'); end
 for i=1:numel(w0)
     if isnan(w0(i)) || isnan(k0(i)) || isinf(w0(i)) || isinf(k0(i))
-        warning('GEWTOOL:computeZGVIterative:ignoringInitialGuess',...
+        warning('GEWTOOL:computeZGV:ignoringInitialGuess',...
             'Ignoring NaN or Inf initial guess.');
         continue; % ignore nan and inf entries
     end
