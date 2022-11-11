@@ -23,10 +23,11 @@ function [dat] = computeZGVDirect(gew, opts)
 L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 
 if nargin<2, opts=[]; end
-if ~isfield(opts,'sc_steps'),  opts.sc_steps=2;   end
-if ~isfield(opts,'showrank'),  opts.showrank=1;   end
-if ~isfield(opts,'rrqr'),      opts.rrqr=1;       end
-if ~isfield(opts,'membtol'),   opts.membtol=1e-4; end
+if ~isfield(opts,'sc_steps'),  opts.sc_steps=2;      end
+if ~isfield(opts,'showrank'),  opts.showrank=false;  end
+if ~isfield(opts,'show'),      opts.show=false;      end
+if ~isfield(opts,'rrqr'),      opts.rrqr=1;          end
+if ~isfield(opts,'membtol'),   opts.membtol=1e-4;    end
 
 [k, w] = ZGVDirect(L2,L1,L0,M,opts);
 

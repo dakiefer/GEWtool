@@ -40,7 +40,8 @@ C0  = [0 0;0 1];
 % define algorithm options to be used in the following:
 if isfield(opts,'sc_steps'),  sc_steps = opts.sc_steps;  else, sc_steps=2;      end
 if isfield(opts,'membtol'),   membtol = opts.membtol;    else, membtol = 1e-6;  end
-if ~isfield(opts,'showrank'), opts.showrank = 1;         end
+if ~isfield(opts,'showrank'), opts.showrank = true;      end
+if ~isfield(opts,'show'),     opts.show = true;          end
 if ~isfield(opts,'rrqr'),     opts.rrqr=1;               end
 if ~isfield(opts,'method'),   opts.method = 'project';   end
 
