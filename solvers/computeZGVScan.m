@@ -22,14 +22,11 @@ if nargin < 3, opts = []; end
 if nargin < 2, wmax = inf; end
 L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 
-% use sparce matrices when they are big
-Ndof = size(M,1);
-if Ndof>20
-    L0 = sparse(L0.*(abs(L0)>1e-12));
-    L1 = sparse(L1.*(abs(L1)>1e-12));
-    L2 = sparse(L2.*(abs(L2)>1e-12));
-    M = sparse(M.*(abs(M)>1e-12));
-end
+% use sparce matrices % tol = 1e-12;
+L0 = sparse(L0); %.*(abs(L0)>tol));
+L1 = sparse(L1); %.*(abs(L1)>tol));
+L2 = sparse(L2); %.*(abs(L2)>tol));
+M = sparse(M);   %.*(abs(M)>tol));
 
 % if maximum frequency is specified, restrict wavenumber search domain:
 waveSpeeds = vertcat(gew.lay.mat.wavespeeds); 
