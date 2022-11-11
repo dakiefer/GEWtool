@@ -39,6 +39,7 @@ if isfield(opts,'MaxIter'),      MaxIter = opts.MaxIter;          else, MaxIter 
 if isfield(opts,'ShiftFactor'),  ShiftFactor = opts.ShiftFactor;  else, ShiftFactor = 1.1;  end
 if isfield(opts,'DeltaPert'),    DeltaPert = opts.DeltaPert;      else, DeltaPert = 1e-6;   end
 if isfield(opts,'kStart'),       kStart = opts.kStart;            else, kStart = 1;    end
+if isfield(opts,'kMax'),         kMax = opts.kMax;                else, kMax = inf;    end
 if ~isfield(opts,'show'),        opts.show = false;    end
 
 % matrices for the three-parameter eigenvalue problem:
@@ -61,7 +62,7 @@ kzgv = []; wzgv = []; % ZGV wavenumbers and frequencies
 optsNewton.beta_corr = true; optsNewton.show = false; optsNewton.maxsteps = 10; % options for ZGVNewtonBeta()
 warningStatus = warning('query', 'MATLAB:eigs:NotAllEigsConverged');
 warning('off', 'MATLAB:eigs:NotAllEigsConverged')
-while found<MaxPoints && iter<MaxIter
+while found<MaxPoints && iter<MaxIter && k0<kMax
     iter = iter + 1;
     % compute candidates:
     [z,lbd] = eigs(Delta1,Delta0,Neigs,1i*k0); % compute candidates

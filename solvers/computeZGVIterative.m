@@ -44,8 +44,8 @@ opts.maxsteps = 10;
 kzgv = nan(length(k0),1);
 wzgv = nan(length(w0),1);
 uzgv = nan([length(w0), size(M,1)]);
-w = warning('query', 'MATLAB:nearlySingularMatrix');
-warning('off', 'MATLAB:nearlySingularMatrix')
+warn = warning('query', 'MATLAB:nearlySingularMatrix');
+if ~opts.show, warning('off', 'MATLAB:nearlySingularMatrix'); end
 for i=1:numel(w0)
     if isnan(w0(i)) || isnan(k0(i)) || isinf(w0(i)) || isinf(k0(i))
         warning('GEWTOOL:computeZGVIterative:ignoringInitialGuess',...
@@ -63,7 +63,7 @@ for i=1:numel(w0)
         uzgv(i, :) = u;
     end
 end
-if strcmp(w.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
+if strcmp(warn.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
 
 if nargin == 2 % remove nan entries when initial guess vector was not provided manually
     ind = ~isnan(wzgv) & ~isnan(kzgv); 
