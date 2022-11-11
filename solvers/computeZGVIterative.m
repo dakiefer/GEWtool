@@ -22,7 +22,11 @@ function datZGV = computeZGVIterative(gew, varargin)
 
 if nargin == 2 % initial guess (w0, k0) where cg changes sign
     dat = varargin{1};
-    cg = groupVel(gew, dat);
+    if isfield(dat, 'cg')
+        cg = dat.cg;
+    else
+        cg = groupVel(gew, dat);
+    end
     sigChange = diff(sign(real(cg)),1,2); % detect where the sign changes
     w0 = dat.w(find(sigChange));
     k0 = dat.k(find(sigChange));
