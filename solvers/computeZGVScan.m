@@ -1,4 +1,4 @@
-function [dat] = computeZGVScan(gew, wmax, opts)
+function [dat] = computeZGVScan(gew, opts)
 % computeZGVScan - Compute ZGV points via iterative shift and search.
 %
 % Determines zero-group-velocity (ZGV) points (k, w) on the dispersion curves.
@@ -18,8 +18,7 @@ function [dat] = computeZGVScan(gew, wmax, opts)
 % Design of ZGV_MFRDScan(): B. Plestenjak, University of Ljubljana, Slovenia
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if nargin < 3, opts = []; end
-if nargin < 2, wmax = inf; end
+if nargin < 2, opts = []; end
 L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 
 % % use sparce matrices: faster and more stable because 
@@ -29,21 +28,20 @@ L1 = sparse(L1);
 L2 = sparse(L2);
 M = sparse(M);
 
-% if maximum frequency is specified, restrict wavenumber search domain:
-waveSpeeds = vertcat(gew.lay.mat.wavespeeds); 
-cmin = min(waveSpeeds);
-kMax = wmax/cmin*gew.np.h0; % to be used only if not provided in opts.kMax
-
 % algorithm options have been fine-tuned empirically:
 if isfield(opts, 'kStart'),     opts.kStart = opts.kStart*gew.np.h0; end % normalize
 if isfield(opts, 'kMax'),       opts.kMax = opts.kMax*gew.np.h0;     end % normalize
 if ~isfield(opts, 'MaxPoints'),     opts.MaxPoints = 50;    end     % number of ZGV points to find
-if ~isfield(opts, 'kStart'),        opts.kStart = 1;        end     % initial shift kStart, search will be done for k > kStart 
-if ~isfield(opts, 'kMax'),          opts.kMax = kMax;       end     % maximum wavenumber to stop scanning
 if ~isfield(opts, 'ShiftFactor'),   opts.ShiftFactor = 1.1; end     % relative increment for k0
 if ~isfield(opts, 'DeltaPert'),     opts.DeltaPert = 1e-6;  end     % regularization parameter 
 if ~isfield(opts, 'Neigs'),         opts.Neigs = 8;         end     % number of candidates to compute at each shift k0
 if ~isfield(opts, 'show'),          opts.show = false;      end     % display iteration results
+if ~isfield(opts, 'wmax'),          opts.wmax = inf;        end     % maximum frequency that defines kMax
+if ~isfield(opts, 'kStart'),        opts.kStart = 1;        end     % initial shift kStart, search will be done for k > kStart 
+% if maximum frequency is specified, restrict wavenumber search domain:
+waveSpeeds = vertcat(gew.lay.mat.wavespeeds); 
+kMax = opts.wmax/min(waveSpeeds)*gew.np.h0; % to be used only if not provided in opts.kMax
+if ~isfield(opts, 'kMax'), opts.kMax = kMax;       end     % maximum wavenumber to stop scanning
 if ~isfield(opts, 'MaxIter')    % break after reaching MaxIter
     if isinf(opts.kMax)
         opts.MaxIter = 30;
@@ -59,7 +57,7 @@ if strcmp(warn.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
 
 kzgv = k/gew.np.h0; 
 wzgv = w*gew.np.fh0/gew.np.h0; 
-ind = wzgv <= wmax;
+ind = wzgv <= opts.wmax;
 dat.k = kzgv(ind); dat.w = wzgv(ind);
 
 end
