@@ -1,0 +1,94 @@
+function datZGV = computeZGV(gew, varargin)
+% computeZGV - Computes ZGV point iteratively from initial guess.
+%
+% Determines zero-group-velocity (ZGV) points (k, w) on the dispersion curves via a
+% Netwon-type iteration implemented in "ZGVNewtonBeta.m". If initial values (k0, w0) 
+% are not provided, you should provide a corresponding waveguide solution "dat", from 
+% where intial values will be guessed from. 
+% 
+% dat = computeZGV(gew, dat): Provide guided-wave-description object
+% "gew" and dispersion curve solution "dat". computeZGV will compute
+% the group velocity dispersion curves. For each zero-crossing of cg(w), a ZGV point 
+% is searched. Only ZGV points with k > 0 are kept, i.e., no cutoff frequencies. 
+% 
+% dat = computeZGV(gew, w0, k0): Provide guided-wave-description object
+% "gew" and an initial guess w0 (angular frequency), k0 (wavenumber) for the ZGV point.
+% w0 and k0 can be vectors of initial guesses. At each point [w0(i), k0(i)] a
+% ZGV point is searched.
+% 
+% dat = computeZGV(..., opts): Provide an additinoal structure "opts" containing
+% parameters that control the algorithm behavior. See details in
+% ZGVNewtonBeta.m.
+% 
+% For details refer to:
+% D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, "Computing 
+% zero-group-velocity points in anisotropic elastic waveguides: globally and locally 
+% convergent methods." arXiv, Nov. 2022. doi: 10.48550/arXiv.2211.01995.
+%
+% See also computeZGVScan, computeZGVDirect, ZGVNewtonBeta, Waveguide.
+%
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+
+if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % initial guess (w0, k0) where cg changes sign
+    dat = varargin{1};
+    if isfield(dat, 'cg')
+        cg = dat.cg;
+    else
+        cg = groupVel(gew, dat);
+    end
+    sigChange = diff(sign(real(cg)),1,2); % detect where the sign changes
+    w0 = dat.w(find(sigChange));
+    k0 = dat.k(find(sigChange));
+    if nargin == 3, opts = varargin{2}; else, opts = []; end
+elseif nargin == 3 && ~isstruct(varargin{1}) || nargin == 4 % initial guess (w0, k0) has been provided
+    w0 = varargin{1}(:); % column vector
+    k0 = varargin{2}(:); % column vector
+    if nargin == 4, opts = varargin{3}; else, opts = []; end
+else
+    error('GEWTOOL:computeZGV:wrongNumberOfArguments',...
+        'Wrong number of input arguments.');
+end
+L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
+
+% algorith options:
+if ~isfield(opts, 'beta_corr'), opts.beta_corr = true; end % algorithm options
+if ~isfield(opts, 'show'),      opts.show = false;     end
+if ~isfield(opts, 'maxsteps'),  opts.maxsteps = 10;    end
+
+% initialize:
+kzgv = nan(length(k0),1);
+wzgv = nan(length(w0),1);
+uzgv = nan([length(w0), size(M,1)]);
+warn = warning('query', 'MATLAB:nearlySingularMatrix');
+if ~opts.show, warning('off', 'MATLAB:nearlySingularMatrix'); end
+for i=1:numel(w0)
+    if isnan(w0(i)) || isnan(k0(i)) || isinf(w0(i)) || isinf(k0(i))
+        warning('GEWTOOL:computeZGV:ignoringInitialGuess',...
+            'Ignoring NaN or Inf initial guess.');
+        continue; % ignore nan and inf entries
+    end
+    w0i = w0(i)*gew.np.h0/gew.np.fh0;
+    k0i = k0(i)*gew.np.h0;
+    [ki,wi,u] = ZGVNewtonBeta(L2, L1, L0, M, k0i, w0i, [], opts); %wi = sqrt(mui);
+    isCutOff = (ki/k0i) < 1e-12;
+    notInList = isempty(find(abs(kzgv/ki-1) < 1e-12, 1)) && isempty(find(abs(wzgv/wi-1) < 1e-12, 1));
+    if ~isCutOff && notInList % add to list of converged solutions
+        kzgv(i) = ki;
+        wzgv(i) = wi;
+        uzgv(i, :) = u;
+    end
+end
+if strcmp(warn.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
+
+if nargin == 2 % remove nan entries when initial guess vector was not provided manually
+    ind = ~isnan(wzgv) & ~isnan(kzgv); 
+    wzgv = wzgv(ind); kzgv = kzgv(ind);
+    [wzgv, ind] = sort(wzgv); kzgv = kzgv(ind); % sort in frequency
+end
+
+% return as structure:
+datZGV.k = kzgv/gew.np.h0; 
+datZGV.w = wzgv*gew.np.fh0/gew.np.h0; 
+datZGV.u = uzgv;
+
+end
