@@ -8,21 +8,22 @@
 mat = Material('steel_austenitic');
 mat = mat.rotateEuler(90/180*pi, 90/180*pi, 0);
 h = 1e-3; % thickness 
-N = 15; % number of discretization points
-k = linspace(1e-2, 50, 150)/h; % wavenumbers to plot dispersion curves
+N = 40; % number of discretization points
+k = linspace(1e-2, 25, 150)/h; % wavenumbers to plot dispersion curves
 
 % % material and waveguide description:
 plate = Plate(mat, h, N); % create waveguide description 
-gew = plate.Lamb; % assembles matrices for the specified waves
+gew = plate.LambA; % assembles matrices for the specified waves
 dat = computeW(gew, k); % dispersion curves will be plotted as reference 
 dat.cg = groupVel(gew, dat); % compute group velocity for plotting
 
-% k0 = [0.3392    0.3496    0.7085    0.2491    0.0680]*1e4;
 % w0 = [0.2883    0.5216    0.6940    0.7191    0.7512]*1e8;
+% k0 = [0.3392    0.3496    0.7085    0.2491    0.0680]*1e4;
 %% compute ZGV points
 tic
-clear opts, opts.kMax = 10/h; fmax = 10e6;
-zgv = computeZGVScan(gew, fmax*2*pi, opts);
+% clear opts, opts.kMax = 20/gew.np.h0; opts.show = false;
+fmax = 25e6;
+zgv = computeZGV(gew, dat);
 toc
 
 nZGV = length(zgv.w(zgv.w < 2*pi*fmax))
@@ -33,7 +34,7 @@ xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 plot(zgv.k(:), zgv.w(:)/2/pi, 'r*');
 
 % plot wave speeds:
-wmax = 10e6*2*pi;
+wmax = 2*pi*fmax;
 waveSpeeds = vertcat(gew.lay.mat.wavespeeds); 
 kMax = wmax./waveSpeeds.';
 hold on
