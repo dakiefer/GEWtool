@@ -8,6 +8,14 @@ function [k, w] = ZGVDirect(L2,L1,L0,M,opts)
 % problem that is quadratic in i*k. To avoid increasing the problem size when
 % linearizing, a singular three-parameter eigenvalue problem is finally solved
 % as described in [1].
+% 
+% Options in opts: 
+%    - sc_steps: (2) number of staircase reduction steps.
+%    - membtol: (1e-6) tolerance for residuum of ZGV condition. 
+%    - showrank: (true) show rank of Delta matrices during reduction. 
+%    - show: (true) show output 
+%    - rrqr: (true) See singgep().
+%    - method: ('project') method for solving the singular EVP.
 %
 % Literature:
 % [1] D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, "Computing 
@@ -42,7 +50,7 @@ if isfield(opts,'sc_steps'),  sc_steps = opts.sc_steps;  else, sc_steps=2;      
 if isfield(opts,'membtol'),   membtol = opts.membtol;    else, membtol = 1e-6;  end
 if ~isfield(opts,'showrank'), opts.showrank = true;      end
 if ~isfield(opts,'show'),     opts.show = true;          end
-if ~isfield(opts,'rrqr'),     opts.rrqr=1;               end
+if ~isfield(opts,'rrqr'),     opts.rrqr=true;               end
 if ~isfield(opts,'method'),   opts.method = 'project';   end
 
 % optional initial staircase reduction of singular pencils

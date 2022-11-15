@@ -8,6 +8,13 @@ function [dat] = computeZGVScan(gew, opts)
 % a (normalized) wavenumber range [1e-8, kmax] is searched for the ZGV points.
 % The method is implemented in ZGV_MFRDScan().
 % 
+% Usage: 
+% dat = computeZGVScan(gew):   Returns the ZGV points given the
+% guided-wave-description object "gew". 
+%
+% dat = computeZGVScan(gew, opts):  Additinally control the algorithm behavior
+% with the structure "opts". The options are described in ZGV_MFRDScan.m.
+% 
 % For details refer to:
 % D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, "Computing 
 % zero-group-velocity points in anisotropic elastic waveguides: globally and locally 

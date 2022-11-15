@@ -21,6 +21,8 @@ function [kzgv, wzgv] = ZGV_MFRDScan(L2, L1, L0, M, opts)
 %         - kStart: (1): initial shift for normalized wavenumber k
 %         - kMax: maximum normalized wavenumber to scan within 
 %         - show: (false) display information during calculation 
+%         - wmax: (inf, inactive) maximum angular frequency that defines kMax
+%                 via the wave speed. This option is an extension for computeZGVScan().
 %
 % [1] E. Jarlebring, S. Kvaal, and W. Michiels, "Computing all Pairs (λ,μ) Such that 
 % λ is a Double Eigenvalue of A+μB," SIAM J. Matrix Anal. Appl., vol. 32, no. 3, 
@@ -42,6 +44,7 @@ if isfield(opts,'ShiftFactor'),  ShiftFactor = opts.ShiftFactor;  else, ShiftFac
 if isfield(opts,'DeltaPert'),    DeltaPert = opts.DeltaPert;      else, DeltaPert = 1e-6;   end
 if isfield(opts,'kStart'),       kStart = opts.kStart;            else, kStart = 1;    end
 if isfield(opts,'kMax'),         kMax = opts.kMax;                else, kMax = inf;    end
+if ~isfield(opts, 'wmax'),       opts.wmax = inf;        end     % only active in computeZGVScan.m
 if ~isfield(opts,'show'),        opts.show = false;    end
 
 if opts.show, disp(opts), end

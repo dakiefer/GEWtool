@@ -9,6 +9,13 @@ function [dat] = computeZGVDirect(gew, opts)
 % The method is implemented in ZGVDirect() and relies on the "MultiParEig" Toolbox 
 % by Bor Plestenjak. Get version 2.6 or later here:
 % https://www.mathworks.com/matlabcentral/fileexchange/47844-multipareig
+%
+% Usage: 
+% dat = computeZGVDirect(gew):   Returns the ZGV points given the object "gew"
+% that describes the guided waves. 
+% 
+% dat = computeZGVDirect(gew, opts):  Additinally control the algorithm behavior
+% with the structure "opts". The options are described in ZGVDirect.m .
 % 
 % For details refer to:
 % D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, "Computing 

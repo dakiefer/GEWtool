@@ -2,6 +2,11 @@
 % Three different computational techniques are implemented in GEWtool and
 % these are showcased in the following.
 %
+% For details refer to:
+% D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, "Computing 
+% zero-group-velocity points in anisotropic elastic waveguides: globally and locally 
+% convergent methods." arXiv, Nov. 2022. doi: 10.48550/arXiv.2211.01995.
+%
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 % % specify parameters:

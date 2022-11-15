@@ -15,6 +15,15 @@ function datZGV = computeZGV(gew, varargin)
 % "gew" and an initial guess w0 (angular frequency), k0 (wavenumber) for the ZGV point.
 % w0 and k0 can be vectors of initial guesses. At each point [w0(i), k0(i)] a
 % ZGV point is searched.
+% 
+% dat = computeZGV(..., opts): Provide an additinoal structure "opts" containing
+% parameters that control the algorithm behavior. See details in
+% ZGVNewtonBeta.m.
+% 
+% For details refer to:
+% D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, "Computing 
+% zero-group-velocity points in anisotropic elastic waveguides: globally and locally 
+% convergent methods." arXiv, Nov. 2022. doi: 10.48550/arXiv.2211.01995.
 %
 % See also computeZGVScan, computeZGVDirect, ZGVNewtonBeta, Waveguide.
 %
