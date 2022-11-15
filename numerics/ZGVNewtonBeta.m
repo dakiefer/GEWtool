@@ -82,7 +82,7 @@ while step < maxsteps
         q = kor(:,1);
         s = kor(:,2);
         beta = -imag(q(n+1))/real(s(n+1)); % correction factor suggested by Lu & Su
-        if abs(beta)>1e-12 % only perform complex correction if beta is non-negligible
+        if abs(beta)>1e-10 % only perform complex correction if beta is non-negligible
             if show, fprintf('     correction beta : %8.3e\n',beta); end
             Delta_p = q + 1i*beta*s; % update for p with complex correction
         else

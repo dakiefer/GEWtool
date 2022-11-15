@@ -20,7 +20,7 @@ function datZGV = computeZGV(gew, varargin)
 %
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if nargin == 2 % initial guess (w0, k0) where cg changes sign
+if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % initial guess (w0, k0) where cg changes sign
     dat = varargin{1};
     if isfield(dat, 'cg')
         cg = dat.cg;
@@ -30,9 +30,11 @@ if nargin == 2 % initial guess (w0, k0) where cg changes sign
     sigChange = diff(sign(real(cg)),1,2); % detect where the sign changes
     w0 = dat.w(find(sigChange));
     k0 = dat.k(find(sigChange));
-elseif nargin == 3 % initial guess (w0, k0) has been provided
+    if nargin == 3, opts = varargin{2}; else, opts = []; end
+elseif nargin == 3 && ~isstruct(varargin{1}) || nargin == 4 % initial guess (w0, k0) has been provided
     w0 = varargin{1}(:); % column vector
     k0 = varargin{2}(:); % column vector
+    if nargin == 4, opts = varargin{3}; else, opts = []; end
 else
     error('GEWTOOL:computeZGV:wrongNumberOfArguments',...
         'Wrong number of input arguments.');
@@ -40,9 +42,9 @@ end
 L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 
 % algorith options:
-opts.beta_corr = true; % algorithm options
-opts.show = false;
-opts.maxsteps = 10;
+if ~isfield(opts, 'beta_corr'), opts.beta_corr = true; end % algorithm options
+if ~isfield(opts, 'show'),      opts.show = false;     end
+if ~isfield(opts, 'maxsteps'),  opts.maxsteps = 10;    end
 
 % initialize:
 kzgv = nan(length(k0),1);
