@@ -25,11 +25,13 @@ k0 = [0.339    0.349    0.708    0.249    0.068]*1e4;
 % guesses. Instead of initial guesses w0, k0. Instead, you can also provide the
 % dispersion data "dat", computeZGV() will then search where the group velocity
 % changes sign.
+fprintf('\n\n++ Newton-type iteration: ++\n')
 tic, zgv = computeZGV(gew, dat); toc
 nZGV = length(zgv.w(zgv.w < 2*pi*fmax)) % print number of ZGV points 
 plotZGVs(dat, zgv, fmax)
 
 % Alternatively, you can compute ZGV points close to initial guesses w0, k0: 
+fprintf('Search close to provided initial guesses:\n')
 tic, zgv5 = computeZGV(gew, w0, k0); toc
 w0, zgv5.w.' % print initial guesses and computed values
 
@@ -40,6 +42,7 @@ w0, zgv5.w.' % print initial guesses and computed values
 % maximum frequency to search at. Even more effective is to provide the paramter
 % kMax (and optionally kStart), these define the wavenumber search interval
 % [kStart, kMax].
+fprintf('\n\n++ Scanning method: ++\n')
 clear opts, opts.kMax = 10/gew.np.h0; % unit distance is np.h0
 tic, zgv = computeZGVScan(gew, opts); toc
 nZGV = length(zgv.w(zgv.w < 2*pi*fmax)) % print number of ZGV points 
@@ -50,6 +53,7 @@ plotZGVs(dat, zgv, fmax)
 % guesses and guarantees to find all ZGV points as long as the matrices defining
 % the problem are not too big. This is rather slow and should not be used for
 % matrices bigger than about 40x40. 
+fprintf('\n\n++ Direct method: ++\n')
 tic, zgv = computeZGVDirect(gew); toc
 nZGV = length(zgv.w(zgv.w < 2*pi*fmax)) % print number of ZGV points 
 plotZGVs(dat, zgv, fmax)
@@ -57,14 +61,16 @@ plotZGVs(dat, zgv, fmax)
 
 %% function to plot dispersion curves with ZGV points
 function plotZGVs(dat, zgv, fmax)
-    % plot
-    figure, clf, hold on, ylim([0, fmax]); xlim([0, 25e3])
+    fh = figure; pos = fh.Position; fh.Position = [pos(1:3), pos(4)*2.1];
+
+    subplot(2,1,1), hold on, ylim([0, fmax]); xlim([0, 25e3])
     plot(dat.k.', dat.w.'/2/pi, '-'); ax = gca; ax.ColorOrderIndex = 1; 
     xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
     plot(zgv.k(:), zgv.w(:)/2/pi, 'r*');
     
-    figure, clf, hold on, xlim([0, fmax]); 
+    subplot(2,1,2), hold on, xlim([0, fmax]); 
     plot(real(dat.w).'/2/pi, real(dat.cg).', '-'); ax = gca; ax.ColorOrderIndex = 1; 
     xlabel('frequency f in Hz'), ylabel('group vel in m/s')
     plot(zgv.w(:)/2/pi, zeros(size(zgv.w(:))), 'r*')
+    drawnow;
 end
