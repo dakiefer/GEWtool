@@ -22,28 +22,35 @@ if nargin < 3, opts = []; end
 if nargin < 2, wmax = inf; end
 L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 
-% use sparce matrices % tol = 1e-12;
-L0 = sparse(L0); %.*(abs(L0)>tol));
-L1 = sparse(L1); %.*(abs(L1)>tol));
-L2 = sparse(L2); %.*(abs(L2)>tol));
-M = sparse(M);   %.*(abs(M)>tol));
+% % use sparce matrices: faster and more stable because 
+% % Rayleigh quotient for mu has a larger imaginary part for full matrices
+L0 = sparse(L0);
+L1 = sparse(L1);
+L2 = sparse(L2);
+M = sparse(M);
 
 % if maximum frequency is specified, restrict wavenumber search domain:
 waveSpeeds = vertcat(gew.lay.mat.wavespeeds); 
 cmin = min(waveSpeeds);
-kMax = wmax/cmin*gew.np.h0;
+kMax = wmax/cmin*gew.np.h0; % to be used only if not provided in opts.kMax
 
 % algorithm options have been fine-tuned empirically:
 if isfield(opts, 'kStart'),     opts.kStart = opts.kStart*gew.np.h0; end % normalize
 if isfield(opts, 'kMax'),       opts.kMax = opts.kMax*gew.np.h0;     end % normalize
 if ~isfield(opts, 'MaxPoints'),     opts.MaxPoints = 50;    end     % number of ZGV points to find
-if ~isfield(opts, 'MaxIter'),       opts.MaxIter = 20;      end     % break after reaching MaxIter
 if ~isfield(opts, 'kStart'),        opts.kStart = 1;        end     % initial shift kStart, search will be done for k > kStart 
 if ~isfield(opts, 'kMax'),          opts.kMax = kMax;       end     % maximum wavenumber to stop scanning
 if ~isfield(opts, 'ShiftFactor'),   opts.ShiftFactor = 1.1; end     % relative increment for k0
 if ~isfield(opts, 'DeltaPert'),     opts.DeltaPert = 1e-6;  end     % regularization parameter 
 if ~isfield(opts, 'Neigs'),         opts.Neigs = 8;         end     % number of candidates to compute at each shift k0
 if ~isfield(opts, 'show'),          opts.show = false;      end     % display iteration results
+if ~isfield(opts, 'MaxIter')    % break after reaching MaxIter
+    if isinf(opts.kMax)
+        opts.MaxIter = 30;
+    else
+        opts.MaxIter = inf;
+    end
+end     
 
 warn = warning('query', 'MATLAB:nearlySingularMatrix');
 if ~opts.show, warning('off', 'MATLAB:nearlySingularMatrix'); end

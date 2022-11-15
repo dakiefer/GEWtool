@@ -19,6 +19,8 @@ function [kzgv, wzgv] = ZGV_MFRDScan(L2, L1, L0, M, opts)
 %         - ShiftFactor: (1.1), factor for shift increment for next iteration
 %         - DeltaPert: (1e-6), factor for perturbation is 1+DeltaPert
 %         - kStart: (1): initial shift for normalized wavenumber k
+%         - kMax: maximum normalized wavenumber to scan within 
+%         - show: (false) display information during calculation 
 %
 % [1] E. Jarlebring, S. Kvaal, and W. Michiels, "Computing all Pairs (λ,μ) Such that 
 % λ is a Double Eigenvalue of A+μB," SIAM J. Matrix Anal. Appl., vol. 32, no. 3, 
@@ -42,6 +44,8 @@ if isfield(opts,'kStart'),       kStart = opts.kStart;            else, kStart =
 if isfield(opts,'kMax'),         kMax = opts.kMax;                else, kMax = inf;    end
 if ~isfield(opts,'show'),        opts.show = false;    end
 
+if opts.show, disp(opts), end
+
 % matrices for the three-parameter eigenvalue problem:
 L2p = L2*(1+DeltaPert)^2;
 L1p = L1*(1+DeltaPert);
@@ -57,12 +61,11 @@ found = 0;   % number of ZGV points found
 k0 = kStart; % wavenumber shift close to which we compute candidates
 kmin = 1e-8; % search candidates above this value
 iter = 0;    % number of iterations
-% zgvs = [];  % ZGV points as [k, w]-pairs
 kzgv = []; wzgv = []; % ZGV wavenumbers and frequencies
 optsNewton.beta_corr = true; optsNewton.show = false; optsNewton.maxsteps = 10; % options for ZGVNewtonBeta()
 warningStatus = warning('query', 'MATLAB:eigs:NotAllEigsConverged');
 warning('off', 'MATLAB:eigs:NotAllEigsConverged')
-while found<MaxPoints && iter<MaxIter && k0<kMax
+while k0<kMax && found<MaxPoints && iter<MaxIter
     iter = iter + 1;
     % compute candidates:
     [z,lbd] = eigs(Delta1,Delta0,Neigs,1i*k0); % compute candidates
@@ -71,7 +74,7 @@ while found<MaxPoints && iter<MaxIter && k0<kMax
     % for each candidate in ks(ind), compute mu = w^2 and apply Newton iteration: 
     for j = ind.'
         mu = (z(:,j)'*DeltaM*z(:,j))/(z(:,j)'*Delta0*z(:,j)); % Rayleight quotient estimation for mu
-        if abs(imag(mu))<1e-3 % refine solution using Newton-type method
+        if abs(imag(mu))<1e-2*abs(real(mu)) % refine solution using Newton-type method
             w = real(sqrt(mu)); % angular frequency (nondimensional)
             [kR,wR,~,isConverged] = ZGVNewtonBeta(full(L2), full(L1), full(L0), full(M),...
                 real(ks(j)), w, [], optsNewton);
@@ -90,7 +93,7 @@ while found<MaxPoints && iter<MaxIter && k0<kMax
         end
     end
     if opts.show
-        fprintf('%d. finished search at k0*h=%g: found %d ZGV points.\n', iter, k0, found);
+        fprintf('%d. finished search at k0*h=%g: found %d ZGV points in total.\n', iter, k0, found);
     end
     % updated shift k0 and minimum kmin for next search: 
     if k0 < 1e-1, k0 = 0.8; end   % avoid getting stuck for initial shift close to 0
@@ -98,6 +101,7 @@ while found<MaxPoints && iter<MaxIter && k0<kMax
         kmin = max(real(ks(ind))); % update kmin
         k0 = max(k0,kmin)*ShiftFactor; % update shift
     else
+        if opts.show, fprintf('    no candidates.\n'); end
         k0 = k0*ShiftFactor; % update shift
     end
 end
