@@ -33,6 +33,6 @@ function exc = excitabilityLUS(gew, dat, at)
     ux = dat.u{l}(:,:,n,1);
     uy = dat.u{l}(:,:,n,2);
     exc = abs(ux).*abs(uy); % excitability ~ ux, detectability ~ uy
-    excUnit = median(exc(:))*1e2;
+    excUnit = median(exc(isfinite(exc)))*1e2;
     exc = exc./excUnit; % normalized excitability (don't use max as there might be singularities where cg->0)
 end

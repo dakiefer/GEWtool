@@ -36,7 +36,7 @@ legend(strcat(num2str([h1; h2]/1e-6), ' um'), 'Location', 'southeast');
 %% plot laser-ultrasonic excitability of the last example: 
 exc = excitabilityLUS(guw, dat, 'top');
 exc = 20*log10(exc); % in decibel
-[exc, ind] = sort(exc(:));
+[exc, ind] = sort(exc(:)); % plot high excitability last (on top)
 ks = dat.k(ind); ws = dat.w(ind);
 figure, hold on, ylim([0, 4e3]/guw.h0); 
 scatter(ks, ws/2/pi, 8, exc, 'filled')
