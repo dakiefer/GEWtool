@@ -4,14 +4,13 @@
 % Institut Langevin, Paris, France
 % 
 
-clear all
-%% specify parameters:
+% % specify parameters:
 rho = 7900; lbd = 1.1538e11; mu = 7.6923e10; % steel material
 h = 1e-3; % thickness 
 N = 15; % number of discretization points
 k = linspace(1e-2, 12, 200)/h; % wavenumbers to solve for
 
-%% material and waveguide description:
+% % material and waveguide description:
 II = eye(3).*shiftdim(eye(3), -2); % 4th order "unit tensor"
 c = lbd*II + mu*(permute(II, [1 3 4 2]) + permute(II, [1 3 2 4])); % stiffness tensor
 steel.c = c; steel.rho = rho; % material 
