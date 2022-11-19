@@ -5,9 +5,7 @@ function c = voigt2tensor(C)
 % see also: D. Royer and T. Valier-Brasier, Ondes élastiques dans les solides 
 % (Elastic waves in solids), vol. 1, 2 vols. London: ISTE éditions, 2021.
 %
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 validateattributes(C,{'numeric'},{'size',[6 6]});
 if ~issymmetric(C), error('Voigt matrix C must be symmetric.'); end

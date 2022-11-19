@@ -5,8 +5,7 @@ function [I] = chebintegrate(f, lim, dim)
 % - lim: 2-vector with lower and upper limit (in that order)
 % - dim: dimension to integrate along (scalar, default: 1)
 % 
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if nargin<3, dim=1; end
 [~, w] = fclencurt(size(f,dim), lim(1), lim(end));

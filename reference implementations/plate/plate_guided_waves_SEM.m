@@ -8,9 +8,7 @@
 % metering", ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, 
 % vol. 42. Erlangen: FAU University Press, 2022, doi: 10.25593/978-3-96147-550-6
 % 
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, ESPCI Paris, France
-%
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 h = 1e-3;   % thickness in m
 N = 10;     % discretization: polynomial order of interpolants

@@ -10,9 +10,7 @@ classdef Cylinder < Waveguide
 %
 % See also Cylinder.Cylinder, Plate, Waveguide.
 % 
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 methods 
 	function obj = Cylinder(mats, rs, Ns)

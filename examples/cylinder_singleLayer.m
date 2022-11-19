@@ -1,9 +1,7 @@
 %% compute axially guided ultrasonic waves in a cylinder
 % different circumferential orders n of the waves are compared
 % 
-% 2022 Daniel Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 clear all
 %% specify parameters:

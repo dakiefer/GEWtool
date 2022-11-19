@@ -9,9 +9,7 @@ function [I] = GEWintegrate(gew, f, n)
 % Return value: 
 % - I: Integrated values (array of dimension p-1)
 %
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
-
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 if nargin < 3 
     n = 3; % dimension to be integrated;
 end

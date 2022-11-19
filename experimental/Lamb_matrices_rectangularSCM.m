@@ -5,12 +5,11 @@ function [gew] = Lamb_matrices_rectangularSCM(mat, h, N)
 % equation describing the ZGV points [1].
 % Aluminum: S1S2: (kh = 1.62, fh = 2842 m/s), S3S6: (kh = 1.72, fh = 9311 m/s)
 % 
-% 2022 - Daniel Kiefer
-% Institut Langevin, Paris, France
-% 
 % [1] J. L. Tassoulas and T. R. Akylas, “On Wave Modes With Zero Group Velocity in 
 %     an Elastic Layer,” Journal of Applied Mechanics, vol. 51, no. 3, pp. 652–656, 
 %     Sep. 1984, doi: 10.1115/1.3167688.
+%
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 % parameters: 
 c = mat.c; rho = mat.rho;

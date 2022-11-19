@@ -1,8 +1,6 @@
 %% Dispersion calculation in a generally anisotropic elastic plate
 % 
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 clear all
 % reference data:

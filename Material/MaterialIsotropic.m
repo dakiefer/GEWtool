@@ -11,9 +11,7 @@ classdef MaterialIsotropic < Material
 %
 % See also: MaterialIsotropic.MaterialIsotropic, Material.
 %
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
     properties (Dependent)
         lambda      % first Lamé parameter

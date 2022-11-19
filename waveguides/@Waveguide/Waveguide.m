@@ -5,9 +5,7 @@ classdef Waveguide < matlab.mixin.Copyable
 % 
 % See also Plate, Cylinder.
 % 
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 properties (Access = public)
 	geom        % geometry object describing the discretized, multilayered structure

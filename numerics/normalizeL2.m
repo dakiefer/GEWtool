@@ -9,8 +9,7 @@ function uNorm = normalizeL2(u, w)
 % Return values:
 % - uNorm: array of dimension p-1
 % 
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 uAbs = sum(conj(u).*u,4);
 w = shiftdim(w(:), -2);

@@ -19,9 +19,8 @@ function dat = computeK(gews, w, nModes)
     % 
     % See also computeW, Waveguide.
     % 
-    % 2022 - Daniel A. Kiefer
-    % Institut Langevin, Paris, France
-    % 
+    % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+    
     if ~isvector(w), error('Angular frequencies should be a [Nx1] array.'); end
     w = w(:); % column vector
     for i = 1:length(gews) % solve for a list of waveguide objects

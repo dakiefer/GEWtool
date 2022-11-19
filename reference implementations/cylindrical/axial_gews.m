@@ -1,14 +1,12 @@
 %% compute axially guided ultrasonic waves in cylindrical coordinates
 % 
-% 2022 Daniel Kiefer
-% Institut Langevin, Paris, France
-% 
 % see also:
 % [1] M. Zheng, C. He, Y. Lyu, and B. Wu, “Guided waves propagation in anisotropic 
 % hollow cylinders by Legendre polynomial solution based on state-vector formalism,” 
 % Composite Structures, vol. 207, pp. 645–657, Jan. 2019, 
 % doi: 10.1016/j.compstruct.2018.09.042.
 % 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 % specify parameters:
 a = 3e-3; b = 5e-3; % inner and outer radius

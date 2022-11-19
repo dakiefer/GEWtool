@@ -5,9 +5,7 @@ classdef Layer
 %
 % See also Plate, Cylinder, Waveguide.
 % 
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
     properties (Access = public)
         y   % nodal points in physical domain

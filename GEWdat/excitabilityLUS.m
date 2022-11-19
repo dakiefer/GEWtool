@@ -21,7 +21,7 @@ function exc = excitabilityLUS(gew, dat, at)
 %       - for the last layer's surface:  'top' | 'outer' | 't' | 'o', or 
 %       - for the first layer's surface: 'bottom' | 'inner' | 'b' | 'i'.
 % 
-% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
     n = size(gew.op.M,1);
     numModes = size(dat.k);

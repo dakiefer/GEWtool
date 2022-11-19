@@ -1,7 +1,6 @@
 % Test orthogonality relation for modes kn at fixed frequency w.
 % 
-% 2022, Daniel Kiefer, Institut Langevin, ESPCI Paris
-%
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 %% calculate complex wavenumber spectrum at given frequency:
 mat = Material('aluminum');

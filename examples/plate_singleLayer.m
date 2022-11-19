@@ -1,8 +1,6 @@
 %% compute guided ultrasonic waves in a plate
 % 
-% 2022 Daniel Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 % % specify parameters:
 rho = 7900; lbd = 1.1538e11; mu = 7.6923e10; % steel material

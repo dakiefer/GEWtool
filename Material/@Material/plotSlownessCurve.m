@@ -9,9 +9,8 @@ function plotSlownessCurve(varargin)
     % 
     % See also: wavespeeds, Material.
     %
-    % 2022 - Daniel A. Kiefer
-    % Institut Langevin, Paris, France
-    % 
+    % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+    
     if nargin==1
         obj = varargin{1}; erot = [0;0;1];
     elseif nargin>=2

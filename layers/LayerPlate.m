@@ -5,9 +5,7 @@ classdef LayerPlate < Layer
 %
 % See also Plate, Waveguide.
 % 
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
     
     methods
         function obj = LayerPlate(mat, ys, N)

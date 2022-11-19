@@ -2,12 +2,10 @@
 % Impose BCs by elimination, see [2]. This leads to regular matrices L and M. 
 % For some reason, eig() is still not always able to find the solutions.
 % 
-% 2022 Daniel Kiefer
-% Institut Langevin, Paris, France
-% 
 % [2] J. Hoepﬀner, “Implementation of boundary conditions,” Paris, 2007. [Online]. 
 % Available: http://www.lmm.jussieu.fr/~hoepffner/home.php
 % 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 % specify parameters:
 a = 3e-3; b = 5e-3; % inner and outer radius

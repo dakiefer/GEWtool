@@ -5,9 +5,8 @@ classdef LayerCylindrical < Layer
 %
 % See also Cylinder, Waveguide.
 % 
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+
     properties 
         PPr     % integral of weighted product matrix of ansatz functions ∫P*P r dr
         PPInvr  % integral of weighted product matrix of ansatz functions ∫P*P 1/r dr 

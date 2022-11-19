@@ -2,9 +2,7 @@
 % Waves in a cylinder with two layeres of different material.
 % Two different deposited layer thicknesses are compared.
 % 
-% 2022 Daniel Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 clear all
 %% specify parameters:

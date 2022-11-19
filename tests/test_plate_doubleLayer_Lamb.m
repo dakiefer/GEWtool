@@ -1,8 +1,6 @@
 %% compute guided ultrasonic waves in a layered plate
 % 
-% 2022 Daniel Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 steel = Material('steel');
 chrom = Material('chromium');

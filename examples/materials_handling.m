@@ -1,8 +1,6 @@
 %% Represent and load anisotropic material data
 % 
-% 2022 Daniel Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 clear all
 %% The "Material" class can be used to represent and manage material data. The

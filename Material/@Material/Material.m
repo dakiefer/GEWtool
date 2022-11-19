@@ -10,9 +10,8 @@ classdef Material
 % 
 % See also: Material.Material, MaterialIsotropic.
 %
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+
 properties
     name        % name for the material: string
     symmetry    % symmetry class: e.g., "isotropic": string

@@ -10,9 +10,8 @@ function [cs, eu] = wavespeeds(obj, ek)
     % - cs:    wave speeds descending in magnitude [3x1]
     % - eu:    the columns are the polarization vectors [3x3]
     % 
-    % 2022 - Daniel A. Kiefer
-    % Institut Langevin, Paris, France
-    % 
+    % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+    
     if nargin < 2, ek = [1; 0; 0]; end
     validateattributes(ek, {'numeric'}, {'vector', 'numel', 3});
     ek = ek(:)/norm(ek(:)); % normalized column vector

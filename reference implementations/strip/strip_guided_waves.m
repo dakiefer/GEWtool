@@ -2,14 +2,12 @@
 % Depends on the DMSUITE toolbox by Weideman and Reddy: 
 % https://mathworks.com/matlabcentral/fileexchange/29-dmsuite
 % 
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
-% 
 % see also:
 % [1] D. A. Kiefer, M. Ponschab, S. J. Rupitsch, and M. Mayle, “Calculating the full 
 % leaky Lamb wave spectrum with exact fluid interaction,” The Journal of the Acoustical 
 % Society of America, vol. 145, no. 6, pp. 3341–3350, Jun. 2019, doi: 10.1121/1.5109399.
 %
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 h = 5e-3;   % thickness in m (ey-dimension)
 b = 15e-3;   % width in m (ez-dimension)

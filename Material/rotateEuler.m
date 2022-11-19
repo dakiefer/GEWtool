@@ -11,8 +11,7 @@ function B = rotateEuler(A, a, b, g)
 % Literature: D. Royer and T. Valier-Brasier, Ondes élastiques dans les solides 
 % (Elastic waves in solids), vol. 1, 2 vols. London: ISTE éditions, 2021.
 %
-% 2022 - Daniel Kiefer
-% Institut Langevin, Paris, France
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 % some error checking:
 if isrow(A)

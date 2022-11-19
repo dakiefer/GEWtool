@@ -10,9 +10,7 @@ classdef Plate < Waveguide
 % 
 % See also Plate.Plate, Cylinder, Waveguide.
 % 
-% 2022 - Daniel A. Kiefer
-% Institut Langevin, Paris, France
-% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 methods 
 	function obj = Plate(mats, ys, Ns)

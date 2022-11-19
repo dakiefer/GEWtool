@@ -12,9 +12,7 @@ function S = save(obj,file)
     % (re-select to overwrite). Note that save() preservers the properties "name", "rho" and
     % either "C" (anisotropic) or "lambda" and "mu" (isotropic).
     % 
-    % 2022 - Daniel A. Kiefer
-    % Institut Langevin, Paris, France
-    % 
+    % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
     % determine where to save:
     if nargin < 2
