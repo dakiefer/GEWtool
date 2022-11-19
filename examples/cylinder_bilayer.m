@@ -32,16 +32,3 @@ hold on, plot(dat.k(:), dat.w(:)/2/pi, '.');
 xlim([0, 20/(ro-ri)]); 
 ylim([0, 4e3]/guw.h0); 
 legend(strcat(num2str([h1; h2]/1e-6), ' um'), 'Location', 'southeast');
-
-%% plot laser-ultrasonic excitability of the last example: 
-exc = excitabilityLUS(guw, dat, 'top');
-exc = 20*log10(exc); % in decibel
-[exc, ind] = sort(exc(:)); % plot high excitability last (on top)
-ks = dat.k(ind); ws = dat.w(ind);
-figure, hold on, ylim([0, 4e3]/guw.h0); 
-scatter(ks, ws/2/pi, 8, exc, 'filled')
-colormap(flipud(inferno(100)));
-cb = colorbar; caxis([-40, 0]);
-cb.Label.Interpreter = 'latex';  cb.Label.String = '$u_x u_r$ at outer surface';
-xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
-title(sprintf('zircaloy tube'))

@@ -23,6 +23,15 @@ function exc = excitabilityLUS(gew, dat, at)
 % 
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris
 
+    n = size(gew.op.M,1);
+    numModes = size(dat.k);
+    if any(numModes == n) || any(numModes == 2*n)
+        warning('GEWtool:excitabilityLUS:restrictSolution',...
+            ['It seems that you have not restricted the number of modes. Note' ...
+            ' that the normalization of the excitation depends on the number of' ...
+            ' modes and, hence, changes with matrix size.']);
+    end
+
     switch at
         case {'top','t','outer','o'}
             n = gew.geom.N(end);  % node index
