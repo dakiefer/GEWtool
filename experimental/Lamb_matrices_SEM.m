@@ -1,4 +1,4 @@
-function [guw] = Lamb_matrices_SEM(mat, h, N)
+function [gew] = Lamb_matrices_SEM(mat, h, N)
 
 % parameters: 
 c = mat.c; rho = mat.rho;
@@ -47,15 +47,15 @@ G0 = kron(cyy, g0);
 
 L2 = K2; L1 = K1 + G1; L0 = G0;
 
-guw.op.L0 = L0; 
-guw.op.L1 = L1;
-guw.op.L2 = L2;
-guw.op.M = M;
-guw.np.fh0 = fh0;
-guw.np.h0 = h0;
-guw.np.c0 = c0;
-guw.np.rho0 = rho0;
-guw.geom = Geometry([0, h],N,2);
+gew.op.L0 = L0; 
+gew.op.L1 = L1;
+gew.op.L2 = L2;
+gew.op.M = M;
+gew.np.fh0 = fh0;
+gew.np.h0 = h0;
+gew.np.c0 = c0;
+gew.np.rho0 = rho0;
+gew.geom = Geometry([0, h],N,2);
 
 
 %% element matrices:

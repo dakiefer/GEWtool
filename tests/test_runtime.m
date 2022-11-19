@@ -6,7 +6,7 @@ k0 = 5.59596;  % for reference and mode selection (also: 3.6180, 3.8674, 5.59596
 N = 5:5:40;
 k = linspace(1e-3, 15, 200);
 
-solv = @(guw) computeW(guw,k); % Note: this function shall not call tic/toc!!
+solv = @(gew) computeW(gew,k); % Note: this function shall not call tic/toc!!
 impls = {@(N) implCurrent(mat,h,N), @(N) Lamb_matrices_SEM(mat,h,N)};
 
 %% current implementation 
@@ -20,10 +20,10 @@ for n = 1:length(impls)
     fprintf('Testing %s:\n', implsName{n})
     tic; 
     for ii = 1:length(N)
-        guw = impl(N(ii));
-        dat = solv(guw); 
+        gew = impl(N(ii));
+        dat = solv(gew); 
         chron(ii+1,n) = toc;
-        fprintf('dof = %d. elapsed time: %g.\n', size(guw.op.M,1),  chron(ii+1,n)-chron(ii,n));
+        fprintf('dof = %d. elapsed time: %g.\n', size(gew.op.M,1),  chron(ii+1,n)-chron(ii,n));
     end
     chron(ii+1,n) = toc;
     fprintf('Total elapsed time: %g.\n\n', chron(ii+1,n));
@@ -39,7 +39,7 @@ ylabel('Runtime in s')
 
 
 %% auxilary function
-function guw = implCurrent(mat,h,N)
+function gew = implCurrent(mat,h,N)
     plate = Plate(mat, h, N);
-    guw = plate.Lamb();
+    gew = plate.Lamb();
 end

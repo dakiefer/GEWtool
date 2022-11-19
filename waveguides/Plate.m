@@ -122,9 +122,9 @@ methods
         % The operators for symmetric (S) and anti-symmetric (A) waves are assembled separately.
         % If your plate is not symmetric, use Plate.Lamb instead.
         % Return value:
-        % guws: [1 x 2] array of Plate objects. 
-        %       - guws(1) describes the anti-symmetric waves
-        %       - guws(2) describes the symmetric waves
+        % gews: [1 x 2] array of Plate objects. 
+        %       - gews(1) describes the anti-symmetric waves
+        %       - gews(2) describes the symmetric waves
         % 
         % See also: Lamb, LambA, LambS, sh, fullyCoupled.
 

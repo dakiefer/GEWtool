@@ -92,13 +92,13 @@ chron = toc; fprintf('nF: %d, nK: %d, elapsed time: %g, time per point: %g. ms\n
 % for reference, plot plate first:
 mat = Material('steel', c, rho);
 plate = Plate(mat, h, 25);
-guw = plate.fullyCoupled;
-dat = computeW(guw, kh/h0);
+gew = plate.fullyCoupled;
+dat = computeW(gew, kh/h0);
 figure, hold on
 plot(dat.k(:), dat.w(:)/2/pi, 'kx');
 plate = Plate(mat, b, 25);
-guw = plate.fullyCoupled;
-dat = computeW(guw, kh/h0);
+gew = plate.fullyCoupled;
+dat = computeW(gew, kh/h0);
 plot(dat.k(:), dat.w(:)/2/pi, 'x', 'Color', [0.7 0.7 0.7]);
 
 % plot strip wavenumbers:

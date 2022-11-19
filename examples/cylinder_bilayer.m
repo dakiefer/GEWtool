@@ -19,16 +19,16 @@ chrom = Material('chromium');
 
 %% with thin layer:
 cyl = Cylinder([zirc, chrom], [ri, ro, ro+h1], N); % create waveguide description 
-guw = cyl.fullyCoupled(n); % waves of circumferential order n
-dat = computeW(guw, k); 
-figure, plot(dat.k(:), dat.w(:)/2/pi, '.'); ylim([0, 4e3]/guw.h0);
+gew = cyl.fullyCoupled(n); % waves of circumferential order n
+dat = computeW(gew, k); 
+figure, plot(dat.k(:), dat.w(:)/2/pi, '.'); ylim([0, 4e3]/gew.h0);
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 
 %% with thick layer:
 cyl = Cylinder([zirc, chrom], [ri, ro, ro+h2], N); % create waveguide description 
-guw = cyl.fullyCoupled(n); % waves of circumferential order n
-dat = computeW(guw, k); 
+gew = cyl.fullyCoupled(n); % waves of circumferential order n
+dat = computeW(gew, k); 
 hold on, plot(dat.k(:), dat.w(:)/2/pi, '.'); 
 xlim([0, 20/(ro-ri)]); 
-ylim([0, 4e3]/guw.h0); 
+ylim([0, 4e3]/gew.h0); 
 legend(strcat(num2str([h1; h2]/1e-6), ' um'), 'Location', 'southeast');

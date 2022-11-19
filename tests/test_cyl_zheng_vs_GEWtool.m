@@ -27,14 +27,14 @@ legend({'', '', '', '', '', 'Zheng'})
 
 % zeroth order:
 n = 0; % circumferential wavenumber (flexural order)
-guw = cyl.fullyCoupled(n);
-dat = computeW(guw, k);
+gew = cyl.fullyCoupled(n);
+dat = computeW(gew, k);
 plot(dat.w(:)/2/pi/1e6, dat.w(:)./dat.k(:), 'r.'); 
 legend({'', '', '', '', '', 'Zheng', 'n = 0'})
 
 % first order:
 n = 1; % circumferential wavenumber (flexural order)
-guw = cyl.fullyCoupled(n);
-dat = computeW(guw, k);
+gew = cyl.fullyCoupled(n);
+dat = computeW(gew, k);
 plot(dat.w(:)/2/pi/1e6, dat.w(:)./dat.k(:), 'g.'); 
 legend({'', '', '', '', '', 'Zheng', 'n = 0', 'n = 1'})

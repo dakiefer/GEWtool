@@ -24,8 +24,8 @@ figure, hold on; ax = gca; xlim([0, k(end)])
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 ax.ColorOrder = winter(length(n));
 for n0 = n
-    guw = cyl.fullyCoupled(n0); % assembles matrices for the specified waves
-    dat = computeW(guw, k); 
+    gew = cyl.fullyCoupled(n0); % assembles matrices for the specified waves
+    dat = computeW(gew, k); 
     plot(dat.k(:), dat.w(:)/2/pi, '.'); ylim([0, 6e3]/h); drawnow;
 end
 legend(strcat('n = ', num2str(n.')), 'Location', 'southeast')

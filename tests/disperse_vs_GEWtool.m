@@ -8,8 +8,8 @@ cyl = Cylinder(mat, [a, b], N);
 
 %% zeroth-order circumferential waves:
 n = 0;
-guw = cyl.fullyCoupled(n);
-dat = computeW(guw, k); 
+gew = cyl.fullyCoupled(n);
+dat = computeW(gew, k); 
 
 % plot against reference data:
 load('data/disperse.mat')
@@ -22,14 +22,14 @@ hold on, plot(dat.k(:), dat.w(:)/2/pi, '.');
 legend({'disperse', 'n = 0'})
 
 n = 1;
-guw = cyl.fullyCoupled(n);
-dat = computeW(guw, k); 
+gew = cyl.fullyCoupled(n);
+dat = computeW(gew, k); 
 hold on, plot(dat.k(:), dat.w(:)/2/pi, '.'); 
 legend({'disperse', 'n = 0'})
 
 %% fist-order circumferential waves:
 % n = 1;
-% guw = cyl.fullyCoupled(n);
-% dat = computeW(guw, k); 
+% gew = cyl.fullyCoupled(n);
+% dat = computeW(gew, k); 
 % hold on, plot(dat.k(:), dat.w(:)/2/pi, '.'); 
 % legend({'disperse', 'n = 0', 'n = 1'})

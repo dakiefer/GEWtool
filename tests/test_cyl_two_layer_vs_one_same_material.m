@@ -10,16 +10,16 @@ k = linspace(1e-2, 15, 200)/(r(end)-r(1)); % wavenumber (solve for frequency)
 
 %% one layer:
 cyl = Cylinder(mat, [r(1), r(3)], sum(N));
-guw = cyl.fullyCoupled(n);
-dat = computeW(guw, k); 
+gew = cyl.fullyCoupled(n);
+dat = computeW(gew, k); 
 figure, plot(dat.k(:), dat.w(:)/2/pi, 'gx'); ylim([0, 4e3]/(r(end)-r(1)));
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 
 
 %% two layers of same material and same total thickness as one layer:
 cyl = Cylinder([mat, mat], r, N);
-guw = cyl.fullyCoupled(n);
-dat = computeW(guw, k); 
+gew = cyl.fullyCoupled(n);
+dat = computeW(gew, k); 
 hold on, plot(dat.k(:), dat.w(:)/2/pi, 'k.'); ylim([0, 4e3]/(r(end)-r(1)));
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 legend({'single', 'two lay.'}, 'Location','southeast')

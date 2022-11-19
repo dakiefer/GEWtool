@@ -1,4 +1,4 @@
-function [I] = GEWintegrate(wguide, f, n)
+function [I] = GEWintegrate(gew, f, n)
 % GEWintegrate - Integrate over all layers of the waveguide.
 % 
 % Integrates the data f along dimension n using the weights and limits 
@@ -17,9 +17,9 @@ if nargin < 3
 end
 s = size(f{1}); s(n) = []; % remove dimension to be integrated
 I = zeros(s);
-for i = 1:wguide.geom.nLay % for every layer
-    hi = wguide.geom.h(i); % thickness of layer i
-    w = shiftdim(wguide.lay(i).w(:), -n+1); % integration weights moved to dim. n
+for i = 1:gew.geom.nLay % for every layer
+    hi = gew.geom.h(i); % thickness of layer i
+    w = shiftdim(gew.lay(i).w(:), -n+1); % integration weights moved to dim. n
     I = I + sum( w.*f{i}*hi , n);
 end
 

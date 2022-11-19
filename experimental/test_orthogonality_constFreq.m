@@ -11,8 +11,8 @@ fh = 8e3;
 kh = 1;
 
 plate = Plate(mat, h, N);
-guw = plate.Lamb;
-dat = computeK(guw,2*pi*fh/h);
+gew = plate.Lamb;
+dat = computeK(gew,2*pi*fh/h);
 
 %% Test the Auld orthogonality relation for modes kn at fixed frequency w.
 % 
@@ -20,16 +20,16 @@ dat = computeK(guw,2*pi*fh/h);
 % Malabar: Krieger Publishing Company, 1990.
 
 ind = real(dat.k) >= 0 & imag(dat.k) >= -inf; 
-% P = powerFlux(guw, dat); u = dat.u{1}; dat.u{1} = u./sqrt(P); % normalize to unit P
+% P = powerFlux(gew, dat); u = dat.u{1}; dat.u{1} = u./sqrt(P); % normalize to unit P
 v = velocity(dat); v = v{1}; v = v(1,ind,:,:);
-T = stress(guw, dat); T = T{1}; 
+T = stress(gew, dat); T = T{1}; 
 tx = permute(T(:,ind,:,1,:), [1 2 3 5 4]);
 
 vm = permute(v, [2 1 3 4]); vn = v;
 txm = permute(tx, [2 1 3 4]); txn = tx;
 
 I = sum(-conj(vn).*txm - vm.*conj(txn), 4);
-Pmn = 1/4*GEWintegrate(guw, {I}, 3);
+Pmn = 1/4*GEWintegrate(gew, {I}, 3);
 Pmn = Pmn/max(abs(Pmn(:))); % normalize
 
 heatmap(log10(abs(Pmn)))
@@ -52,14 +52,14 @@ title('Auld and Kino orthogonality relation')
 
 ind = real(dat.k) >= 0 & imag(dat.k) >= 0; % does not working for complex pairs?
 u = dat.u{1}; u = u(1,ind,:,:);
-T = stress(guw, dat); T = T{1}; 
+T = stress(gew, dat); T = T{1}; 
 tx = permute(T(:,ind,:,1,:), [1 2 3 5 4]);
 
 uxm = permute(u(:,:,:,1), [2 1 3 4]); uyn = u(:,:,:,2);
 txym = permute(tx(:,:,:,2), [2 1 3 4]); txxn = tx(:,:,:,1);
 
 I = uyn.*txym - uxm.*txxn;
-Dmn = GEWintegrate(guw, {I}, 3);
+Dmn = GEWintegrate(gew, {I}, 3);
 Dmn = Dmn(1:end-4, 1:end-4);
 Dmnabs = abs(Dmn)/max(abs(Dmn(:)));
 

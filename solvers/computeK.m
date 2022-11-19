@@ -1,11 +1,11 @@
-function dat = computeK(guws, w, nModes)
+function dat = computeK(gews, w, nModes)
     % computeK - Obtain complex wavenumbers k for specified frequencies w.
     % Solves the polynomial eigenvalue problem [(ik)^2*L2 + ik*L1 + L0(w)]*u = 0.
     %
     % Arguments:
-    % - guws:    Waveguide object(s), either a scalar or vector.
+    % - gews:    Waveguide object(s), either a scalar or vector.
     %            Describes the eigenproblem, i.e., the matrices Li.
-    %            If guws is a vector, computeW solves one problem after another 
+    %            If gews is a vector, computeW solves one problem after another 
     %            and returns a vector of results "dat" of same length.
     % - w:       Angular frequencies to specify in rad/s. Vector valued.
     % - nModes:  (optional) Number of modes to save (discards the highest wavenumbers).
@@ -24,28 +24,28 @@ function dat = computeK(guws, w, nModes)
     % 
     if ~isvector(w), error('Angular frequencies should be a [Nx1] array.'); end
     w = w(:); % column vector
-    for i = 1:length(guws) % solve for a list of waveguide objects
-        guw = guws(i);
-        wh = w*guw.np.h0;
-        M = guw.op.M; L0 = guw.op.L0; L1 = guw.op.L1; L2 = guw.op.L2;
+    for i = 1:length(gews) % solve for a list of waveguide objects
+        gew = gews(i);
+        wh = w*gew.np.h0;
+        M = gew.op.M; L0 = gew.op.L0; L1 = gew.op.L1; L2 = gew.op.L2;
         if nargin < 3
-            nModes = size(guw.op.M,1);  % for now we dont distinguish between linearized and quadratic EVP
+            nModes = size(gew.op.M,1);  % for now we dont distinguish between linearized and quadratic EVP
         end
-        if nModes > size(guw.op.M,1)
+        if nModes > size(gew.op.M,1)
             warning('GEWTOOL:computeK:tooManyModes', 'More modes requested than available. Resetting nModes to the matrix size.')
-            nModes = size(guw.op.M,1);
+            nModes = size(gew.op.M,1);
         end
         kh = nan(length(wh), nModes);
-        u = nan(length(wh), nModes, guw.geom.Ndof);
-        gdoffree = setdiff([guw.geom.gdofOfLay{:}], guw.geom.gdofDBC(:).');
+        u = nan(length(wh), nModes, gew.geom.Ndof);
+        gdoffree = setdiff([gew.geom.gdofOfLay{:}], gew.geom.gdofDBC(:).');
         for ii = 1:length(wh)
-            whn = wh(ii)/guw.np.fh0; % current frequency-thickness (normalized)
+            whn = wh(ii)/gew.np.fh0; % current frequency-thickness (normalized)
             if isequal(L2, zeros(size(L2))) % is linearized as [(ik) L1 + L0 + w^2 M]*u = 0
                 [ui, ikhi] = polyeig(L0 + whn^2*M, L1); 
             elseif isempty(L1) % is linearized as [(ik)^2 L2 + L0 + w^2 M]*u = 0
                 [ui, ikhi2] = polyeig(L0 + whn^2*M, L2); % calculate (ikh)^2
                 ikhi = sqrt(ikhi2);
-                N = guw.geom.N; dofy = N+1:2*N;
+                N = gew.geom.N; dofy = N+1:2*N;
                 ui(dofy,:) = ikhi.'.*ui(dofy,:); % eig.vec. was [ux, 1i*k*uy]
             else % quadratic EVP: [(ik)^2 L2 + (ik) L1 + L0 + w^2 M]*u = 0
                 [ui, ikhi] = polyeig(L0 + whn^2*M, L1, L2);
@@ -58,12 +58,12 @@ function dat = computeK(guws, w, nModes)
             u(ii,:,gdoffree) = ui(:,1:nModes).'; % save
             kh(ii, :) = khi(1:nModes);
         end
-        dat(i).k = kh/guw.np.h0;
+        dat(i).k = kh/gew.np.h0;
         dat(i).w = w.*ones(size(kh));
-        dat(i).u = cell(guw.geom.nLay, 1); % initialize
-        for l = 1:guw.geom.nLay
-            ulay = u(:,:,guw.geom.gdofOfLay{l});
-            dat(i).u{l} = reshape(ulay, [size(kh), guw.geom.N(l), guw.geom.Nudof(l)]);
+        dat(i).u = cell(gew.geom.nLay, 1); % initialize
+        for l = 1:gew.geom.nLay
+            ulay = u(:,:,gew.geom.gdofOfLay{l});
+            dat(i).u{l} = reshape(ulay, [size(kh), gew.geom.N(l), gew.geom.Nudof(l)]);
         end
     end
 end

@@ -17,13 +17,13 @@ timings = nan(numel(N),1);
 dofs=ws; % allocate
 disp('Test computeW():'), 
 for i=1:numel(N)
-%     plate = Plate(mat, h, N(i)); guw = plate.Lamb;
-%     guw = Lamb_matrices_rectangularSCM(mat, h, N(i));
-    guw = Lamb_matrices_SEM(mat, h, N(i));
+%     plate = Plate(mat, h, N(i)); gew = plate.Lamb;
+%     gew = Lamb_matrices_rectangularSCM(mat, h, N(i));
+    gew = Lamb_matrices_SEM(mat, h, N(i));
     ftest = @() Lamb_matrices_SEM(mat, h, N(i));
     timings(i) = timeit(ftest);
-    dofs(i)=size(guw.op.L0,1);
-    dat = computeW(guw, k0);
+    dofs(i)=size(gew.op.L0,1);
+    dat = computeW(gew, k0);
     [~, indSel] = min(abs(dat.w - w0));
     ws(i)=dat.w(indSel);
 end
@@ -54,10 +54,10 @@ legend({'SCM', 'new'})
 % dofs=ks; % allocate
 % disp('Test computeK():'), tic
 % for i=1:numel(N)
-%     plate = Plate(mat, h, N(i));  guw = plate.Lamb;
-% %     guw = Lamb_matrices_rectangularSCM(mat, h, N(i));
-%     dofs(i)=size(guw.op.L0,1);
-%     dat = computeK(guw, w0);
+%     plate = Plate(mat, h, N(i));  gew = plate.Lamb;
+% %     gew = Lamb_matrices_rectangularSCM(mat, h, N(i));
+%     dofs(i)=size(gew.op.L0,1);
+%     dat = computeK(gew, w0);
 %     [~, indSel] = min(abs(dat.k - k0));
 %     ks(i)=dat.k(indSel);
 % end

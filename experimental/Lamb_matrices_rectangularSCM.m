@@ -1,4 +1,4 @@
-function [guw] = Lamb_matrices_rectangularSCM(mat, h, N)
+function [gew] = Lamb_matrices_rectangularSCM(mat, h, N)
 
 %% Eigenvalue problem describing the ZGV points 
 % Generates the matrices describing the Lamb wave problem as well as the associated 
@@ -46,12 +46,12 @@ B1 = kron(cyx, Id([1, N], :)); B0 = kron(cyy, Dy1([1, N], :)); % BCs
 % L2(dofBC, :) = B1; L1(dofBC, :) = B0; L0(dofBC, :) = 0; M(dofBC, :) = 0;
 L2 = [zeros(size(B0)); L2]; L1 = [B1; L1]; L0 = [B0; L0]; M = [zeros(size(B0)); M]; % append BCs
 
-guw.op.L0 = L0; 
-guw.op.L1 = L1;
-guw.op.L2 = L2;
-guw.op.M = M;
-guw.np.fh0 = f0*h0;
-guw.np.h0 = h0;
-guw.np.c0 = c0;
-guw.np.rho0 = rho0;
-guw.geom = Geometry([0, h],N,2);
+gew.op.L0 = L0; 
+gew.op.L1 = L1;
+gew.op.L2 = L2;
+gew.op.M = M;
+gew.np.fh0 = f0*h0;
+gew.np.h0 = h0;
+gew.np.c0 = c0;
+gew.np.rho0 = rho0;
+gew.geom = Geometry([0, h],N,2);

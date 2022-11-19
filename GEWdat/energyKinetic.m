@@ -1,7 +1,7 @@
-function [Ekin] = energyKinetic(wguide, dat)
+function [Ekin] = energyKinetic(gew, dat)
 %ENERGYKIN Compute the total kinetik energy over the waveguide cross section.
 
-ekin = energyDensityKinetic(wguide, dat);
-Ekin = GEWintegrate(wguide, ekin);
+ekin = energyDensityKinetic(gew, dat);
+Ekin = GEWintegrate(gew, ekin);
 
 end

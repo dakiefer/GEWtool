@@ -1,4 +1,4 @@
-function [guw] = Lamb_matrices_utx(mat, h, N)
+function [gew] = Lamb_matrices_utx(mat, h, N)
 % Generate matrices for convergence test
 c = mat.c; rho = mat.rho;
 c0 = c(1,2,1,2); h0 = h; % normalization parameters
@@ -37,14 +37,14 @@ L1 = L1(dof, dof); L0 = L0(dof, dof); M = M(dof, dof);
 
 L2 = zeros(size(M)); 
 
-guw.op.L0 = L0; 
-guw.op.L1 = L1;
-guw.op.L2 = L2;
-guw.op.M = M;
-guw.np.fh0 = fh0;
-guw.np.h0 = h0;
-guw.np.c0 = c0;
-guw.np.rho0 = rho0;
-guw.geom = Geometry([0, h],N,2);
+gew.op.L0 = L0; 
+gew.op.L1 = L1;
+gew.op.L2 = L2;
+gew.op.M = M;
+gew.np.fh0 = fh0;
+gew.np.h0 = h0;
+gew.np.c0 = c0;
+gew.np.rho0 = rho0;
+gew.geom = Geometry([0, h],N,2);
 
 end

@@ -1,8 +1,8 @@
-function [ce] = energyVel(wguide, dat)
+function [ce] = energyVel(gew, dat)
 %ENERGYVEL Compute the energy velocity ce.
 
-P = powerFlux(wguide, dat);
-H = energyTotal(wguide, dat);
+P = powerFlux(gew, dat);
+H = energyTotal(gew, dat);
 ce = P./H;
 
 % NOTE: this function depends on basically all field calculation functions:

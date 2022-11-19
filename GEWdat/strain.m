@@ -1,12 +1,12 @@
-function [S] = strain(wguide,dat)
+function [S] = strain(gew,dat)
 %STRAIN Compute the strain S.
 
-S = cell(wguide.geom.nLay, 1); % allocate for each layer
-for i = 1:wguide.geom.nLay
+S = cell(gew.geom.nLay, 1); % allocate for each layer
+for i = 1:gew.geom.nLay
     % initialize 
-    lay = wguide.lay(i);
+    lay = gew.lay(i);
     D1 = 1/lay.h*lay.D1; % TODO: multilayer
-    Nudof = wguide.geom.Nudof(i); % Lamb and/or SH
+    Nudof = gew.geom.Nudof(i); % Lamb and/or SH
     es = eye(Nudof); % unit directional vectors
     
     % compute du/dy:

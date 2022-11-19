@@ -10,16 +10,16 @@ k = linspace(1e-3, 5, 200)/(r(end)-r(1)); % wavenumber-thickness (solve for freq
 
 %% only first material
 cyl = Cylinder(mats(1), [r(1), r(3)], N(1));
-guw = cyl.fullyCoupled(n);
-dat = computeW(guw, k); 
+gew = cyl.fullyCoupled(n);
+dat = computeW(gew, k); 
 figure, plot(dat.k(:), dat.w(:)/2/pi, 'gx'); 
 xlim([0, 5e3]), ylim([0, 2e6]) 
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 
 %% only second material
 cyl = Cylinder(mats(2), [r(1), r(3)], N(2));
-guw = cyl.fullyCoupled(n);
-dat = computeW(guw, k); 
+gew = cyl.fullyCoupled(n);
+dat = computeW(gew, k); 
 hold on, plot(dat.k(:), dat.w(:)/2/pi, 'cx'); drawnow;
 
 %% bilayer problem thick-thin:
@@ -28,8 +28,8 @@ cc = inferno(length(b));
 for ii = 1:length(b)
     r0 = [r(1), b(ii), r(3)];
     cyl = Cylinder(mats, r0, N);
-    guw = cyl.fullyCoupled(n);
-    dat = computeW(guw, k); 
+    gew = cyl.fullyCoupled(n);
+    dat = computeW(gew, k); 
     plot(dat.k(:), dat.w(:)/2/pi, '.', 'Color', cc(ii,:)); drawnow;
 end 
 legend({'zircaloy', 'steel'}, 'Location','southeast')
