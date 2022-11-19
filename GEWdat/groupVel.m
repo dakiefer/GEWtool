@@ -1,9 +1,9 @@
 function [cg] = groupVel(gew, dat)
 %GROUPVEL compute the group velocities of guided wave solutions.
 
-M = gew.op.M; % mass operator such that dimension are: [nF, nK, M]
-L2 = gew.op.L2; % stiffness op in k^2
-L1 = gew.op.L1; % stiffness op in k
+M = gew.op.M; % mass matrix 
+L2 = gew.op.L2; % stiffness matrix in k^2
+L1 = gew.op.L1; % stiffness matrix in k
 w = dat.w/gew.np.fh0*gew.np.h0; % normalize frequency like the above operators
 k = dat.k*gew.np.h0; % wavenumbers
 u = zeros([size(dat.k), gew.geom.Ndof]); % allocate

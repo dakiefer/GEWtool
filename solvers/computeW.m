@@ -12,10 +12,10 @@ function dat = computeW(gews, k, nModes)
     %
     % Return value:
     % - dat:     A data structure containing 
-    %            - w: the angular frequencies in rad/s [nF x nK]
-    %            - k: the wavenumbers in rad/m, expanded to [nF x nK]
+    %            - w: the angular frequencies in rad/s [nK x nF]
+    %            - k: the wavenumbers in rad/m, expanded to [nK x nF]
     %            - u: the displacement eigenvectors as a 
-    %                 cell array describing the layers, elements are [nF x nK x N x Nudof]
+    %                 cell array describing the layers, elements are [nK x nF x N x Nudof]
     % 
     % See also computeK, Waveguide.
     % 
@@ -23,7 +23,7 @@ function dat = computeW(gews, k, nModes)
     % Institut Langevin, Paris, France
     % 
     if ~isvector(k), error('Wavenumbers should be a [1xN] array.'); end
-    k = k(:).'; % row vector
+    k = k(:); % column vector
     for i=1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
         if nargin < 3, nModes = size(gew.op.M,1); end % default
@@ -33,8 +33,8 @@ function dat = computeW(gews, k, nModes)
         end
         kh = k*gew.np.h0;
         M = gew.op.M; L0 = gew.op.L0; L1 = gew.op.L1; L2 = gew.op.L2;
-        whn = nan(nModes, length(kh));
-        u = nan(nModes, length(kh), gew.geom.Ndof);
+        whn = nan(length(kh), nModes);
+        u = nan(length(kh), nModes, gew.geom.Ndof);
         gdoffree = setdiff([gew.geom.gdofOfLay{:}], gew.geom.gdofDBC(:).');
         for n = 1:length(kh)
             [un, whn2] = polyeig((1i*kh(n))^2*L2 + (1i*kh(n))*L1 + L0, M); % does not work properly with eig()
@@ -42,8 +42,8 @@ function dat = computeW(gews, k, nModes)
             spurious = whnn==0; whnn(spurious) = nan; un(:,spurious) = nan;
             [whnn, ind] = sort(whnn);
             un = un(:,ind);
-            u(:,n,gdoffree) = un(:,1:nModes).'; % save
-            whn(:, n) = whnn(1:nModes);
+            u(n,:,gdoffree) = un(:,1:nModes).'; % save
+            whn(n,:) = whnn(1:nModes);
         end
         % save to output variable:
         dat(i).w = whn*gew.np.fh0/gew.np.h0;

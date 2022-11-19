@@ -20,9 +20,9 @@ dat = computeK(gew,2*pi*fh/h);
 
 ind = real(dat.k) >= 0 & imag(dat.k) >= -inf; 
 % P = powerFlux(gew, dat); u = dat.u{1}; dat.u{1} = u./sqrt(P); % normalize to unit P
-v = velocity(dat); v = v{1}; v = v(1,ind,:,:);
+v = velocity(dat); v = v{1}; v = v(ind,1,:,:);
 T = stress(gew, dat); T = T{1}; 
-tx = permute(T(:,ind,:,1,:), [1 2 3 5 4]);
+tx = permute(T(ind,:,:,1,:), [1 2 3 5 4]);
 
 vm = permute(v, [2 1 3 4]); vn = v;
 txm = permute(tx, [2 1 3 4]); txn = tx;
@@ -50,9 +50,9 @@ title('Auld and Kino orthogonality relation')
 % 
 
 ind = real(dat.k) >= 0 & imag(dat.k) >= 0; % does not working for complex pairs?
-u = dat.u{1}; u = u(1,ind,:,:);
+u = dat.u{1}; u = u(ind,1,:,:);
 T = stress(gew, dat); T = T{1}; 
-tx = permute(T(:,ind,:,1,:), [1 2 3 5 4]);
+tx = permute(T(ind,:,:,1,:), [1 2 3 5 4]);
 
 uxm = permute(u(:,:,:,1), [2 1 3 4]); uyn = u(:,:,:,2);
 txym = permute(tx(:,:,:,2), [2 1 3 4]); txxn = tx(:,:,:,1);

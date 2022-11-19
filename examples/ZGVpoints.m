@@ -33,7 +33,7 @@ k0 = [0.339    0.349    0.708    0.249    0.068]*1e4;
 fprintf('\n\n++ Newton-type iteration: ++\n')
 tic, zgv = computeZGV(gew, dat); toc
 nZGV = length(zgv.w(zgv.w < 2*pi*fmax)) % print number of ZGV points 
-plotZGVs(dat, zgv, fmax)
+plotZGVs(dat, zgv, fmax), title('Newton-type method'), drawnow
 
 % Alternatively, you can compute ZGV points close to initial guesses w0, k0: 
 fprintf('Search close to provided initial guesses:\n')
@@ -51,7 +51,7 @@ fprintf('\n\n++ Scanning method: ++\n')
 clear opts, opts.kMax = 10/gew.np.h0; % unit distance is np.h0
 tic, zgv = computeZGVScan(gew, opts); toc
 nZGV = length(zgv.w(zgv.w < 2*pi*fmax)) % print number of ZGV points 
-plotZGVs(dat, zgv, fmax)
+plotZGVs(dat, zgv, fmax), title('Scaning method'), drawnow
 
 %% Direct method
 % This method is implemented in computeZGVDirect(). It does not need initial
@@ -61,7 +61,7 @@ plotZGVs(dat, zgv, fmax)
 fprintf('\n\n++ Direct method: ++\n')
 tic, zgv = computeZGVDirect(gew); toc
 nZGV = length(zgv.w(zgv.w < 2*pi*fmax)) % print number of ZGV points 
-plotZGVs(dat, zgv, fmax)
+plotZGVs(dat, zgv, fmax), title('Direct method'), drawnow
 
 
 %% function to plot dispersion curves with ZGV points
@@ -69,13 +69,13 @@ function plotZGVs(dat, zgv, fmax)
     fh = figure; pos = fh.Position; fh.Position = [pos(1:3), pos(4)*2.1];
 
     subplot(2,1,1), hold on, ylim([0, fmax]); xlim([0, 25e3])
-    plot(dat.k.', dat.w.'/2/pi, '-'); ax = gca; ax.ColorOrderIndex = 1; 
+    plot(dat.k, dat.w/2/pi, '-'); ax = gca; ax.ColorOrderIndex = 1; 
     xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
     plot(zgv.k(:), zgv.w(:)/2/pi, 'r*');
     
     subplot(2,1,2), hold on, xlim([0, fmax]); 
-    plot(real(dat.w).'/2/pi, real(dat.cg).', '-'); ax = gca; ax.ColorOrderIndex = 1; 
+    plot(real(dat.w)/2/pi, real(dat.cg), '-'); ax = gca; ax.ColorOrderIndex = 1; 
     xlabel('frequency f in Hz'), ylabel('group vel in m/s')
     plot(zgv.w(:)/2/pi, zeros(size(zgv.w(:))), 'r*')
-    drawnow;
+    subplot(2,1,1);
 end

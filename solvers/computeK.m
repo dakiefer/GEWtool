@@ -12,17 +12,17 @@ function dat = computeK(gews, w, nModes)
     %
     % Return value:
     % - dat:     A data structure containing 
-    %            - w: the angular frequencies in rad/s, expanded to [nF x nK]
-    %            - k: the wavenumbers in rad/m [nF x nK]
+    %            - w: the angular frequencies in rad/s, expanded to [nK x nF]
+    %            - k: the wavenumbers in rad/m [nK x nF]
     %            - u: the displacement eigenvectors as a 
-    %                 cell array describing the layers, elements are [nF x nK x N x Nudof]
+    %                 cell array describing the layers, elements are [nK x nF x N x Nudof]
     % 
     % See also computeW, Waveguide.
     % 
     % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
     
     if ~isvector(w), error('Angular frequencies should be a [Nx1] array.'); end
-    w = w(:); % column vector
+    w = w(:).'; % row vector
     for i = 1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
         wh = w*gew.np.h0;
@@ -34,8 +34,8 @@ function dat = computeK(gews, w, nModes)
             warning('GEWTOOL:computeK:tooManyModes', 'More modes requested than available. Resetting nModes to the matrix size.')
             nModes = size(gew.op.M,1);
         end
-        kh = nan(length(wh), nModes);
-        u = nan(length(wh), nModes, gew.geom.Ndof);
+        kh = nan(nModes, length(wh));
+        u = nan(nModes, length(wh), gew.geom.Ndof);
         gdoffree = setdiff([gew.geom.gdofOfLay{:}], gew.geom.gdofDBC(:).');
         for ii = 1:length(wh)
             whn = wh(ii)/gew.np.fh0; % current frequency-thickness (normalized)
@@ -54,8 +54,8 @@ function dat = computeK(gews, w, nModes)
             ui = ui(:,ind); % sort
     %         [~, ind] = sort(real(khi));
     %         khi = khi(ind); ui = ui(:,ind); % sort
-            u(ii,:,gdoffree) = ui(:,1:nModes).'; % save
-            kh(ii, :) = khi(1:nModes);
+            u(:,ii,gdoffree) = ui(:,1:nModes).'; % save
+            kh(:,ii) = khi(1:nModes);
         end
         dat(i).k = kh/gew.np.h0;
         dat(i).w = w.*ones(size(kh));

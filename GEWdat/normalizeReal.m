@@ -1,7 +1,7 @@
 function datN = normalizeReal(gew,dat)
 % normalizeReal - Normalize propagating modes with real wavenumbers. 
 
-if any(dat.k ~= dat.k(1,:), 'all') % orthogonality for constant frequency! 
+if any(dat.k ~= dat.k(:,1), 'all') % orthogonality for constant frequency! 
     error('GEWTOOL:normalizeReal:nonconstk', 'Use this normalization for constant constant wavenumber computations only.');
 end
 
