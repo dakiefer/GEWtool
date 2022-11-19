@@ -4,24 +4,30 @@ function exc = excitabilityLUS(gew, dat, at)
 %   laser ultrasonic excitation and interferometric detection. The
 %   excitability/detectability depends on the modal displacements on the waveguide's
 %   surface where the measurement is performed:
-%   excitability  ~ ux (shear tractions are induced by laser)
-%   detectability ~ uy (normal displacements are detected) 
+%   - excitability  ~ ux (shear tractions are induced by small-diamiter laser in 
+%                   nonablasive regime)
+%   - detectability ~ uy (normal displacements are detected) 
 %   excitabilityLUS() returns the product ux*uy normlized such that an
-%   excitability of 1 is obtained 1e2 above the median excitability. Ploting
-%   decibel values in [-40, 0] usually gives nice pictures. 
+%   excitability of 1 is obtained 1e2 above the median excitability. To mantain
+%   the same normalization with different discretiations (i.e., obtained number
+%   of modes) it is important to either (1) specify the desired number of modes
+%   in computeW(), or (2) restrict to the solutions in a given frequency range.
+%   Otherwise, more and more modes are considered with increasing discretization
+%   order. Ploting decibel values in [-40, 0] usually gives nice pictures.
 %
 %   Usage: 
 %   exc = excitabilityLUS(gew, dat, at):   provide the waveguide description
-%   "gew", the dispersion data "dat" and the surface where to compute exc: 
-%       - at: one of 'top', 'bottom'.
+%   "gew", the dispersion data "dat" and select the surface by chosing "at": 
+%       - for the last layer's surface:  'top' | 'outer' | 't' | 'o', or 
+%       - for the first layer's surface: 'bottom' | 'inner' | 'b' | 'i'.
 % 
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris
 
     switch at
-        case 'top'
+        case {'top','t','outer','o'}
             n = gew.geom.N(end);  % node index
             l = gew.geom.nLay;    % layer index
-        case 'bottom'
+        case {'bottom','b','inner','i'}
             n = 1; % node index
             l = 1; % layer index 
         otherwise 
