@@ -6,7 +6,7 @@ function dat = normalizeComplex(gew, dat)
 % B. A. Auld, Acoustic Fields and Waves in Solids 2, 2nd ed., vol. 2, 2 vols. 
 % Malabar: Krieger Publishing Company, 1990.
 
-warning('GEWtool:untested', 'Untested function.')
+warning('GEWTOOL:untested', 'Untested function.')
 
 if any(dat.w ~= dat.w(:,1), 'all') % orthogonality for constant frequency! 
     error('GEWTOOL:normalizeComplex:nonconstfreq', 'Cross power flux must be computed for wavenumbers at constant frequency.');

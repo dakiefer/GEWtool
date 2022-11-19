@@ -1,4 +1,4 @@
-# GEWTool
+# GEWtool
 
 Dispersion curves and computation with guided elastic waves (GEWs) in MATLAB©. 
 
@@ -6,13 +6,13 @@ Dispersion curves and computation with guided elastic waves (GEWs) in MATLAB©.
 
 1. Add the folders `layers`, `material`, `material/database`, `numerics`, `solvers` and `waveguides` to the matlab path and save for future sessions.  You could use:
   ```matlab
-  installdir = fullfile('~', 'Documents', 'MATLAB'); % adjust to path where you put GEWTool!
-  addpath(fullfile(installdir, 'GEWTool', 'layers'));
-  addpath(fullfile(installdir, 'GEWTool', 'material'));
-  addpath(fullfile(installdir, 'GEWTool', 'material/database'));
-  addpath(fullfile(installdir, 'GEWTool', 'numerics'));
-  addpath(fullfile(installdir, 'GEWTool', 'solvers'));
-  addpath(fullfile(installdir, 'GEWTool', 'waveguides'));
+  installdir = fullfile('~', 'Documents', 'MATLAB'); % adjust to path where you put GEWtool!
+  addpath(fullfile(installdir, 'GEWtool', 'layers'));
+  addpath(fullfile(installdir, 'GEWtool', 'material'));
+  addpath(fullfile(installdir, 'GEWtool', 'material/database'));
+  addpath(fullfile(installdir, 'GEWtool', 'numerics'));
+  addpath(fullfile(installdir, 'GEWtool', 'solvers'));
+  addpath(fullfile(installdir, 'GEWtool', 'waveguides'));
   savepath % make permanent
   ```
 2. Enjoy!

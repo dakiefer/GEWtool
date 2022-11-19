@@ -28,7 +28,7 @@ if nargin<5, opts=[]; end
 class_t = superiorfloat(L0,L1,L2,M);
 n = size(L0,2);
 if ~exist('threepar_delta', 'file') % check if function is on Matlab path
-    error('GEWtool:installMultiParEig',...
+    error('GEWTOOL:installMultiParEig',...
         'This functionality requires you to first install MultiParEig from\nhttps://www.mathworks.com/matlabcentral/fileexchange/47844-multipareig');
 end
 
