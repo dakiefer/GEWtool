@@ -37,13 +37,12 @@ function dat = computeW(gews, k, nModes)
         u = nan(length(kh), nModes, gew.geom.Ndof);
         gdoffree = setdiff([gew.geom.gdofOfLay{:}], gew.geom.gdofDBC(:).');
         for n = 1:length(kh)
-            [un, whn2] = polyeig((1i*kh(n))^2*L2 + (1i*kh(n))*L1 + L0, M); % does not work properly with eig()
-            whnn = real(sqrt(whn2));
-            spurious = whnn==0; whnn(spurious) = nan; un(:,spurious) = nan;
-            [whnn, ind] = sort(whnn);
+            [un, whn2] = eig(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, 'chol',...
+                'vector'); % Choleski guarantees real eigenvalues, M needs to be positive definite, faster than qz
+            [whnn, ind] = sort(sqrt(whn2));
             un = un(:,ind);
+            whn(n,:) = whnn(1:nModes); % save
             u(n,:,gdoffree) = un(:,1:nModes).'; % save
-            whn(n,:) = whnn(1:nModes);
         end
         % save to output variable:
         dat(i).w = whn*gew.np.fh0/gew.np.h0;
