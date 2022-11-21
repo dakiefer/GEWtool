@@ -4,6 +4,7 @@
 % aluminum plate.
 
 % % input: You need to create matrices Li, M first!
+matrices = @(c, rho, N) matrices_GEWtool(c, rho, N); % select one of the function defined below
 addpath("~/Projekte/GEWtool/tests/") % for rayleighLambS() and rayleighLambA()
 mat = Material('aluminum'); % load material parameters from database
 c = mat.c; rho = mat.rho;
@@ -21,11 +22,12 @@ residuumAtRLRoot = abs(rayLambAtK0(wRayLamb))
 
 %% computing the frequency w
 ws = nan(numel(N),1); % allocate
-dofs = nan(numel(N),1); % allocate
+dofs = nan(numel(N),1); % allocate for resulting matrix size (depends on considered polarization)
+time = nan(numel(N),1); % allocate
 for i=1:numel(N)
-    [L2, L1, L0, M, fh0] = matrices_SCM(c, rho, N(i));
+    [L2, L1, L0, M, fh0] = matrices(c, rho, N(i));
     dofs(i)=size(L0,1);
-    % [wh2] = polyeig((1i*k0*h)^2*L2 + (1i*k0*h)*L1 + L0, M); 
+    time(i) = timeit(@()matrices(c, rho, N(i))); % test assembling time
     [wh2] = eig(-(1i*k0*h)^2*L2 - (1i*k0*h)*L1 - L0, M, 'qz');  % use Cholesky: positive definite B
     w = sqrt(wh2)*fh0/h;
     [~, indSel] = min(abs(w - w0));
@@ -35,11 +37,16 @@ end
 errRel = abs(ws-wRayLamb)/wRayLamb;
 errWNmax = errRel(end)
 
+figure(1), hold on, 
+bar(dofs, time); 
+title('assembling time for matrices'); 
+xlabel('matrix size (= 2N)'), ylabel('time in s')
+
 figure(2), hold on, plot(dofs,abs(errRel),'o--');
 ax=gca; ax.YScale='log';
 xlabel('matrix size (= 2N)'), ylabel('rel. error')
 title('Error w.r.t Rayleigh-Lamb root')
-legend({'SCM', 'SEM', 'GEWtool'})
+% legend({'SCM', 'SEM', 'GEWtool'})
 
 
 %% assembling the matrices:
