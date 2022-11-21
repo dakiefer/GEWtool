@@ -2,5 +2,6 @@
 
 adamou.m
 *.asv
+untracked
 tests/data/ThurstonRod.png
 tests/data/disperseRod.csv
