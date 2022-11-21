@@ -1,45 +1,47 @@
-addpath('../experimental')
-mat = Material('aluminum');
-h = 1; 
-w0 = 2*pi*5000; % for reference and mode selection
-k0 = 5.59596;  % for reference and mode selection (also: 3.6180, 3.8674, 5.59596, 7.8648)
-N = 5:5:40;
-k = linspace(1e-3, 15, 200);
+%% computational time 
+% Times computational cost required to solve for dispersion curves with different
+% discretization orders and different solvers.
+% 
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-solv = @(gew) computeW(gew,k); % Note: this function shall not call tic/toc!!
-impls = {@(N) implCurrent(mat,h,N), @(N) Lamb_matrices_SEM(mat,h,N)};
+mat = Material('steel');
+h = 1; 
+N = 5:5:30;
+k = linspace(1e-1, 15, 200);
+w = k*mat.ct;
+
+% list of solvers to compare:
+solver_list = {@(gew) computeW(gew,k), @(gew) computeK(gew,w)};
 
 %% current implementation 
 figure(1), hold off
-chron = zeros(length(N)+1,length(impls));
-implsName = {};
-for n = 1:length(impls)
-    impl = impls{n};
-    func = functions(impl); 
-    implsName{n} = func.function;
-    fprintf('Testing %s:\n', implsName{n})
-    tic; 
-    for ii = 1:length(N)
-        gew = impl(N(ii));
-        dat = solv(gew); 
-        chron(ii+1,n) = toc;
-        fprintf('dof = %d. elapsed time: %g.\n', size(gew.op.M,1),  chron(ii+1,n)-chron(ii,n));
+chron = zeros(length(N),length(solver_list));
+n = zeros(length(N), length(solver_list)); % allocate for matrix size (depends on problem solved)
+solverName = {};
+for i = 1:length(solver_list)
+    solver = solver_list{i};
+    func = functions(solver); 
+    solverName{i} = func.function; % get the name of the solver function
+    fprintf('Testing %s:\n', solverName{i})
+    for j = 1:length(N)
+        plate = Plate(mat, h, N(j));
+        gew = plate.Lamb();
+        tic;
+        dat = solver(gew); 
+        chron(j,i) = toc;
+        n(j,i) = size(gew.op.M,1);
+%         chron(ii,n) = timeit(@()solver(gew)); % not really necessary as we do lots of for loops in the solver function
+        fprintf('dof = %d. solution time: %g.\n', size(gew.op.M,1),  chron(j,i));
     end
-    chron(ii+1,n) = toc;
-    fprintf('Total elapsed time: %g.\n\n', chron(ii+1,n));
     plot(dat.k(:), dat.w(:)/2/pi, '.'); ylim([0, 6e3]/h); hold on;
     xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz'), drawnow
 end
 
-figure(2)
-bar(N, diff(chron))
-legend(implsName, 'Location','northwest')
-xlabel('Discretization order N')
-ylabel('Runtime in s')
+figure(2), hold on,
+bar(n, chron)
+legend(solverName, 'Location','northwest')
+xlabel('matrix size n')
+ylabel('solution time in s')
 
-
-%% auxilary function
-function gew = implCurrent(mat,h,N)
-    plate = Plate(mat, h, N);
-    gew = plate.Lamb();
-end
+figure(1)
+legend(solverName, 'Location','northwest')
