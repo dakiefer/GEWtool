@@ -78,6 +78,36 @@ function [L2, L1, L0, M, fh0] = matrices_SCM(c, rho, N)
     L2(dofBC, :) = 0; L1(dofBC, :) = B1; L0(dofBC, :) = B0; M(dofBC, :) = 0;
 end
 
+function [L2, L1, L0, M, fh0] = matrices_SCMrect(c, rho, N)
+    c0 = c(1,2,1,2); rho0 = rho; fh0 = sqrt(c0/rho0); % normalization parameters
+    rhon = rho/rho0; cn = c/c0;
+    
+    % relevant stiffness tensors: 
+    cxx = squeeze(cn(1,1:2,1:2,1));
+    cxy = squeeze(cn(1,1:2,1:2,2));
+    cyx = squeeze(cn(2,1:2,1:2,1));
+    cyy = squeeze(cn(2,1:2,1:2,2));
+    Rho = rhon*eye(size(cxx));
+    
+    %% discretization 
+%     [~, Dy_dash] = chebdif(N, 2);
+%     D1 = -2*Dy_dash(:,:,1); % differentiation on [-1/2, 1/2]
+%     D2 = (2)^2*Dy_dash(:,:,2); % 2nd order differentiation on [-1/2, 1/2]
+    D1 = diffmat(N, 1, [-0.5 0.5], 'chebkind2'); % first order on domain [0 1]
+    D2 = diffmat(N, 2, [-0.5 0.5], 'chebkind2'); % second order on domain [0 1]
+    Id = eye(size(D1));  % identity matrix for discretization
+    [xf, ccw, baryw] = chebpts(N, [-0.5 0.5], 2); % second-kind points (includes boundaries)
+    [xd] = chebpts(N-2, [-0.5 0.5], 1); % first-kind points (without boundaries)
+    P = barymat(xd, xf, baryw); % resampling matrix (from values on xf to values on xd)
+    % P = eye(size(Id)); % disable resampling
+    
+    %% Lamb wave problem
+    L2 = kron(cxx, P*Id); L1 = kron(cxy + cyx, P*D1); L0 = kron(cyy, P*D2); 
+    M = kron(Rho,P*Id);
+    B1 = kron(cyx, Id([1, N], :)); B0 = kron(cyy, D1([1, N], :)); % BCs
+    L2 = [zeros(size(B0)); L2]; L1 = [B1; L1]; L0 = [B0; L0]; M = [zeros(size(B0)); M]; % incorporate BCs
+end
+
 function [L2, L1, L0, M, fh0] = matrices_SEM(c, rho, N)
     c0 = c(1,2,1,2); rho0 = rho; fh0 = sqrt(c0/rho0);  % normalization parameters
     rhon = rho/rho0; cn = c/c0; % normalize
