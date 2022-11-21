@@ -41,7 +41,7 @@ function dat = computeW(gews, k, nModes)
                 'vector'); % Choleski guarantees real eigenvalues, M needs to be positive definite, faster than qz
             [whnn, ind] = sort(sqrt(whn2));
             un = un(:,ind);
-            whn(n,:) = whnn(1:nModes); % save
+            whn(n,:) = real(whnn(1:nModes)); % save
             u(n,:,gdoffree) = un(:,1:nModes).'; % save
         end
         % save to output variable:
