@@ -28,7 +28,7 @@ exc = 20*log10(exc); % in decibel
 ks = dat.k(ind); ws = dat.w(ind);
 figure, hold on, ylim([0, 6e6]); 
 scatter(ks, ws/2/pi, 8, exc, 'filled')
-colormap(flipud(inferno(100)));
+colormap(flipud(colormap));
 cb = colorbar; caxis([-60, 0]);
 cb.Label.Interpreter = 'latex';  cb.Label.String = '$u_x u_r$ at outer surface in dB';
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
