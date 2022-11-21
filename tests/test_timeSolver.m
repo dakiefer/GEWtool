@@ -6,7 +6,7 @@
 
 mat = Material('steel');
 h = 1; 
-N = 5:5:30;
+N = 5:5:50;
 k = linspace(1e-1, 15, 200);
 w = k*mat.ct;
 
@@ -37,11 +37,11 @@ for i = 1:length(solver_list)
     xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz'), drawnow
 end
 
+figure(1)
+legend(solverName, 'Location','northwest')
+
 figure(2), hold on,
 bar(n, chron)
 legend(solverName, 'Location','northwest')
 xlabel('matrix size n')
 ylabel('solution time in s')
-
-figure(1)
-legend(solverName, 'Location','northwest')
