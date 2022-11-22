@@ -29,7 +29,11 @@ methods
         % - rs:    coordinates of interfaces in meter [1 x Nlay+1]
         % - Ns:    discretization order [1 x Nlay], each entry corresponds to one layer
         % - Nudof: displacement digrees of freedom [1 x Nlay], each entry corresponds to one layer
+
+        % initialize geometry:
 		if nargin < 4, Nudof = 3*ones(size(Ns)); end
+        obj.geom = Geometry(rs, Ns, Nudof);
+        % convert mats to Material class:
         if isstruct(mats) % convert from struct to objects of Material class
             matsObj = Material.empty(0, length(mats)); % initialize
             for i = 1:length(mats)
@@ -37,13 +41,15 @@ methods
             end
             mats = matsObj;
         end
-		obj.geom = Geometry(rs, Ns, Nudof);
 		obj.mat = mats;
-		np.c0 = mats(1).c(1,2,1,2); 
-		np.h0 =(rs(end)-rs(1))/length(mats); % normalization parameters
-		np.rho0 = mats(1).rho;
-		np.fh0 = sqrt(np.c0/np.rho0);
-		obj.np = np;
+        % choose normalization parameters (physical units for the calculation):
+        c1212 = zeros(1,length(mats));
+        for i = 1:length(mats), c1212(i) = mats(i).c(1,2,1,2); end
+		np.c0 = mean(c1212); % unit stiffness
+		np.rho0 = mean([mats.rho]); % unit mass
+        np.h0 =(rs(end)-rs(1))/length(mats); % unit distance
+		np.fh0 = sqrt(np.c0/np.rho0); % unit frequency-thickness
+		obj.np = np; % normalization parameters
 	end
 
 	function h0 = get.h0(obj)
