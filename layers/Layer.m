@@ -88,7 +88,7 @@ classdef Layer
                 N = length(yi); % polynomial order is equal to number of quadrature points
             end
             % % For Chebyshev polynomials: 
-%             Dy = diffmat(2*N, [0 1]); % differentiation matrix on integration grid yi
+%             Dy = diffmat(N, [0 1]); % differentiation matrix on integration grid yi
 %             Psi = chebpoly(0:N-1, [0 1]); % Chebyshev polynomials
 %             P = Psi(yi,:); % along 1st dim: samples at yi, along 2nd dim: polynomial order
 %             Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials
