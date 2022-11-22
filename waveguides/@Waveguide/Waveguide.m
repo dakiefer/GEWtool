@@ -9,11 +9,14 @@ classdef Waveguide < matlab.mixin.Copyable
 
 properties (Access = public)
 	geom        % geometry object describing the discretized, multilayered structure
-	mat         % materials [1 x Nlay]
 	lay Layer = LayerPlate.empty   % layers [1 x Nlay]
 	op = [] 	% operators describing the wave propagation
 	np  		% normalization parameters (material parameters, geometry)
 end % properties
+
+properties (Access = protected)
+    mat         % materials [1 x Nlay] (user interface should rather use obj.lay.mat)
+end
 
 properties (Dependent)
 	h0  		% unit thickness: short hand for obj.np.h0
@@ -41,7 +44,7 @@ methods
             end
             mats = matsObj;
         end
-		obj.mat = mats;
+		obj.mat = mats; % protected property is later used in constructor of subclass
         % choose normalization parameters (physical units for the calculation):
         c1212 = zeros(1,length(mats));
         for i = 1:length(mats), c1212(i) = mats(i).c(1,2,1,2); end
