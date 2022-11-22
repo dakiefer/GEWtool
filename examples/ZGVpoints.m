@@ -21,24 +21,26 @@ gew = plate.LambA; % assembles matrices for the specified waves
 dat = computeW(gew, k); % dispersion curves will be plotted for reference 
 dat.cg = groupVel(gew, dat); % compute group velocity for plotting
 
-% % here are some ZGV points with 3 digits accuracy (serve as initial guess): 
-w0 = [0.288    0.521    0.694    0.719    0.751]*1e8;
-k0 = [0.339    0.349    0.708    0.249    0.068]*1e4;
+% % here are some ZGV points with 2 digits accuracy (serve as initial guess): 
+w0 = [0.29    0.52    0.69    0.72    0.75]*1e8;
+k0 = [0.34    0.35    0.71    0.25    0.07]*1e4;
 
 %% Newton-kind iteration: 
 % This method is implemented in computeZGV(). It is super fast but needs initial
-% guesses. Instead of initial guesses w0, k0. Instead, you can also provide the
-% dispersion data "dat", computeZGV() will then search where the group velocity
-% changes sign.
+% guesses:
 fprintf('\n\n++ Newton-type iteration: ++\n')
+fprintf('Search close to provided initial guesses:\n')
+tic, zgv5 = computeZGV(gew, w0, k0); toc
+w0initial = w0, wConverged = zgv5.w.' % print initial guesses and computed values
+
+% Instead of initial guesses w0, k0, you can also provide the dispersion data
+% "dat", computeZGV() will then search where the group velocity changes sign:
+fprintf('\n\n++ Newton-type iteration: ++\n')
+fprintf('Search where group velocity changes sign:\n')
 tic, zgv = computeZGV(gew, dat); toc
 nZGV = length(zgv.w(zgv.w < 2*pi*fmax)) % print number of ZGV points 
 plotZGVs(dat, zgv, fmax), title('Newton-type method'), drawnow
 
-% Alternatively, you can compute ZGV points close to initial guesses w0, k0: 
-fprintf('Search close to provided initial guesses:\n')
-tic, zgv5 = computeZGV(gew, w0, k0); toc
-w0, zgv5.w.' % print initial guesses and computed values
 
 %% Scanning the ZGV points
 % This methods is implemented in computeZGVScan(). It does not need initial
@@ -66,7 +68,7 @@ plotZGVs(dat, zgv, fmax), title('Direct method'), drawnow
 
 %% function to plot dispersion curves with ZGV points
 function plotZGVs(dat, zgv, fmax)
-    fh = figure; pos = fh.Position; fh.Position = [pos(1:3), pos(4)*2.1];
+    fh = figure; pos = fh.Position; fh.Position = [pos(1), pos(2)-pos(4)*0.8, pos(3), pos(4)*1.8];
 
     subplot(2,1,1), hold on, ylim([0, fmax]); xlim([0, 25e3])
     plot(dat.k, dat.w/2/pi, '-'); ax = gca; ax.ColorOrderIndex = 1; 
