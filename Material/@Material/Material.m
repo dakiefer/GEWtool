@@ -1,8 +1,12 @@
 classdef Material
 % Material - Represent mechanical material data (generally anisotropic).
-% Stores and manipulates elasticity moduli, density and derived quantities.
-% It stores the full 4th order stiffness tensor c as a [3x3x3x3] array.
-% It interfaces to a simple material database that allows to load data by name.
+% Stores and manipulates elasticity moduli, density and derived quantities. The
+% full 4th order stiffness tensor c is stored as a [3x3x3x3] array (helpful for
+% nonlinear materials). It interfaces to a simple material database that allows
+% to load data by name.
+% 
+% Conversion functions between sets of material parameters are provided by the
+% subclass MaterialIsotropic.
 % 
 % Examples:
 % mat = Material('steel')   % load from steel.json (anywhere on path)

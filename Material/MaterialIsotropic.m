@@ -9,6 +9,14 @@ classdef MaterialIsotropic < Material
 % mat = MaterialIsotropic('steel')   % load from steel.json (anywhere on path)
 % heavierMat = MaterialIsotropic('anyName', mat.lambda, mat.mu, 1.1*mat.rho);
 %
+% Static functions:
+% (can be called directly, e.g., MaterialIsotropic.Enu2lame(E, nu))
+% [lbd, mu] = Enu2lame(E, nu)  % Young's modulus E and Poisson's ratio nu to Lamé 
+% [E, nu] = lame2Enu(lbd, mu)  % Lamé lbd and mu to Young's modulus and Poisson's ratio
+% [lbd, mu] = wavespeed2lame(cl, ct, rho) % wave speeds cl, ct and density rho to Lamé
+% [cl, ct] = lame2wavespeed(lbd, mu, rho) % Lamé lbd, mu and density rho to wave speeds
+% c = lame2stiffnessTensor(lbd, mu) % Lamé lbd and mu to stiffeness tensor c [3x3x3x3]
+%
 % See also: MaterialIsotropic.MaterialIsotropic, Material.
 %
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
@@ -80,6 +88,22 @@ classdef MaterialIsotropic < Material
         % Output: scalars E, nu
             E = mu*(3*lbd + 2*mu)/(lbd + mu);
             nu = lbd/(2*(lbd + mu));
+        end
+        function [lbd, mu] = wavespeed2lame(cl, ct, rho)
+        % wavespeed2lame - Convert wave speeds cl and ct to Lamé parameters lbd
+        % and mu. 
+        % Input: scalars cl, ct and rho (mass density)
+        % Output: scalars lbd, mu
+            mu = rho*ct^2;
+            lbd = rho*(cl^2 - 2*ct^2);
+        end
+        function [cl, ct] = lame2wavespeed(lbd, mu, rho)
+        % lame2wavespeed - Convert Lamé parameters lbd and mu to wave speeds cl
+        % and ct.
+        % Input: scalars lbd, mu and rho (mass density)
+        % Output: scalars cl and ct
+            cl = sqrt((lbd + 2*mu)/rho);
+            ct = sqrt(mu/rho);
         end
         function c = lame2stiffnessTensor(lbd, mu)
             % lame2stiffnessTensor - Convert Lamé parameters lambda and mu to c 
