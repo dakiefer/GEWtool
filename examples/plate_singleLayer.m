@@ -1,43 +1,38 @@
-%% compute guided ultrasonic waves in a plate
+%% compute guided waves in a plate
 % 
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-% % specify parameters:
-rho = 7900; lbd = 1.1538e11; mu = 7.6923e10; % steel material
-h = 1e-3; % thickness 
-N = 15; % number of discretization points
-k = linspace(1e-2, 12, 100)/h; % wavenumbers to solve for
+mat = Material('steel');        % load from database (or create your own)
+h = 1e-3;                       % thickness in m
+N = 12;                         % number of nodes (dictates accuracy)
+k = linspace(1e-2, 12, 100)/h;  % wavenumbers to solve for
+plate = Plate(mat, h, N);       % create waveguide description 
 
-% % material and waveguide description:
-II = eye(3).*shiftdim(eye(3), -2); % 4th order "unit tensor"
-c = lbd*II + mu*(permute(II, [1 3 4 2]) + permute(II, [1 3 2 4])); % stiffness tensor
-steel.c = c; steel.rho = rho; % material 
-plate = Plate(steel, h, N); % create waveguide description 
-
-%% compute coupled S/A-waves and plot:
-gew = plate.Lamb; % assembles matrices for the specified waves
-dat = computeW(gew, k); 
-figure, h0 = plot(dat.k, dat.w/2/pi, 'xk'); ylim([0, 6e3]/h);
-ax = gca; ax.ColorOrderIndex = 1; % reset color order index
-xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
+%% compute Lamb waves (any symmetry):
+gew = plate.Lamb; tic           % choose waves (assemble matrices) 
+dat = computeW(gew, k); toc     % solve
+plot(dat.k/1e3, dat.w/2/pi/1e6); ylim([0, 6]);   % plot
+xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
+title('Lamb waves')
 
 %% compute symmetric/anti-symmetric waves separately:
 gews = plate.LambSA; % assembles matrices for both the sym/anti-sym Lamb waves
 datSA = computeW(gews, k);
 
-cc = lines(3);
 datS = datSA(1); % symmetric waves
-hold on, h1 = plot(datS.k, datS.w/2/pi, 'Color', cc(1,:)); 
 datA = datSA(2); % anti-symmetric waves
-hold on, h2 = plot(datA.k, datA.w/2/pi, 'Color', cc(2,:)); ylim([0, 6e3]/h);
-xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
-legend([h0(1), h1(1), h2(1)], {'coupled (reference)', 'symmetric', 'anti-symmetric'}, 'Location', 'southeast')
+figure, hold on, cc = lines(3);
+hS = plot(datS.k/1e3, datS.w/2/pi/1e6, 'Color', cc(1,:)); 
+hA = plot(datA.k/1e3, datA.w/2/pi/1e6, 'Color', cc(2,:)); ylim([0, 6]);
+xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
+legend([hS(1), hA(1)], {'symmetric', 'anti-symmetric'}, 'Location', 'southeast')
+title('symmetric and anti-symmetric Lamb waves')
 
 %% compute wavenumbers and plot:
-freq = linspace(1e-3, 6, 100).'*1e6;
+freq = linspace(1e-2, 6, 500).'*1e6; % frequencies where to compute wavenumbers k
 dat = computeK(gew, 2*pi*freq);
-hold on, h3 = plot(real(dat.k(:)), dat.w(:)/2/pi, '.'); xlim([0, max(k)])
-legend([h0(1), h1(1), h2(1), h3(1)], {'coupled (reference)', 'symmetric', 'anti-symmetric'...
-    'complex k'}, 'Location', 'southeast')
-
-
+figure, plot3(real(dat.k(:))/1e3, imag(dat.k(:))/1e3, dat.w(:)/2/pi/1e6, '.'); 
+xlim([0, 12]), ylim([-10.5, 10.5]), view(-22, 18)
+xlabel('Re(k) in rad/mm'), ylabel('Im(k) in rad/mm')
+zlabel('f in MHz')
+title('complex spectrum')
