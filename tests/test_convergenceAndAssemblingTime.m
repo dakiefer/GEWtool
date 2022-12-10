@@ -44,7 +44,7 @@ xlabel('matrix size (= 2N)'), ylabel('time in s')
 
 figure(2), hold on, plot(dofs,abs(errRel),'o--');
 ax=gca; ax.YScale='log';
-xlabel('matrix size (= 2N)'), ylabel('rel. error')
+xlabel('matrix size (= 2N)'), ylabel('relative error')
 title('Error w.r.t Rayleigh-Lamb root')
 % legend({'SCM', 'SEM', 'GEWtool'})
 
