@@ -1,4 +1,4 @@
-%% plot the convergence with respect to the increase in degrees of freedom (dof)
+% % plot the convergence with respect to the increase in degrees of freedom (dof)
 % The convergence is tested against the Rayleigh-Lamb root, i.e., valid for Lamb waves
 % in an isotropic plate. The provided approximate solution (w0, k0) is for an
 % aluminum plate.

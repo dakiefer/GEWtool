@@ -24,11 +24,7 @@ plot(dat1.k(:), dat1.w(:)/2/pi, '.');
 legend({'disperse', 'n = 0', 'n = 1'})
 
 % request user to evaluate test:
-answer = questdlg('Is the plot good?','confirm test', 'yes', 'no', 'no');
-close(fig);
-pass = false;
-if strcmp(answer, 'yes'), pass = true; end
-assert(pass)
+assert( userTestConfirmation(fig) )
 
 % some unused stuff:
 % pass = uiconfirm(fig, 'pass?','Is plot good?')

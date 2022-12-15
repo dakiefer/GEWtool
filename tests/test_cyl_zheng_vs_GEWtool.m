@@ -1,4 +1,4 @@
-%% compare to zheng
+% % compare to zheng
 % axial waves in a cylinder of an anisotropic steel material. 
 %
 % see: M. Zheng, C. He, Y. Lyu, and B. Wu, “Guided waves propagation in anisotropic 
@@ -16,9 +16,10 @@ k = linspace(1e-2, 15, 200)/h;
 mat = Material('steel_zheng');
 cyl = Cylinder(mat, [a, b], N);
 
+%% plot 
 % plot reference:
 load('data/zheng.mat');
-figure, hold on, ylim([0, 12e3]), xlim([0, 0.4])
+fig = figure; hold on, ylim([0, 12e3]), xlim([0, 0.4])
 plot(L01.f, L01.cp, 'k'), plot(L02.f, L02.cp, 'k'), plot(L04.f, L04.cp, 'k')
 plot(F11.f, F11.cp, 'k'), plot(F12.f, F12.cp, 'k'), plot(F13.f, F13.cp, 'k')
 xlabel('f in MHz'), ylabel('cp in m/s'), drawnow
@@ -38,3 +39,6 @@ gew = cyl.fullyCoupled(n);
 dat = computeW(gew, k);
 plot(dat.w(:)/2/pi/1e6, dat.w(:)./dat.k(:), 'g.'); 
 legend({'', '', '', '', '', 'Zheng', 'n = 0', 'n = 1'})
+
+% request user to evaluate test:
+assert( userTestConfirmation(fig) )
