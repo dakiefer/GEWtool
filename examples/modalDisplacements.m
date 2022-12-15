@@ -47,7 +47,7 @@ Tyy = [T1(:,2); T2(:,2)];
 %%  plot the modal displacements 
 % All displacement components need to be continuous across the layer interfaces.
 figure(2), clf
-subplot(2,1,1); hold on, title('modal displacements ux and uy') % plot ux
+subplot(2,1,1); hold on, % plot ux
 plot(real(ux), y/1e-3, '-*');
 plot(imag(ux), y/1e-3, '-*');
 yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
@@ -69,7 +69,7 @@ legend({'real uy', 'imag uy'}, 'Location','best')
 % The stress components Tyx and Tyy need to be continuous across the layers. Moreover, 
 % they vanish at the boundaries. 
 figure(3), clf,
-subplot(2,1,1); hold on, title('modal stresses Tyx and Tyy'); % plot Tyx
+subplot(2,1,1); hold on, % plot Tyx
 plot(real(Tyx), y/1e-3, '-*');
 plot(imag(Tyx), y/1e-3, '-*');
 yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
