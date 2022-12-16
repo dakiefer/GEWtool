@@ -1,94 +1,101 @@
-% % EDAT:
-mat = Material.Material('brass'); 
-h = 1e-3; % plate thickness in mm
-N = 40; % number of collocation points
-plate = Dispersion.Plate(mat, h, N);
+% % load pre-computed fields:
+load('data/Lamb_ref_fields.mat')
 
-% compute wavenumbers and wave displacement structures:
-freq = linspace(0.01, 4, 150).'*1e6;
-Nmodes = 60;
-data = plate.solveForFreq(freq, Nmodes);
-ff = freq.*ones(size(data.k)); % for plotting
-[ySCM, wSCM] = chebpts(N, [-0.5 0.5]*h);
-data.u = normalizeL2(data.u, wSCM);  % normalize to ∫ conj(u).u dy = 1
-
-% % new implementation:
-clear plate
-plate = Plate(mat, h, N);
+% % current implementation:
+N = 35;
+plate = Plate(mat, h, N); % mat and h from Lamb_ref_fields.mat
 gew = plate.Lamb;
-% k = linspace(1e-3, 15, 150)/h;
-dat = computeK(gew, 2*pi*freq);
-[yNew, wNew] = Layer.nodes(N); wNew = wNew*h; yNew = (yNew-0.5)*h;
-dat.u{1} = normalizeL2(dat.u{1}, wNew); % % normalize to ∫ conj(u).u dy = 1
+dat = computeK(gew, 2*pi*freq, Nmodes); % freq and Nmodes from Lamb_ref_fields.mat
+[y, wInt] = Layer.nodes(N); wInt = wInt*h; y = (y-0.5)*h;
+dat.u{1} = normalizeL2(dat.u{1}, wInt); % % normalize to ∫ conj(u).u dy = 1
+relTol = 1e-4;
+absTol = 1e-3;
 
 %% displacements:
-uOld = abs(data.u(:,:,1,1));
-uNew = abs(dat.u{1}(:,:,1,1));
-clf, hold on, title('displacement ux at boundary')
-plot(ff(:), abs(uOld(:)), 'x')
-plot(dat.w(:)/2/pi, abs(uNew(:)), '.')
+u = abs(dat.u{1}(:,:,1,1));
+err = (abs(u(:) - uRef(:)))./uRef(:);
+assert( all(err < relTol) )
+
+figure, hold on, title('displacement ux at boundary')
+plot(datRef.w(:)/2/pi, abs(uRef(:)), 'x')
+plot(dat.w(:)/2/pi, abs(u(:)), '.')
 
 %% particle velocity:
-vOld = abs(data.v(:,:,1,1));
-vNew = velocity(dat);
-vNew = abs(vNew{1});
-vNew = vNew(:,:,1,1);
+v= velocity(dat);
+v = abs(v{1});
+v = v(:,:,1,1);
+err = (abs(v(:) - vRef(:)))./vRef(:);
+assert( all(err < relTol) )
+
 figure, hold on, title('velocity vx at boundary')
-plot(ff(:), real(vOld(:)), 'x')
-plot(dat.w(:)/2/pi, real(vNew(:)), '.')
+plot(datRef.w(:)/2/pi, real(vRef(:)), 'x')
+plot(dat.w(:)/2/pi, real(v(:)), '.')
 
 %% strain: 
-Sold = abs(data.S(:,:,1,1,1));
-Snew = strain(gew, dat);
-Snew = abs(Snew{1});
-Snew = Snew(:,:,1,1,1);
+S = strain(gew, dat);
+S = abs(S{1});
+S = S(:,:,1,1,1);
+err = (abs(S(:) - SRef(:)))./SRef(:);
+assert( all(err < relTol) )
+
 figure, hold on, title('strain Sxx at boundary')
-plot(ff(:), real(Sold(:)), 'x')
-plot(dat.w(:)/2/pi, Snew(:), '.')
+plot(datRef.w(:)/2/pi, real(SRef(:)), 'x')
+plot(dat.w(:)/2/pi, S(:), '.')
 % ylim([0, 5000])
 
 %% stress: 
-TOld = abs(data.T(:,:,1,1,1));
-Tnew = stress(gew, dat);
-Tnew = abs(Tnew{1});
-Tnew = Tnew(:,:,1,1,1);
+T = stress(gew, dat);
+T = abs(T{1});
+T = T(:,:,1,1,1);
+err = (abs(T(:) - TRef(:)))./TRef(:);
+assert( all(err < relTol) )
+
 figure, hold on, title('stress Txx at boundary')
-plot(ff(:), real(TOld(:)), 'x')
-plot(dat.w(:)/2/pi, real(Tnew(:)), '.'), %ylim([0, 3e14])
+plot(datRef.w(:)/2/pi, real(TRef(:)), 'x')
+plot(dat.w(:)/2/pi, real(T(:)), '.'), %ylim([0, 3e14])
 
 %% power flux at interface 
-pOld = data.poyntingVectors;
-pOld = pOld(:,:,1,1);
-pNew = poyntingVec(gew, dat);
-pNew = pNew{1}(:,:,1,1);
+p = poyntingVec(gew, dat);
+p = p{1}(:,:,1,1);
+err = (abs(p(:) - pRef(:))); % do not divide by zero
+assert( all(err < absTol) )
+
 figure, hold on, title('power flux density px at boundary')
-plot(ff(:), real(pOld(:)), 'x')
-plot(dat.w(:)/2/pi, real(pNew(:)), '.')
+plot(datRef.w(:)/2/pi, real(pRef(:)), 'x')
+plot(dat.w(:)/2/pi, real(p(:)), '.')
 
 %% kinetik energy 
-EkOld = data.Ek;
-EkNew = energyKinetic(gew, dat);
+Ek = energyKinetic(gew, dat);
+err = (abs(Ek(:) - EkRef(:)))./EkRef(:);
+assert( all(err < relTol) )
+
 figure, hold on, title('total kinetik energy')
-plot(ff(:), real(EkOld(:)), 'x')
-plot(dat.w(:)/2/pi, real(EkNew(:)), '.')
+plot(datRef.w(:)/2/pi, real(EkRef(:)), 'x')
+plot(dat.w(:)/2/pi, real(Ek(:)), '.')
 
 %% elastic energy:
-EsOld = data.Es;
-EsNew = energyElastic(gew, dat);
+Es = energyElastic(gew, dat);
+err = (abs(Es(:) - EsRef(:)))./EsRef(:);
+assert( all(err < relTol) )
+
 figure, hold on, title('total elastic energy')
-plot(ff(:), abs(EsOld(:)), 'x');
-plot(dat.w(:)/2/pi, abs(EsNew(:)), '.');
+plot(datRef.w(:)/2/pi, abs(EsRef(:)), 'x');
+plot(dat.w(:)/2/pi, abs(Es(:)), '.');
 
 %% power flux total
-Pold = data.Px;
-Pnew = powerFlux(gew, dat);
+P = powerFlux(gew, dat);
+err = (abs(P(:) - PRef(:)))./PRef(:);
+assert( all(err < relTol) )
+
 figure, hold on, title('total power flux P')
-plot(ff(:), real(Pold(:)), 'x')
-plot(dat.w(:)/2/pi, real(Pnew(:)), '.')
+plot(datRef.w(:)/2/pi, real(PRef(:)), 'x')
+plot(dat.w(:)/2/pi, real(P(:)), '.')
 
 %% energy vel
-ceOld = data.ce;
-ceNew = energyVel(gew, dat);
+ce = energyVel(gew, dat);
+err = (abs(ce(:) - ceRef(:)))./ceRef(:);
+assert( all(err < relTol) )
+
 figure, hold on, title('energy velocity ce')
-plot(ff(:), ceOld(:), 'x')
-plot(dat.w(:)/2/pi, ceNew(:), '.')
+plot(datRef.w(:)/2/pi, ceRef(:), 'x')
+plot(dat.w(:)/2/pi, ce(:), '.')

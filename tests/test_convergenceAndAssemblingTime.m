@@ -5,7 +5,7 @@
 
 % % input: You need to create matrices Li, M first!
 matrices = @(c, rho, N) matrices_GEWtool(c, rho, N); % select one of the function defined below
-addpath("~/Projekte/GEWtool/tests/") % for rayleighLambS() and rayleighLambA()
+% addpath("~/Projekte/GEWtool/tests/") % for rayleighLambS() and rayleighLambA()
 mat = Material('aluminum'); % load material parameters from database
 c = mat.c; rho = mat.rho;
 h = 1;          % thickness 
@@ -18,9 +18,10 @@ rayLambAtK0 = @(wh) rayleighLambS(mat, wh, k0).*rayleighLambA(mat, wh, k0);
 options = optimset('Display','iter');
 options.TolX = eps;
 wRayLamb = fzero(rayLambAtK0, w0, options); % only for real arguments
-residuumAtRLRoot = abs(rayLambAtK0(wRayLamb))
+residuumAtRLRoot = abs(rayLambAtK0(wRayLamb));
+assert(residuumAtRLRoot < 10e-14); % make sure that Rayleigh-Lamb root is converged before starting tests
 
-%% computing the frequency w
+% % computing the frequency w
 ws = nan(numel(N),1); % allocate
 dofs = nan(numel(N),1); % allocate for resulting matrix size (depends on considered polarization)
 time = nan(numel(N),1); % allocate
@@ -34,22 +35,37 @@ for i=1:numel(N)
     ws(i)=w(indSel);
 end
 
+% plot if the variable "show" has been set to true
+if exist('show', 'var') && show
+    figure(1), hold on, 
+    bar(dofs, time); 
+    title('assembling time for matrices'); 
+    xlabel('matrix size (= 2N)'), ylabel('time in s')
+    
+    figure(2), hold on, plot(dofs,abs(errRel),'o--');
+    ax=gca; ax.YScale='log';
+    xlabel('matrix size (= 2N)'), ylabel('relative error')
+    title('Error w.r.t Rayleigh-Lamb root')
+    % legend({'SCM', 'SEM', 'GEWtool'})
+end
+
+% %%%%%%% UNIT TESTS %%%%%%%
+% run using "runtests"
+
+%% assembling time
+assert( mean(time) < 10e-4 )
+
+%% convergence
 errRel = abs(ws-wRayLamb)/wRayLamb;
-errWNmax = errRel(end)
+convi = abs(errRel) < 1e-13;        % indices of converged values
+indConv = find( diff(convi) ) + 1;  % indices where the drops occur
+assert( length(indConv) == 1 );     % there exists exactly one index where the drop occurs
 
-figure(1), hold on, 
-bar(dofs, time); 
-title('assembling time for matrices'); 
-xlabel('matrix size (= 2N)'), ylabel('time in s')
-
-figure(2), hold on, plot(dofs,abs(errRel),'o--');
-ax=gca; ax.YScale='log';
-xlabel('matrix size (= 2N)'), ylabel('relative error')
-title('Error w.r.t Rayleigh-Lamb root')
-% legend({'SCM', 'SEM', 'GEWtool'})
+% %%%%%%% END OF TESTS %%%%%%%
 
 
-%% assembling the matrices:
+% % HELPER FUNCTIONS:
+% % assembling the matrices:
 function [L2, L1, L0, M, fh0] = matrices_SCM(c, rho, N)
     c0 = c(1,2,1,2); rho0 = rho; fh0 = sqrt(c0/rho0);  % normalization parameters
     rhon = rho/rho0; cn = c/c0; % normalize
@@ -89,7 +105,7 @@ function [L2, L1, L0, M, fh0] = matrices_SCMrect(c, rho, N)
     cyy = squeeze(cn(2,1:2,1:2,2));
     Rho = rhon*eye(size(cxx));
     
-    %% discretization 
+    % % discretization 
 %     [~, Dy_dash] = chebdif(N, 2);
 %     D1 = -2*Dy_dash(:,:,1); % differentiation on [-1/2, 1/2]
 %     D2 = (2)^2*Dy_dash(:,:,2); % 2nd order differentiation on [-1/2, 1/2]
@@ -101,7 +117,7 @@ function [L2, L1, L0, M, fh0] = matrices_SCMrect(c, rho, N)
     P = barymat(xd, xf, baryw); % resampling matrix (from values on xf to values on xd)
     % P = eye(size(Id)); % disable resampling
     
-    %% Lamb wave problem
+    % % Lamb wave problem
     L2 = kron(cxx, P*Id); L1 = kron(cxy + cyx, P*D1); L0 = kron(cyy, P*D2); 
     M = kron(Rho,P*Id);
     B1 = kron(cyx, Id([1, N], :)); B0 = kron(cyy, D1([1, N], :)); % BCs
@@ -146,7 +162,7 @@ function [L2, L1, L0, M, fh0] = matrices_GEWtool(c, rho, N)
     fh0 = gew.np.fh0;
 end
 
-%% element matrices:
+% % element matrices:
 function pp = elemPP(P) 
     % elemPP - integral ∫P*Pdy of basis functions P (element mass)
     N = size(P,2);
