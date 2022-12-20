@@ -32,7 +32,7 @@ xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
 output:
 `> Elapsed time is 0.025834 seconds.` 
 
-<img src="resources/img/dispersion_lamb_steel.png" alt="rendering failed" title="Lamb waves in steel" width="450pt">
+<img src="resourcesAndDeps/img/dispersion_lamb_steel.png" alt="rendering failed" title="Lamb waves in steel" width="450pt">
 
 Proceed by inspecting the laser-ultrasonic excitability of the waves computed above (product of tangential and normal displacements ux·uy):
 
@@ -45,7 +45,7 @@ xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
 title('laser-ultrasonic excitability in dB')
 ```
 
-<img src="resources/img/lus_excitability.png" alt="rendering failed" title="LUS excitability" width="450pt">
+<img src="resourcesAndDeps/img/lus_excitability.png" alt="rendering failed" title="LUS excitability" width="450pt">
 
 ## Installation 
 
@@ -58,7 +58,7 @@ You can achieve this with (adjust first line):
   addpath(fullfile(installdir, 'GEWtool', 'material'));
   addpath(fullfile(installdir, 'GEWtool', 'material/database'));
   addpath(fullfile(installdir, 'GEWtool', 'numerics'));
-  addpath(fullfile(installdir, 'GEWtool', 'resources'));
+  addpath(fullfile(installdir, 'GEWtool', 'resourcesAndDeps'));
   addpath(fullfile(installdir, 'GEWtool', 'solvers'));
   addpath(fullfile(installdir, 'GEWtool', 'waveguides'));
   savepath % make permanent
@@ -79,16 +79,16 @@ You can also display help for all functions and classes, e.g., `help Plate`. The
 
 GEWtool implements the *Spectral Element Method (SEM)* (higher-order Finite Elements) to solve the *waveguide problem*, i.e., the boundary value problem that describes wave propagation in the structure. Such an approach is commonly qualified as 'semi-analytical'. Contrary to classical root-finding of the characteristic equation, this method does not miss solutions. Moreover, in contrast to Finite Elements, the Spectral Elements lead to small but dense matrices. 
 
-Solusions are computed with machine precision provided you have set the discretization order `N` sufficiently high. The higher you go in frequency-thickness, the higher `N`  should be. As a rule of thumb: half of the obtained modes will be accurate. The figure below shows the convergence with respect to the Rayleigh-Lamb root of an aluminum plate at 5 MHz mm and 5.6 rad/mm (S1 mode). A Spectral Collocation [implementation](https://github.com/dakiefer/GEW_dispersion_script) is shown in comparison. 15 digits accuracy is seen to be attained with N = 16 in this case.
+Solusions are computed with machine precision provided you have set the discretization order `N` sufficiently high. The higher you go in frequency-thickness, the higher `N`  should be. As a rule of thumb: half of the obtained modes will be accurate. The figure below shows the convergence with respect to the Rayleigh-Lamb root of an aluminum plate at 5 MHz mm and 5.6 rad/mm (S1 mode). A [Spectral Collocation](https://github.com/dakiefer/GEW_dispersion_script) implementation is shown in comparison. 15 digits accuracy is seen to be attained with N = 16 in this case.
 
-<img src="resources/img/convergence.png" alt="rendering failed" title="relative error w.r.t. Rayleigh-Lamb root" width="450pt">
+<img src="resourcesAndDeps/img/convergence.png" alt="rendering failed" title="relative error w.r.t. Rayleigh-Lamb root" width="450pt">
 
 For general information on the theory of elastic guided wave propagation refer to 
 > D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
 
 ## Dependencies
 
-The functions `collocD` and `lglnodes` created by Greg von Winckel are bundled together with their license file in the `resources` directory. They are also available on [Matlab Central](https://fr.mathworks.com/matlabcentral/profile/authors/869721).
+GEWtool depends on the functions `collocD` and `lglnodes` created by Greg von Winckel. They are bundled together with their license files in the `resourcesAndDeps` directory. You may find them also on [Matlab Central](https://fr.mathworks.com/matlabcentral/profile/authors/869721).
 
 ## Author
 
