@@ -1,3 +1,11 @@
+% Run using: runtests()
+% Test preprocessing implemented in GEWdat/ to pre-computed results.
+%
+% see also: 
+% https://fr.mathworks.com/help/matlab/matlab_prog/write-script-based-unit-tests.html
+%
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+
 % % load pre-computed fields:
 load('data/Lamb_ref_fields.mat')
 w = warning; warning off; % save state and turn off

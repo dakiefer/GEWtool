@@ -1,3 +1,11 @@
+% Run using: runtests()
+% Test the convergence of the frequency spectrum to the Rayleigh-Lamb root.
+%
+% see also: 
+% https://fr.mathworks.com/help/matlab/matlab_prog/write-script-based-unit-tests.html
+%
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+
 % % plot the convergence with respect to the increase in degrees of freedom (dof)
 % The convergence is tested against the Rayleigh-Lamb root, i.e., valid for Lamb waves
 % in an isotropic plate. The provided approximate solution (w0, k0) is for an

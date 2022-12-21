@@ -1,3 +1,11 @@
+% Run using: runtests()
+% Compare axial waves of an isotropic cylinder to results by "Disperse".
+%
+% see also: 
+% https://fr.mathworks.com/help/matlab/matlab_prog/write-script-based-unit-tests.html
+%
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+
 % parameters:
 a = 20; b = 21; h = b-a;
 rho=7932; mu=rho*3260^2; lbd=rho*5960^2-2*mu;	

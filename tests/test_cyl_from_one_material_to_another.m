@@ -1,3 +1,12 @@
+% Run using: runtests()
+% Test the solution of a bilayered cylinder by transitioning from one material
+% to another. Requires user input.
+%
+% see also: 
+% https://fr.mathworks.com/help/matlab/matlab_prog/write-script-based-unit-tests.html
+%
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+
 % specify parameters:
 r = [4e-3, 4.995e-3, 5e-3];
 N = [12, 12];

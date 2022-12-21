@@ -1,5 +1,8 @@
-% run using: runtests()
-% test the Lamb wave solutions vs. precomputed reference values
+% Run using: runtests()
+% Test the Lamb wave solutions vs. precomputed reference values.
+%
+% see also: 
+% https://fr.mathworks.com/help/matlab/matlab_prog/write-script-based-unit-tests.html
 %
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 

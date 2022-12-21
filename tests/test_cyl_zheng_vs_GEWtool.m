@@ -1,11 +1,16 @@
-% % compare to zheng
-% axial waves in a cylinder of an anisotropic steel material. 
+% Run using: runtests()
+% Compare axial waves in anisotropic cylinder to solutions by Zheng. 
 %
 % see: M. Zheng, C. He, Y. Lyu, and B. Wu, “Guided waves propagation in anisotropic 
 % hollow cylinders by Legendre polynomial solution based on state-vector formalism,” 
 % Composite Structures, vol. 207, pp. 645–657, Jan. 2019, 
 % doi: 10.1016/j.compstruct.2018.09.042.
-
+%
+% see also: 
+% https://fr.mathworks.com/help/matlab/matlab_prog/write-script-based-unit-tests.html
+%
+% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+%
 
 b = 141.3/2*1e-3; % outer radius
 h = 12.5e-3; % thickness
