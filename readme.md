@@ -6,12 +6,11 @@
 
 **Features**:
 
-- does not miss solutions, super fast 
-- compute real frequencies or complex wavenumbers
-- choose polarization (Lamb/SH/coupled) and symmetry (S/A)
-- general anisotropy
-- dissipative materials
-- layered plates and cylinders
+- Layered plates and cylinders
+- Does not miss solutions, super fast 
+- Compute real frequencies, complex wavenumbers or ZGV points
+- Choose polarization (Lamb/SH/coupled) and symmetry (S/A)
+- Materials: general anisotropy, dissipation
 
 Code repository: [<img src="https://www.svgrepo.com/show/35001/github.svg" alt="GitHub" width="27px" />](https://github.com/dakiefer/GEWtool) [https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool)
 
@@ -69,11 +68,11 @@ You can achieve this with (adjust first line):
 
 To get started, explore the `examples` directory. 
 
-You can also display help for all functions and classes, e.g., `help Plate`. The most important ones are
+You can also display help for all functions and classes, e.g., by typing `help Plate`. The most important ones are
 
-- material representation: `Material`, `MaterialIsotropic`
-- waveguides:  `Plate`, `Cylinder`
-- solvers: `computeW`, `computeK`, `computeZGV`
+- Material representation: `Material`, `MaterialIsotropic`
+- Waveguides:  `Plate`, `Cylinder`
+- Solvers: `computeW`, `computeK`, `computeZGV`
 
 ## Mathematical and physical background
 
@@ -88,7 +87,11 @@ For general information on the theory of elastic guided wave propagation refer t
 
 ## Dependencies
 
-GEWtool depends on the functions `collocD` and `lglnodes` created by Greg von Winckel. They are bundled together with their license files in the `resourcesAndDeps` directory. You may find them also on [Matlab Central](https://fr.mathworks.com/matlabcentral/profile/authors/869721).
+GEWtool depends on the functions `collocD` and `lglnodes` created by Greg von Winckel. They are bundled together with their license files in the `resourcesAndDeps` directory. You may also find them on
+> Greg von Winckel, MATLAB Central File Exchange, https://fr.mathworks.com/matlabcentral/profile/authors/869721.
+
+The function `computeZGVDirect` depends on the `MultiParEig toolbox` by Bor Plestenjak and Andrej Muhič: 
+> Bor Plestenjak (2022). MultiParEig (https://www.mathworks.com/matlabcentral/fileexchange/47844-multipareig), MATLAB Central File Exchange.
 
 ## Author
 
