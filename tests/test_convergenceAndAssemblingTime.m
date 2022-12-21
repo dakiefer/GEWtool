@@ -23,7 +23,7 @@ N = 4:30;       % list of discretization orders
  
 % % compute Rayleigh-Lamb root:
 rayLambAtK0 = @(wh) rayleighLambS(mat, wh, k0).*rayleighLambA(mat, wh, k0);
-options = optimset('Display','iter');
+% options = optimset('Display','iter'); % uncomment to show convergence
 options.TolX = eps;
 wRayLamb = fzero(rayLambAtK0, w0, options); % only for real arguments
 residuumAtRLRoot = abs(rayLambAtK0(wRayLamb));
