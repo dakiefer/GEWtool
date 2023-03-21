@@ -28,13 +28,6 @@ function [dat] = computeZGVScan(gew, opts)
 if nargin < 2, opts = []; end
 L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 
-% % use sparce matrices: faster and more stable because 
-% % Rayleigh quotient for mu has a larger imaginary part for full matrices
-L0 = sparse(L0);
-L1 = sparse(L1);
-L2 = sparse(L2);
-M = sparse(M);
-
 % algorithm options have been fine-tuned empirically:
 if isfield(opts, 'kStart'),     opts.kStart = opts.kStart*gew.np.h0; end % normalize
 if isfield(opts, 'kMax'),       opts.kMax = opts.kMax*gew.np.h0;     end % normalize
@@ -44,7 +37,7 @@ if ~isfield(opts, 'DeltaPert'),     opts.DeltaPert = 1e-6;  end     % regulariza
 if ~isfield(opts, 'Neigs'),         opts.Neigs = 8;         end     % number of candidates to compute at each shift k0
 if ~isfield(opts, 'show'),          opts.show = false;      end     % display iteration results
 if ~isfield(opts, 'wmax'),          opts.wmax = inf;        end     % maximum frequency that defines kMax
-if ~isfield(opts, 'kStart'),        opts.kStart = 1;        end     % initial shift kStart, search will be done for k > kStart 
+if ~isfield(opts, 'kStart'),        opts.kStart = 1e-2;     end     % initial shift kStart, search will be done for k > kStart 
 % if maximum frequency is specified, restrict wavenumber search domain:
 lays = [gew.lay]; mats = [lays.mat];
 cList = cell2mat(arrayfun(@(x) x.wavespeeds(), mats, 'UniformOutput', false)); % wave speeds in x-direction
@@ -59,10 +52,10 @@ if ~isfield(opts, 'MaxIter')    % break after reaching MaxIter
     end
 end     
 
-warn = warning('query', 'MATLAB:nearlySingularMatrix');
+warnStat = warning('query', 'MATLAB:nearlySingularMatrix');
 if ~opts.show, warning('off', 'MATLAB:nearlySingularMatrix'); end
-[k, w] = ZGV_MFRDScan(L2, L1, L0, M, opts);
-if strcmp(warn.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
+[k, w] = ZGV_Sylv_MFRDScan(L2, L1, L0, M, opts);
+if strcmp(warnStat.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
 
 kzgv = k/gew.np.h0; 
 wzgv = w*gew.np.fh0/gew.np.h0; 
