@@ -1,4 +1,4 @@
-function dat = computeW(gews, k, nModes)
+function dat = computeW(gews, k, nModes, opts)
     % computeW - Obtain frequency w for specified wavenumbers k.
     % Solves the eigenvalue problem described by L(k)*u = -w^2*M*u.
     %
@@ -22,6 +22,18 @@ function dat = computeW(gews, k, nModes)
     % 2022 - Daniel A. Kiefer
     % Institut Langevin, Paris, France
     % 
+
+    if nargin < 4, opts = []; end
+    if ~isfield(opts, 'sparse'),   opts.sparse = false;    end
+    if ~isfield(opts, 'subspace'), opts.subspace = false;  end
+    if ~isfield(opts, 'parallel'), opts.parallel = false;  end
+    if ~opts.subspace && opts.sparse
+        warning('GEWTOOL:computeW:ignoringSparse',...
+            'Sparse matrices are only supported in combination with the subspace solver, i.e., eigs(). I will ignore the option you passed.');
+        opts.sparse = false; % ignore sparse option if not using subspace methods
+    end 
+    if opts.parallel, opts.parallel = inf; else, opts.parallel = 0; end % set the number of workers
+
     if ~isvector(k), error('Wavenumbers should be a [1xN] array.'); end
     k = k(:); % column vector
     for i=1:length(gews) % solve for a list of waveguide objects
@@ -32,13 +44,23 @@ function dat = computeW(gews, k, nModes)
             nModes = size(gew.op.M,1);
         end
         kh = k*gew.np.h0;
-        M = gew.op.M; L0 = gew.op.L0; L1 = gew.op.L1; L2 = gew.op.L2;
+        if opts.sparse
+            M = sparse(gew.op.M); L0 = sparse(gew.op.L0); L1 = sparse(gew.op.L1); L2 = sparse(gew.op.L2);
+        else
+            M = gew.op.M; L0 = gew.op.L0; L1 = gew.op.L1; L2 = gew.op.L2;
+        end
         whn = nan(length(kh), nModes);
         u = nan(length(kh), nModes, gew.geom.Ndof);
         gdoffree = setdiff([gew.geom.gdofOfLay{:}], gew.geom.gdofDBC(:).');
-        for n = 1:length(kh)
-            [un, whn2] = eig(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, 'chol',...
+        useSubspace = opts.subspace; % avoids Matlab warning due to parfor loop
+        parfor (n = 1:length(kh), opts.parallel)
+            if useSubspace
+                [un, whn2] = eigs(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, nModes, "smallestabs");
+                whn2 = diag(whn2); % eigs returns a matrix
+            else
+                [un, whn2] = eig(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, 'chol',...
                 'vector'); % Choleski guarantees real eigenvalues, M needs to be positive definite, faster than qz
+            end
             [whnn, ind] = sort(sqrt(whn2));
             un = un(:,ind);
             whn(n,:) = real(whnn(1:nModes)); % save
