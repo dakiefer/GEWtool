@@ -145,17 +145,17 @@ methods
             warning('GEWTOOL:Waveguide:notassembled', 'Define the waveguide problem first by calling, e.g., fullyCoupled().');
             return
         end
+        if ~isempty(obj.geom.gdofDBC)
+            error('GEWTOOL:Waveguide:multipleCallsToFixGdof', ['Only one call to fixGdof is permitted.'... 
+                ' Collect all global dofs you want to fix in a vector and pass them to fixGdof().']);
+        end
         ops = fields(obj.op);
         for i=1:length(ops)
             opName = ops{i};
             obj.op.(opName)(gdof,:) = []; % remove row
             obj.op.(opName)(:,gdof) = []; % remove column
         end
-        for l=1:obj.geom.nLay
-%             obj.geom.gdofOfLay{l} = setdiff(obj.geom.gdofOfLay{l}, gdof);
-%             obj.geom.gdofBC{l} = setdiff(obj.geom.gdofBC{l}, gdof);
-        end
-        obj.geom.gdofDBC = [obj.geom.gdofDBC(:) gdof(:).'];
+        obj.geom.gdofDBC = gdof(:).'; 
     end
 
 	[op] = assembleLayers(obj, udof, n)

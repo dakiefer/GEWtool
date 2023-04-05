@@ -60,7 +60,8 @@ methods
         udof = 1:3;
 		gew = obj;
 		gew.op = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
-        gew = gew.fixGdof(gew.geom.gdofBC{1}(1,1)); % fix ux-displacement at bottom (y=0)
+        gdofs = [gew.geom.gdofBC{1}(1,1), gew.geom.gdofBC{1}(3,1)];
+        gew = gew.fixGdof(gdofs); % fix ux- and uz-displacements at bottom (y=0)
     end
 
     function gew = fullyCoupledS(obj)
