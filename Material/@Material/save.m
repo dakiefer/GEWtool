@@ -3,20 +3,21 @@ function S = save(obj,file)
     %
     % Arguments:
     % - obj:   Material object.
-    % - file:  (optional) file name as a string or char array. Default: database folder.
+    % - file:  (optional) file name as a string or char array. Default: GEWtool's database folder.
     %
     % Return value:
     % - s:     The json-formatted string that has been saved.
     %
     % If "file" exists already, a window will prompt the user where to save instead 
-    % (re-select to overwrite). Note that save() preservers the properties "name", "rho" and
+    % (re-select to overwrite). The saved properties are "name", "rho" and
     % either "C" (anisotropic) or "lambda" and "mu" (isotropic).
     % 
     % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
     % determine where to save:
     if nargin < 2
-        path = fileparts(which('aluminum.json'));
+%         path = fileparts(which('aluminum.json'));
+        path = '.';
         file = fullfile(path, [obj.name '.json']);
     end
     if exist(file, 'file')==2
@@ -34,7 +35,7 @@ function S = save(obj,file)
         mat.C = obj.C;
     end
     mat.symmetry = obj.symmetry;
-    S = jsonencode(mat);
+    S = jsonencode(mat, "PrettyPrint", true);
     try
         fid = fopen(file, 'w'); fprintf(fid, S); fclose(fid); 
     catch e
