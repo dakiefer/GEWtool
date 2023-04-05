@@ -77,6 +77,21 @@ methods
         gew = gew.fixGdof(gew.geom.gdofBC{1}(2,1)); % fix uy-displacement at bottom (y=0)
     end
 
+    function gews = fullyCoupledSA(obj)
+        % fullyCoupledSA - Assemble operators for the symmetric and the anti-symmetric waves.
+        % The operators for symmetric (S) and anti-symmetric (A) waves are assembled separately.
+        % If your plate is not symmetric, use Plate.fullyCoupled instead.
+        % Return value:
+        % gews: [1 x 2] array of Plate objects. 
+        %       - gews(1) describes the symmetric waves
+        %       - gews(2) describes the anti-symmetric waves
+        % 
+        % See also: fullyCoupled, fullyCoupledA, fullyCoupledS, Lamb, sh.
+
+        gews(1) = obj.fullyCoupledS;
+        gews(2) = obj.fullyCoupledA;
+    end
+
     function gew = Lamb(obj)
         n = 0;
         gew = Lamb@Waveguide(obj, n);
