@@ -106,7 +106,7 @@ classdef Layer
             % Usage: 
             % eq(a, b);
             % a == b;
-            ret = a.mat == b.mat && a.h == b.h;
+            ret = a.mat == b.mat && (a.h-b.h)/(a.h+b.h)*2 < 1e4*eps;
         end
         function ret = ne(a, b)
             % ne - Test if the layers a and b are physically different.
