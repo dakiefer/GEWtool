@@ -122,8 +122,8 @@ methods
         % If your plate is not symmetric, use Plate.Lamb instead.
         % Return value:
         % gews: [1 x 2] array of Plate objects. 
-        %       - gews(1) describes the anti-symmetric waves
-        %       - gews(2) describes the symmetric waves
+        %       - gews(1) describes the symmetric waves
+        %       - gews(2) describes the anti-symmetric waves
         % 
         % See also: Lamb, LambA, LambS, sh, fullyCoupled.
 
@@ -180,12 +180,17 @@ methods
             warning('GEWTOOL:symmetrizeGeometry:SAdecoupl', 'You are doing bêtises! S/A waves do not decouple. I will proceed anyways.');
         end
         % create new waveguide object reduced to only the symmetric half:
-        lMid = ceil(obj.geom.nLay/2);
+        if mod(obj.geom.nLay,2) == 1 % odd number of layers
+            lMid = ceil(obj.geom.nLay/2);
+        else % even number of layers
+            lMid = obj.geom.nLay/2+1;
+        end
         lays = obj.lay(lMid:end);
         Ns = obj.geom.N(lMid:end);
         Ns = ceil(Ns/2); % use smaller matrices
+        while any(Ns<2), Ns = Ns +1; end % ensure to have at least two nodes
         yItfList = [obj.geom.yItf(lMid:end,1).' obj.geom.yItf(end,end)];
-        if mod(obj.geom.nLay,2) == 1
+        if mod(obj.geom.nLay,2) == 1 % odd number of layers
             hmid = yItfList(2) - yItfList(1);
             yItfList(1) = yItfList(2) - hmid/2; % half the thickness for middle layer
         end
