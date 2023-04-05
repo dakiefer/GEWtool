@@ -1,0 +1,12 @@
+{
+"name":"silicon",
+"rho":2330,
+"C":[[165.6e9,  63.9e9,   63.9e9,   0,    0,     0 ],
+    [ 63.9e9,   165.6e9,  63.9e9,   0,    0,     0 ],
+    [ 63.9e9,   63.9e9,   165.6e9,  0,    0,     0 ],
+    [0,         0,        0,     79.5e9 ,  0,       0],
+    [0,         0,        0,     0,      79.5e9,    0],
+    [0,         0,        0,     0,        0,     79.5e9 ]],
+"symmetry":"cubic",
+"source":"M. A. Hopcroft, W. D. Nix, and T. W. Kenny, “What is the Young’s Modulus of Silicon?,” J. Microelectromech. Syst., vol. 19, no. 2, pp. 229–238, Apr. 2010, doi: 10.1109/JMEMS.2009.2039697."
+}
