@@ -21,8 +21,8 @@ u(:,:,gew.geom.gdofDBC) = []; % remove homogeneous DBC nodes
 cg = zeros(size(k)); 
 for i = 1:size(k,1)
     for j = 1:size(k,2)
-        u0 = squeeze(u(i,j,:,:));
-        cg(i, j) = (u0'*(2*k(i,j).*L2 - 1i*L1)*u0) ./ (u0'*2*w(i,j)*M*u0);
+        u0 = squeeze(u(i,j,:));
+        cg(i, j) = (u0'*(2*k(i,j).*L2 - 1i*L1)*u0) ./ (2*w(i,j)*u0'*M*u0);
     end
 end
 % Q = sum(v.*sum((2*k.*L2 - 1i*L1).*u, 4), 3); % nominator
