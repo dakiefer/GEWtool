@@ -6,15 +6,23 @@
 %
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+% % options : 
+show = false;
+
 % % load pre-computed fields:
 load('data/Lamb_ref_fields.mat')
-w = warning; warning off; % save state and turn off
+warnStat = warning; warning off; % save state and turn off
 
 % % current implementation:
 N = 30; % needs to be high enough such that also the evanescent waves converge
 plate = Plate(mat, h, N); % mat and h from Lamb_ref_fields.mat
 gew = plate.Lamb;
-dat = computeK(gew, 2*pi*freq, Nmodes); % freq and Nmodes from Lamb_ref_fields.mat
+% gew = gew.linearizeInK2;
+clear opts;
+opts.parallel = false;
+opts.subspace = false;
+opts.sparse = false;
+dat = computeK(gew, 2*pi*freq, Nmodes, opts); % freq and Nmodes from Lamb_ref_fields.mat
 [y, wInt] = Layer.nodes(N); wInt = wInt*h; y = (y-0.5)*h;
 dat.u{1} = normalizeL2(dat.u{1}, wInt); % % normalize to ∫ conj(u).u dy = 1
 relTol = 1e-4;
@@ -153,4 +161,4 @@ end
 
 %% reset state of warnings
 % new block is run even if the previous tests fail (using "runtests")
-warning(w); % reset warning state
+warning(warnStat); % reset warning state
