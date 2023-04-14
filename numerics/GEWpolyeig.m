@@ -6,6 +6,9 @@ function [u, k] = GEWpolyeig(P0, P1, P2, nModes, opts)
 % Arguments:
 % - P0, P1, P2:   Coefficient matrices of the quadratic eigenvalue problem
 % - nModes:  (optional) Number of eigensolutions (smallest eigenvalue magnitude).
+% - opts:    (optional) A structure of options. Possible fields are: 
+%            - 'sparse': false (default) | true. Use sparse matrices.
+%            - 'subspace': false (default) | true. Use eigs() instead of eig().
 %
 % Return values:
 % - u:  The eigenvectors as a matrix of size [size(P0,1), nModes]
