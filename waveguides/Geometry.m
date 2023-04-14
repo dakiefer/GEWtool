@@ -26,6 +26,7 @@ end
 
 properties (Dependent)
     gdofBC      % a link to all gdofOfLay(ldofBC) assembled into one array: size [ui, 2 (bottom/top)]
+    gdofFree    % degrees of freedom where no Dirichlet-BCs are imposed
 end
 
 methods
@@ -89,6 +90,11 @@ methods
             gdofE = obj.gdofOfLay{e};
             gdofBC{e} = gdofE(obj.ldofBC{e});
         end
+    end
+
+    function gdofFree = get.gdofFree(obj)
+        dofs = [obj.gdofOfLay{:}];
+        gdofFree = setdiff(dofs, obj.gdofDBC);
     end
 
 end % methods
