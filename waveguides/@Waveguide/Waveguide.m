@@ -158,6 +158,35 @@ methods
         obj.geom.gdofDBC = gdof(:).'; 
     end
 
+    function wc = cutoffFreq(obj, wmax, includeZeroFreq)
+        if isempty(obj.op)
+            error('GEWTOOL:cutoffFreq:chooseWaves', 'First choose the waves you want to compute: Lamb(), sh(), fullyCoupled().');
+        end
+        if size(obj.op.M,1) < 4
+            error('GEWTOOL:cutoffFreq:chooseWaves', 'Matrices need to be at least of size 4x4.');
+        end
+        if ischar(includeZeroFreq)
+            if strcmp(includeZeroFreq, 'includeZeroFreq')
+                includeZeroFreq = true; 
+            else
+                includeZeroFreq = false;
+            end
+        end
+        wnCutoff = real(sqrt(eig(-obj.op.L0, obj.op.M, 'chol'))); % calculate cutoff frequencies
+        wnCutoff = sort(wnCutoff);
+        if nargin < 3 || ~includeZeroFreq % remove 0 Hz: relative to 4th cutoff as we have at most 3 cutoffs at 0 Hz.
+            wnCutoff = wnCutoff(wnCutoff > 1e-4*wnCutoff(4));
+        end
+        wc = wnCutoff*obj.np.fh0/obj.np.h0; % in Hz.
+        if nargin > 1
+            wc = wc(wc <= wmax); % limit to maximum frequency if provided
+        end
+    end
+
+    function nM = nModes(obj, wmax)
+        nM = length(obj.cutoffFreq(wmax, 'includeZeroFreq'));
+    end
+
 	[op] = assembleLayers(obj, udof, n)
 end
 
