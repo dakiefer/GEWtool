@@ -196,6 +196,27 @@ methods
         decoupl = obj.isSymmetricOnAxis(2);
     end
 
+    function cmin = minWavespeed(obj, en)
+        % CMIN - Approximate minimum plane wave speed in the en-plane. 
+        if nargin < 2
+            en = [0; 0; 1];
+        end
+        alpha = linspace(0, pi/2, 100); % TODO this might be assuming some symmetries in the material 
+        s = obj.slownessCurve(alpha, en);
+        cmin = 1/max(s(:));
+    end
+
+    function cmax = maxWavespeed(obj, en)
+        % CMIN - Approximate maximum plane wave speed in the en-plane. 
+        if nargin < 2
+            en = [0; 0; 1];
+        end
+        alpha = linspace(0, pi/2, 100); % TODO this might be assuming some symmetries in the material 
+        s = obj.slownessCurve(alpha, en);
+        cmax = 1/min(s(:));
+    end
+
+    [s, e0] = slownessCurve(obj, alpha, ek)
     plotSlownessCurve(varargin)
     [cs, eu] = wavespeeds(obj, ek)
     save(obj,path)
