@@ -25,6 +25,8 @@ function [k,w,u,isConverged,err] = ZGVNewtonBeta(L2, L1, L0, M, k, w, u, opts)
 %         - tol:        (1e-14) tolerance (relative to the norm of matrices)
 %         - beta_corr:  (true) turn on/off complex correction
 %         - show:       (false) set to 'true' to display values and residuals
+%         - kmin:       (1e-6) below this value, the result is interpreted as a
+%                       cutoff frequency. 
 %
 % Literature:
 % [1] D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing 
@@ -41,6 +43,7 @@ if isfield(opts,'show'),      show     = opts.show;       else, show     = false
 if isfield(opts,'tol'),       tol      = opts.tol;        else, tol      = 1e-14;  end
 if isfield(opts,'maxsteps'),  maxsteps = opts.maxsteps;   else, maxsteps = 10;     end
 if isfield(opts,'beta_corr'), beta_corr = opts.beta_corr; else, beta_corr = true;  end
+if isfield(opts, 'kmin'),     kmin = opts.kmin;           else, kmin = 1e-6;       end % below kmin -> interprete as cutoff
 if ~isreal(k) || ~isreal(w)
     error('ZGV_NewtonBeta: initial guess (k, w) should be real-valued!');
 end
@@ -99,7 +102,7 @@ end
 
 % return values:
 w = real(sqrt(mu)); % angular frequency
-if ~isConverged % return nan if not converge, i.e., residuum is larger then tol
+if ~isConverged || k < kmin % return nan if not converge or cutoff was found
     k = nan;
     w = nan;
     u = nan(size(u));

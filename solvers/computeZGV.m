@@ -29,7 +29,7 @@ function datZGV = computeZGV(gew, varargin)
 %
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % initial guess (w0, k0) where cg changes sign
+if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % dispersion data provided instead of initial guess
     dat = varargin{1};
     if isfield(dat, 'cg')
         cg = dat.cg;
@@ -51,9 +51,10 @@ end
 L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 
 % algorith options:
-if ~isfield(opts, 'beta_corr'), opts.beta_corr = true; end % algorithm options
-if ~isfield(opts, 'show'),      opts.show = false;     end
-if ~isfield(opts, 'maxsteps'),  opts.maxsteps = 10;    end
+if ~isfield(opts, 'beta_corr'), opts.beta_corr = true;      end % algorithm options
+if ~isfield(opts, 'show'),      opts.show = false;          end
+if ~isfield(opts, 'maxsteps'),  opts.maxsteps = 10;         end
+if ~isfield(opts, 'kmin'),      opts.kmin = 1e-6*min(k0)*gew.np.h0;   end % below kmin -> interprete as cutoff
 
 % initialize:
 kzgv = nan(length(k0),1);
@@ -70,12 +71,11 @@ for i=1:numel(w0)
     w0i = w0(i)*gew.np.h0/gew.np.fh0;
     k0i = k0(i)*gew.np.h0;
     [ki,wi,u] = ZGVNewtonBeta(L2, L1, L0, M, k0i, w0i, [], opts); %wi = sqrt(mui);
-    isCutOff = (ki/k0i) < 1e-12;
-    notInList = isempty(find(abs(kzgv/ki-1) < 1e-12, 1)) && isempty(find(abs(wzgv/wi-1) < 1e-12, 1));
-    if ~isCutOff && notInList % add to list of converged solutions
+    notInList = isempty(find(abs(kzgv/ki-1) < 1e-10, 1)) && isempty(find(abs(wzgv/wi-1) < 1e-10, 1));
+    if notInList % add to list of converged solutions
         kzgv(i) = ki;
         wzgv(i) = wi;
-        uzgv(i, :) = u;
+        uzgv(i,:) = u;
     end
 end
 if strcmp(warn.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
@@ -83,7 +83,9 @@ if strcmp(warn.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
 if nargin == 2 % remove nan entries when initial guess vector was not provided manually
     ind = ~isnan(wzgv) & ~isnan(kzgv); 
     wzgv = wzgv(ind); kzgv = kzgv(ind);
-    [wzgv, ind] = sort(wzgv); kzgv = kzgv(ind); % sort in frequency
+    [wzgv, ind] = sort(wzgv); 
+    kzgv = kzgv(ind);   % sort in frequency
+    uzgv = uzgv(ind,:); % sort in frequency
 end
 
 % return as structure:
