@@ -47,7 +47,7 @@ C0  = [0 0;0 1];
 
 % define algorithm options to be used in the following:
 if isfield(opts,'sc_steps'),  sc_steps = opts.sc_steps;  else, sc_steps=2;      end
-if isfield(opts,'membtol'),   membtol = opts.membtol;    else, membtol = 1e-6;  end
+if isfield(opts,'membtol'),   membtol = opts.membtol;    else, membtol = 1e-4;  end
 if ~isfield(opts,'showrank'), opts.showrank = true;      end
 if ~isfield(opts,'show'),     opts.show = true;          end
 if ~isfield(opts,'rrqr'),     opts.rrqr=true;               end
@@ -87,3 +87,6 @@ ind = isImag & isfinite(mu);
 k = real(-1i*lambda(ind));
 w = sqrt(real(mu(ind)));
 
+% sort by frequency:
+[w, ind] = sort(w);
+k = k(ind);
