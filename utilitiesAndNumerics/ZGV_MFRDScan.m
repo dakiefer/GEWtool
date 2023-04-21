@@ -119,9 +119,4 @@ end % ZGV_MFRDScan
 function Delta = deltaMatrix(A2, A1, A0, B2, B1, B0, C2, C1, C0)
     Delta = kron(A2, kron(B1, C0)) + kron(A1, kron(B0, C2)) + kron(A0, kron(B2, C1))...
         - kron(A0, kron(B1, C2)) - kron(A2, kron(B0, C1)) - kron(A1, kron(B2, C0));
-    % when C0 = 0-matrix, this might be faster:
-    % Delta0 = kron(L1, kron(M,C2)) + kron(M, kron(L2p,C1))...
-    %     - kron(M, kron(L1p, C2)) - kron(L2, kron(M, C1));
-    % Delta1 = -1*( kron(L0, kron(M, C2)) + kron(M, kron(L2p, C0))...
-    %     - kron(M, kron(L0, C2)) - kron(L2, kron(M, C0)) );
 end

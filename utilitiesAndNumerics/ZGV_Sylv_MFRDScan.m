@@ -1,4 +1,4 @@
-function [kzgv, wzgv] = ZGV_Sylv_MFRDScan(L2, L1, L0, M, opts)
+function [kzgv, wzgv, k0s] = ZGV_Sylv_MFRDScan(L2, L1, L0, M, opts)
 % ZGV_Sylv_MFRDScan - Compute ZGV points via iterative shift and search using fast eigenvalue solver.
 %
 % Returns ZGV points (k, w) with the smallest k for 
@@ -6,23 +6,30 @@ function [kzgv, wzgv] = ZGV_Sylv_MFRDScan(L2, L1, L0, M, opts)
 % The Method of Fixed Relative Distance (MFRD) proposed by Jarlebring, Kvall and
 % Michiels [1] is used to this end. The method computes candidate wavenumbers close 
 % to a shift k0 and refines them with a Newton-type iteration. By iteratively adapting
-% the shift k0, a wavenumber range [kmin, kmax] is searched. Details can be found in [2].
+% the shift k0, a wavenumber range [kmin, kend] is searched. Details can be found in [2].
 %
 % It is important that matrix M is nonsingular and that the system is
 % transformed in such way that k and mu are real.
 % Input:
-%    - L2,L1,L0,M: matrices of the model 
-%    - options in opts:
-%         - Neigs: (8) number of eigenvalues to compute using eigs for one shift
-%         - MaxPoints: (20) maximum number of requested ZGV points 
-%         - MaxIter: (10) maximum number of iterations with different shift
-%         - ShiftFactor: (1.1), factor for shift increment for next iteration
-%         - DeltaPert: (1e-6), factor for perturbation is 1+DeltaPert
-%         - kStart: (1): initial shift for normalized wavenumber k
-%         - kMax: maximum normalized wavenumber to scan 
-%         - show: (false) whether to display information during calculation 
-%         - wmax: (inf, inactive) maximum angular frequency that defines kMax
-%                 via the wave speed. This option is an extension for computeZGVScan().
+% - L2,L1,L0,M: matrices of the model 
+% - options in opts:
+%      - Neigs: (6) Number of eigenvalues to compute using eigs for a given shift.
+%        Reducing Neigs can considerably speed up the computation, especially if
+%        you have large matrices. If it is too small, you will miss solutions.
+%      - kEnd: (40) Maximum normalized wavenumber to scan to. Reduce kEnd to speed up
+%        the computation. ZGV points with kZGV >~ kEnd will not be found.
+%      - Dk: (kEnd/50): Increment for the target k0 where to search for ZGV
+%        points. Increase Dk to speed up the computation. Smaller Dk make it
+%        more likely that all ZGV points will be found. 
+%      - kStart: (2*Dk): Initial shift for normalized wavenumber k. Searching at
+%        low wavenumbers is super slow, avoid it.
+%      - DeltaPert: (1e-3): Regularization parameter. At ZGV points, we have two
+%        very close solutions k and (1+DeltaPert)*k. These are computed as
+%        initial guess where the ZGV point is finally computed.
+%      - wmax: (inf, inactive) maximum angular frequency that defines kEnd
+%              via the wave speed. This option is an extension for computeZGVScan().
+%      - MaxIter: (100) Break search when reaching this number of iterations.
+%      - show: (false) whether to display information during calculation 
 %
 % [1] E. Jarlebring, S. Kvaal, and W. Michiels, "Computing all Pairs (λ,μ) Such that 
 % λ is a Double Eigenvalue of A+μB," SIAM J. Matrix Anal. Appl., vol. 32, no. 3, 
@@ -40,35 +47,34 @@ function [kzgv, wzgv] = ZGV_Sylv_MFRDScan(L2, L1, L0, M, opts)
 
 narginchk(4, 5);
 if nargin < 5, opts = []; end
-
-if isfield(opts,'Neigs'),        Neigs = opts.Neigs;              else, Neigs = 8;          end
-if isfield(opts,'MaxPoints'),    MaxPoints = opts.MaxPoints;      else, MaxPoints = 50;     end % number of ZGV points to find
-if isfield(opts,'MaxIter'),      MaxIter = opts.MaxIter;          else, MaxIter = 30;       end
-if isfield(opts,'ShiftFactor'),  ShiftFactor = opts.ShiftFactor;  else, ShiftFactor = 1.1;  end % relative increment for k0
-if isfield(opts,'DeltaPert'),    DeltaPert = opts.DeltaPert;      else, DeltaPert = 1e-6;   end % regularization parameter 
-if isfield(opts,'kStart'),       kStart = opts.kStart;            else, kStart = 1;         end % initial shift kStart, search will be done for k > kStart 
-if isfield(opts,'kMax'),         kMax = opts.kMax;                else, kMax = inf;         end
-if ~isfield(opts,'show'),        opts.show = false;                                         end % display iteration results
-
-if opts.show, disp(opts), end
+if isfield(opts,'Neigs'),        Neigs = opts.Neigs;              else, Neigs = 6;          end
+if isfield(opts,'kEnd'),         kEnd = opts.kEnd;                else, kEnd = 40;          end
+if isfield(opts,'Dk'),           Dk = opts.Dk;                    else, Dk = kEnd/50;       end % minimum increment in kh after each iteration
+if isfield(opts,'kStart'),       kStart = opts.kStart;            else, kStart = 2*Dk;      end % initial shift 
+if isfield(opts,'DeltaPert'),    DeltaPert = opts.DeltaPert;      else, DeltaPert = 1e-3;   end % regularization parameter: leads to error if too small because sylvester has no unique solution
+if isfield(opts,'wmax'),         wmax = opts.wmax;                else, wmax = inf;         end % maximum normalized frequency of interest
+if isfield(opts,'MaxIter'),      MaxIter = opts.MaxIter;          else, MaxIter = 100;      end
+if isfield(opts,'show'),         show = opts.show;                else, show = false;       end % display iteration results
 
 m = size(L0,1);
 n = m^2;
 
 found = 0;   % number of ZGV points found
 k0 = kStart; % wavenumber shift close to which we compute candidates
-kmin = 1e-8; % search candidates above this value
+kmin = 1e-4*kStart; % search candidates above this value
 iter = 0;    % number of iterations
 kzgv = []; wzgv = []; % ZGV wavenumbers and frequencies
+k0s = nan(1,MaxIter);    % to collect used target values
 optsNewton.beta_corr = true; optsNewton.show = false; optsNewton.maxsteps = 10; % options for ZGVNewtonBeta()
 warningStatus = warning('query', 'MATLAB:eigs:NotAllEigsConverged');
 warning('off', 'MATLAB:eigs:NotAllEigsConverged')
-while k0<kMax && found<MaxPoints && iter<MaxIter
+% k0list = kStart:Dk:kEnd;
+while k0<kEnd && iter<MaxIter
     iter = iter + 1;
     % compute candidates:
     [z,Lbd] = ZGV_eigs(L2,L1,L0,M,DeltaPert,Neigs,1i*k0); % solves MEP for ZGV wavenumbers
     ks = k0 - 1i./diag(Lbd);
-    ind = find(abs(imag(ks))<1e-4 & real(ks) > kmin); % candidates are solutions that are real
+    ind = find(abs(imag(ks)./real(ks))<1e-3 & real(ks) > kmin); % candidates are solutions that are real
     % for each candidate in ks(ind), compute mu = w^2 and apply Newton iteration: 
     for j = ind.'
         mu = multDelta2(z(:,j))/multDelta0(z(:,j)); % Rayleigh quotient for mu
@@ -77,7 +83,7 @@ while k0<kMax && found<MaxPoints && iter<MaxIter
             [kR,wR,~,isConverged] = ZGVNewtonBeta(full(L2), full(L1), full(L0), full(M),...
                 real(ks(j)), w, [], optsNewton);
             % add converged solutions to list of ZGV points:
-            if isConverged && (kR>kmin) 
+            if isConverged && kR>kmin && wR<wmax
                 if isempty(kzgv)
                     kzgv = kR; wzgv = wR; found = 1;
                 else % only add if not yet in list
@@ -90,21 +96,27 @@ while k0<kMax && found<MaxPoints && iter<MaxIter
             end
         end
     end
-    if opts.show
+    if show
         fprintf('%d. finished search at k0*h=%g: found %d ZGV points in total.\n', iter, k0, found);
     end
     
     % updated shift k0 and minimum kmin for next search: 
-    if k0 < 1e-1, k0 = 0.8; end   % avoid getting stuck for initial shift close to 0
     if ~isempty(ks(ind)) % avoid error: max of empty array is an empty array
-        kmin = max(real(ks(ind))); % update kmin
-        k0 = max(k0,kmin)*ShiftFactor; % update shift
-    else
-        if opts.show, fprintf('    no candidates.\n'); end
-        k0 = k0*ShiftFactor; % update shift
+        kmin = max(real(ks(ind)))*0.95; % update kmin. Note that there can be serverl ZGV with similar k.
     end
+    k0s(iter) = k0;
+    k0 = max(k0 + Dk, kmin + Dk/2);
+end
+k0s = k0s(~isnan(k0s)); % crop nan entries
+
+if (iter >= MaxIter)
+    warning('ZGV_Sylv_MFRDScan:maxIterReached', ...
+        'Maximum iteration number reached. If you are missing ZGV points, increase opts.MaxIter which is currently %d.', MaxIter);
 end
 if strcmp(warningStatus.state, 'on'), warning('on', 'MATLAB:eigs:NotAllEigsConverged'); end
+
+[wzgv, ind] = sort(wzgv); % sort in frequency before returning
+kzgv = kzgv(ind);
 
 function x = multDelta0(y)
     Y1 = reshape(y(1:n),m,m);
