@@ -165,12 +165,16 @@ methods
         if size(obj.op.M,1) < 4
             error('GEWTOOL:cutoffFreq:chooseWaves', 'Matrices need to be at least of size 4x4.');
         end
-        if ischar(includeZeroFreq)
+        if nargin < 3
+            includeZeroFreq = false;
+        elseif ischar(includeZeroFreq)
             if strcmp(includeZeroFreq, 'includeZeroFreq')
                 includeZeroFreq = true; 
             else
                 includeZeroFreq = false;
             end
+        elseif ~islogical(includeZeroFreq)
+            error('GEWTOOL:cutoffFreq:wrongArg', 'Provide argument "includeZeroFreq" as a boolean/logical or char.');
         end
         wnCutoff = real(sqrt(eig(-obj.op.L0, obj.op.M, 'chol'))); % calculate cutoff frequencies
         wnCutoff = sort(wnCutoff);
@@ -178,7 +182,7 @@ methods
             wnCutoff = wnCutoff(wnCutoff > 1e-4*wnCutoff(4));
         end
         wc = wnCutoff*obj.np.fh0/obj.np.h0; % in Hz.
-        if nargin > 1
+        if nargin > 1 && ~isempty(wmax)
             wc = wc(wc <= wmax); % limit to maximum frequency if provided
         end
     end
