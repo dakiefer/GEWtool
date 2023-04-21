@@ -6,13 +6,17 @@ function [X,D] = ZGV_eigs(L2,L1,L0,M,delta,Neigs,shift)
 m = size(L0,1);
 n = m^2;
 
+if m > 70
+    L2 = sparse(L2); L1 = sparse(L1); L0 = sparse(L0); M = sparse(M);
+end
+
 L = L0 + shift*L1 + shift^2*L2;
 Ldel = L0 + (1+delta)*shift*L1 + (1+delta)^2*shift^2*L2;
 LM = transpose(L)/M;    % = B in A*X + X*B = C
 MLdel = M\Ldel;         % = A in A*X + X*B = C
 
-[Q,R] = schur(-MLdel,'complex');
-[U,S] = schur(LM,'complex');
+[Q,R] = schur(full(-MLdel),'complex');
+[U,S] = schur(full(LM),'complex');
 
 F1 = transpose(L1+shift*L2)/M;
 F2 = transpose(L2)/M;
