@@ -43,7 +43,7 @@ if isfield(opts,'show'),      show     = opts.show;       else, show     = false
 if isfield(opts,'tol'),       tol      = opts.tol;        else, tol      = 1e-14;  end
 if isfield(opts,'maxsteps'),  maxsteps = opts.maxsteps;   else, maxsteps = 10;     end
 if isfield(opts,'beta_corr'), beta_corr = opts.beta_corr; else, beta_corr = true;  end
-if isfield(opts, 'kmin'),     kmin = opts.kmin;           else, kmin = 1e-6;       end % below kmin -> interprete as cutoff
+if isfield(opts, 'kmin'),     kmin = opts.kmin;           else, kmin = 1e-4*k;     end % below kmin -> interprete as cutoff
 if ~isreal(k) || ~isreal(w)
     error('ZGV_NewtonBeta: initial guess (k, w) should be real-valued!');
 end
