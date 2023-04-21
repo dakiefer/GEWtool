@@ -46,8 +46,10 @@ if ~isfield(opts, 'show'),          opts.show = false;      end     % display it
 if ~isfield(opts, 'wmax'),          opts.wmax = inf;        end     % maximum frequency that defines kMax
 if ~isfield(opts, 'kStart'),        opts.kStart = 1;        end     % initial shift kStart, search will be done for k > kStart 
 % if maximum frequency is specified, restrict wavenumber search domain:
-waveSpeeds = vertcat(gew.lay.mat.wavespeeds); 
-kMax = opts.wmax/min(waveSpeeds)*gew.np.h0; % to be used only if not provided in opts.kMax
+lays = [gew.lay]; mats = [lays.mat];
+cList = cell2mat(arrayfun(@(x) x.wavespeeds(), mats, 'UniformOutput', false)); % wave speeds in x-direction
+clmin = min(cList(1,:)); % We conjecture that ZGVs cannot exist at phase velocities below the minimum bulk longitudinal wave speed.
+kMax = opts.wmax/clmin*gew.np.h0; % to be used only if not provided in opts.kMax
 if ~isfield(opts, 'kMax'), opts.kMax = kMax;       end     % maximum wavenumber to stop scanning
 if ~isfield(opts, 'MaxIter')    % break after reaching MaxIter
     if isinf(opts.kMax)
