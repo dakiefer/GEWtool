@@ -34,7 +34,7 @@ end
 clear opts; % keep in case you execute as a script
 if exist('show', 'var') && show, opts.show=true;  else, opts.show=false; end 
 opts.kEnd = 2.5/h; % restrict search domain for faster computations
-tic, zgv = computeZGVScan(gew, opts); timing = toc;
+tic, zgv = computeZGVScan(gew, wmax, opts); timing = toc;
 nZGV = length(zgv.w(zgv.w < wmax));
 
 if exist('show', 'var') && show

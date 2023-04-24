@@ -18,7 +18,7 @@ gew = plate.LambS; % assembles matrices for the specified waves
 clear opts; % keep in case you execute as a script
 if exist('show', 'var') && show, opts.show=true;  else, opts.show=false; end 
 opts.kEnd = 15e3;
-tic, zgv = computeZGVScan(gew, opts); timing = toc;
+tic, zgv = computeZGVScan(gew, wmax, opts); timing = toc;
 nZGV = length(zgv.w(zgv.w < wmax));  % print number of ZGV points 
 if exist('show', 'var') && show, fprintf('Computed %d ZGV points in %g s.\n', nZGV, timing); end 
 assert(nZGV == 6, 'Missed ZGV points.');
@@ -29,7 +29,7 @@ gew = plate.LambA; % assembles matrices for the specified waves
 clear opts; % keep in case you execute as a script
 if exist('show', 'var') && show, opts.show=true;  else, opts.show=false; end 
 opts.kEnd = 15e3;
-tic, zgv = computeZGVScan(gew, opts); timing = toc;
+tic, zgv = computeZGVScan(gew, wmax, opts); timing = toc;
 nZGV = length(zgv.w(zgv.w < wmax));  % print number of ZGV points 
 if exist('show', 'var') && show, fprintf('Computed %d ZGV points in %g s.\n', nZGV, timing); end 
 assert(nZGV == 6, 'Missed ZGV points.');
@@ -46,7 +46,7 @@ opts.kEnd = 15e3;
 DkList = 450:50:900;
 for Dk = DkList
     opts.Dk = Dk;
-    tic, zgv = computeZGVScan(gew, opts); timing = toc;
+    tic, zgv = computeZGVScan(gew, wmax, opts); timing = toc;
     nZGV = length(zgv.w(zgv.w < wmax));  % print number of ZGV points 
     if exist('show', 'var') && show, fprintf('Computed %d ZGV points in %g s.\n', nZGV, timing); end 
     assert(nZGV == 6, 'Missed ZGV points.');
@@ -58,7 +58,7 @@ gew = plate.Lamb; % assembles matrices for the specified waves
 clear opts; % keep in case you execute as a script
 if exist('show', 'var') && show, opts.show=true;  else, opts.show=false; end 
 opts.kEnd = 15e3;
-tic, zgv = computeZGVScan(gew, opts); timing = toc;
+tic, zgv = computeZGVScan(gew, wmax, opts); timing = toc;
 nZGV = length(zgv.w(zgv.w < wmax));  % print number of ZGV points 
 
 if exist('show', 'var') && show

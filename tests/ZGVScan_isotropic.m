@@ -15,7 +15,7 @@ plate = Plate(mat, h, N); % create waveguide description
 gew = plate.LambS; % assembles matrices for the specified waves
 clear opts; % keep in case you execute as a script
 if exist('show', 'var') && show, opts.show=true;  else, opts.show=false; end 
-tic, zgv = computeZGVScan(gew, opts); timing = toc;
+tic, zgv = computeZGVScan(gew, wmax, opts); timing = toc;
 nZGV = length(zgv.w(zgv.w < wmax));  % print number of ZGV points 
 
 if exist('show', 'var') && show
@@ -33,13 +33,13 @@ if exist('show', 'var') && show
     if isfield(zgv, 'k0s'), xline(zgv.k0s/1e3); end
 end
 assert(nZGV == 3, 'Missed ZGV points.');
-% assert(timing < 4, 'Slow calculation (previously 2 s).');
+assert(timing < 4, 'Slow calculation (previously 2 s).');
 
 %% anti-symmetric Lamb waves
 gew = plate.LambA; % assembles matrices for the specified waves
 clear opts; % keep in case you execute as a script
 if exist('show', 'var') && show, opts.show=true;  else, opts.show=false; end 
-tic, zgv = computeZGVScan(gew, opts); timing = toc;
+tic, zgv = computeZGVScan(gew, wmax, opts); timing = toc;
 nZGV = length(zgv.w(zgv.w < wmax));  % print number of ZGV points 
 
 if exist('show', 'var') && show
@@ -57,13 +57,13 @@ if exist('show', 'var') && show
     if isfield(zgv, 'k0s'), xline(zgv.k0s/1e3); end
 end
 assert(nZGV == 0, 'Missed ZGV points.');
-% assert(timing < 10, 'Slow calculation (previously 6 s).');
+assert(timing < 10, 'Slow calculation (previously 6 s).');
 
 %% Lamb waves
 gew = plate.Lamb; % assembles matrices for the specified waves
 clear opts; % keep in case you execute as a script
 if exist('show', 'var') && show, opts.show=true;  else, opts.show=false; end 
-tic, zgv = computeZGVScan(gew, opts); timing = toc;
+tic, zgv = computeZGVScan(gew, wmax, opts); timing = toc;
 nZGV = length(zgv.w(zgv.w < wmax));  % print number of ZGV points 
 
 if exist('show', 'var') && show
@@ -81,4 +81,4 @@ if exist('show', 'var') && show
     if isfield(zgv, 'k0s'), xline(zgv.k0s/1e3); end
 end
 assert(nZGV == 3, 'Missed ZGV points.');
-% assert(timing < 16, 'Slow calculation (previously 9 s).');
+assert(timing < 16, 'Slow calculation (previously 9 s).');
