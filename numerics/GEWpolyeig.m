@@ -21,13 +21,11 @@ function [u, k] = GEWpolyeig(P0, P1, P2, nModes, opts)
 if nargin < 5, opts = []; end
 if ~isfield(opts, 'sparse'),   opts.sparse = false;    end
 if ~isfield(opts, 'subspace'), opts.subspace = false;  end
-if ~isfield(opts, 'parallel'), opts.parallel = false;  end
 if ~opts.subspace && opts.sparse
     warning('GEWTOOL:ignoringSparse',...
         'Sparse matrices are only supported in combination with the subspace solver, i.e., eigs(). Switching to subspace method. To hide this message set opts.subspace=true;');
     opts.subspace = true; % switch to eigs()
 end 
-if opts.parallel, opts.parallel = inf; else, opts.parallel = 0; end % set the number of workers
 if nargin < 4, nModes = size(P0,1); end
 
 % N = size(varargin{1}); % size of matrices
