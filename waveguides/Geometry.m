@@ -16,7 +16,7 @@ properties
     Nudof        % number of displacement dofs (e.g., ux, uy, uz) for each layer
     yItf         % position of interfaces in meter [nLay x 2]
     y            % cell array with nodal points for each layer in meter
-    h            % thickness for each layer in meter
+    hl           % thickness for each layer in meter
     % nodesOfElem  % connectivity map: row e contains left and right node num of elem e -> TODO not being used
     ldofBC       % cell array of local dofs at boundaries: e.g. [1, N; N+1, 2*N] -> [upper, lower]
     gdofDBC      % fixed degrees of freedom
@@ -56,7 +56,7 @@ methods
         obj.Nudof = Nudof(:); % how many of the ux, uy, uz degrees of freedom
         obj.nItf = length(yItf);
         obj.yItf = [yItf(1:end-1).', yItf(2:end).'];
-        obj.h = diff(obj.yItf, 1, 2); % first order along 2nd dim
+        obj.hl = diff(obj.yItf, 1, 2); % first order along 2nd dim
         % mesh connectivity:
         % obj.nodesOfElem = zeros(obj.nLay, 2); % connectivity map
         % obj.nodesOfElem(:,1) = 1:obj.nItf-1;
@@ -65,7 +65,7 @@ methods
         for e=1:length(N) % length(N) == number of layers
             obj.ldofBC{e} = (0:Nudof(e)-1).'*N(e) + [1, N(e)];
             etad = Layer.nodes(N(e)); 
-            obj.y{e} = etad*obj.h(e) + obj.yItf(e, 1);
+            obj.y{e} = etad*obj.hl(e) + obj.yItf(e, 1);
             if e == 1
                 gdofE = 1:Nudof(e)*N(e);
             else

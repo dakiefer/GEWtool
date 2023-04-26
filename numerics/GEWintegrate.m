@@ -16,7 +16,7 @@ end
 s = size(f{1}); s(n) = []; % remove dimension to be integrated
 I = zeros(s);
 for i = 1:gew.geom.nLay % for every layer
-    hi = gew.geom.h(i); % thickness of layer i
+    hi = gew.geom.hl(i); % thickness of layer i
     w = shiftdim(gew.lay(i).w(:), -n+1); % integration weights moved to dim. n
     I = I + sum( w.*f{i}*hi , n);
 end
