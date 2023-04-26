@@ -19,7 +19,7 @@ properties (Access = protected)
 end
 
 properties (Dependent)
-	h0  		% unit thickness: short hand for obj.np.h0
+    h           % total thickness
 end % properties Dependent
 
 
@@ -55,9 +55,9 @@ methods
 		obj.np = np; % normalization parameters
 	end
 
-	function h0 = get.h0(obj)
-		h0 = obj.np.h0;
-	end
+    function h = get.h(obj)
+        h = obj.geom.yItf(end)-obj.geom.yItf(1);
+    end
 
 	function gew = fullyCoupled(obj, n)
         % fullyCoupled - Assemble wave operators describing the coupled set of Lamb- and SH-polarized waves.
