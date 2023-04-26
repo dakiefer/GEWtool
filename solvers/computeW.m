@@ -35,7 +35,7 @@ function dat = computeW(gews, k, nModes, opts)
         opts.subspace = true; % switch to eigs()
     end 
     if opts.parallel, opts.parallel = inf; else, opts.parallel = 0; end % set the number of workers
-    if nargin >= 3 && ( ~isscalar(nModes) || nModes ~= round(nModes) )
+    if nargin >= 3 && ~isempty(nModes) && ~isinf(nModes) && ( ~isscalar(nModes) || nModes ~= round(nModes) )
         error('GEWTOOL:wrongArg', 'Argument "nModes" must be a scalar integer.');
     end
     
@@ -43,7 +43,9 @@ function dat = computeW(gews, k, nModes, opts)
     k = k(:); % column vector
     for i=1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
-        if nargin < 3, nModes = size(gew.op.M,1); end % default
+        if nargin < 3 || isempty(nModes) || isinf(nModes) % default
+            nModes = size(gew.op.M,1); 
+        end
         if nModes > size(gew.op.M,1)
             warning('GEWTOOL:computeW:tooManyModes', 'More modes requested than available. Resetting nModes to the matrix size.')
             nModes = size(gew.op.M,1);

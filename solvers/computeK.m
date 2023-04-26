@@ -35,7 +35,7 @@ function dat = computeK(gews, w, nModes, opts)
         opts.subspace = true; % switch to eigs()
     end 
     if opts.parallel, opts.parallel = inf; else, opts.parallel = 0; end % set the number of workers
-    if nargin >= 3 && ( ~isscalar(nModes) || nModes ~= round(nModes) )
+    if nargin >= 3 && ~isempty(nModes) && ~isinf(nModes) && ( ~isscalar(nModes) || nModes ~= round(nModes) )
         error('GEWTOOL:wrongArg', 'Argument "nModes" must be a scalar integer.');
     end
     
@@ -49,7 +49,7 @@ function dat = computeK(gews, w, nModes, opts)
         else
             M = gew.op.M; L0 = gew.op.L0; L1 = gew.op.L1; L2 = gew.op.L2;
         end
-        if nargin < 3
+        if nargin < 3 || isempty(nModes) || isinf(nModes)
             nModes = size(gew.op.M,1);  % for now we dont distinguish between linearized and quadratic EVP
         end
         if nModes > size(gew.op.M,1)
