@@ -29,6 +29,9 @@ methods
         % N = 20; % discretization (number of nodal points)
         % plate = Plate(mat, h, N); % create waveguide description
         % 
+        if length(ys) == 1 && length(mats) > 1 % use same thickness for all layers
+            ys = ys*ones(size(mats)); % expand into a vector of thicknesses
+        end
         if length(mats) == length(ys) % thicknesses have been provided
             if length(ys) == 1
                 ys = ys*[-1/2, 1/2]; % single layer has centered coordinate 
@@ -41,7 +44,7 @@ methods
 		obj = obj@Waveguide(mats, ys, Ns); % converts mats 
         obj.lay = LayerPlate.empty; % initialize with correct class
 		for ii = 1:length(obj.mat)
-			obj.lay(ii) = LayerPlate(obj.mat(ii), ys(ii:ii+1), Ns(ii));
+			obj.lay(ii) = LayerPlate(obj.mat(ii), obj.geom.yItf(ii,:), obj.geom.N(ii));
 		end
     end
 
