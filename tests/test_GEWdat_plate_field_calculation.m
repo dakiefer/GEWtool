@@ -17,7 +17,7 @@ warnStat = warning; warning off; % save state and turn off
 N = 30; % needs to be high enough such that also the evanescent waves converge
 plate = Plate(mat, h, N); % mat and h from Lamb_ref_fields.mat
 gew = plate.Lamb;
-% gew = gew.linearizeInK2;
+% gew = gew.linearizeInK;
 clear opts;
 opts.parallel = false;
 opts.subspace = false;

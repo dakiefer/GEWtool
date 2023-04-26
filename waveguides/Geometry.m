@@ -27,6 +27,8 @@ end
 properties (Dependent)
     gdofBC      % a link to all gdofOfLay(ldofBC) assembled into one array: size [ui, 2 (bottom/top)]
     gdofFree    % degrees of freedom where no Dirichlet-BCs are imposed
+    gdofRedX    % degrees of freedom for the x-displacements in the reduced matrices (due to Dirichlet BC)
+    gdofRedY    % degrees of freedom for the y-displacements in the reduced matrices (due to Dirichlet BC)
 end
 
 methods
@@ -95,6 +97,18 @@ methods
     function gdofFree = get.gdofFree(obj)
         dofs = [obj.gdofOfLay{:}];
         gdofFree = setdiff(dofs, obj.gdofDBC);
+    end
+
+    function dofx = get.gdofRedX(obj)
+        dofAll = 1:length(obj.gdofFree);
+        indx = obj.gdofFree <= obj.N;
+        dofx = dofAll(indx);
+    end
+
+    function dofy = get.gdofRedY(obj)
+        dofAll = 1:length(obj.gdofFree);
+        indy = obj.gdofFree >= (obj.N+1) & obj.gdofFree <= 2*obj.N;
+        dofy = dofAll(indy);
     end
 
 end % methods

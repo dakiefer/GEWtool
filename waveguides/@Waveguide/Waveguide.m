@@ -95,32 +95,40 @@ methods
 		gew.op = obj.assembleLayers(udof, n);
     end
     
-    function lin = isLinearizableInK2(obj)
-        % isLinearizableInK2 - Test if the problem can be linearized in k without increasing the problem size.
+    function lin = isLinearizableInK(obj)
+        % isLinearizableInK - Test if the problem can be linearized in k without increasing the problem size.
+        if isempty(obj.op)
+            warning('GEWTOOL:isLinearizableInK', 'Setup problem first. Ignoring your request.'); 
+            lin = false; return; 
+        end
+        if isempty(obj.op.L1) && ~isempty(obj.op.L2)
+            lin = true; return; % already linearized
+        end
         if obj.geom.Nudof < 2, lin = false; return; end % TODO look at SH waves
-        if obj.geom.nLay > 1, lin = false; return; end  % TODO implement for multiple layers
-        if isempty(obj.op), warning('Setup problem first.'); end
-        N = obj.geom.N; 
-        dofx = 1:N; dofy = N+1:2*N;
+        if obj.geom.nLay > 1, lin = false; warning('Not implemented for multilayers.'); return; end  % TODO implement for multiple layers
+        dofx = obj.geom.gdofRedX; dofy = obj.geom.gdofRedY;
         L2test = all(obj.op.L2(dofy,dofx) == 0, 'all');
         L1test = all(obj.op.L1(dofx,dofx) == 0, 'all') & all(obj.op.L1(dofy,dofy) == 0, 'all');
         L0test = all(obj.op.L0(dofx,dofy) == 0, 'all');
         lin = L2test & L1test & L0test;
     end
     
-    function obj = linearizeInK2(obj)
-        % linearizeInK2 - Linearizes the problem in the wavenumber k without increasing size. 
+    function gews = linearizeInK(gews)
+        % linearizeInK - Linearizes the problem in the wavenumber k without increasing size. 
         % The matrices are manipulated without increasing their size. Use this before passing 
         % to the solver for faster computation of wavenumbers.
-        if ~obj.isLinearizableInK2
-            warning('GEWTOOL:Waveguide:nonlinearizable', 'This problem is not linearizable as intended.');
+        for obj = gews % note: the objects are "by reference", i.e., the original ones are changed
+            if ~obj.isLinearizableInK
+                warning('GEWTOOL:Waveguide:nonlinearizable', 'This problem is not linearizable as intended.');
+            end
+            if ~isempty(obj.op.L1) % ignore if already linearized
+                L2 = obj.op.L2; L1 = obj.op.L1; L0 = obj.op.L0;
+                dofx = obj.geom.gdofRedX; dofy = obj.geom.gdofRedY;
+                L2(dofy,dofx) = L1(dofy,dofx); 
+                L0(dofx,dofy) = L1(dofx,dofy);
+                obj.op.L2 = L2; obj.op.L1 = []; obj.op.L0 = L0;
+            end
         end
-        L2 = obj.op.L2; L1 = obj.op.L1; L0 = obj.op.L0;
-        N = obj.geom.N;
-        dofx = 1:N; dofy = N+1:2*N;
-        L2(dofy,dofx) = L1(dofy,dofx); 
-        L0(dofx,dofy) = L1(dofx,dofy);
-        obj.op.L2 = L2; obj.op.L1 = []; obj.op.L0 = L0;
     end
     
     function decoupl = decouplesLambvsSH(obj)

@@ -61,7 +61,7 @@ function dat = computeK(gews, w, nModes, opts)
         gdoffree = gew.geom.gdofFree;
         parfor (ii = 1:length(wh), opts.parallel)
             whn = wh(ii)/gew.np.fh0; % current frequency-thickness (normalized)
-            [un, khn] = solveAtFreq(L2, L1, L0, M, whn, nModes, gew.geom.N, opts);
+            [un, khn] = solveAtFreq(L2, L1, L0, M, whn, nModes, gew.geom, opts);
             u(:,ii,gdoffree) = un(:,1:nModes).'; % save
             kh(:,ii) = khn(1:nModes);
         end
@@ -75,7 +75,7 @@ function dat = computeK(gews, w, nModes, opts)
     end
 end
 
-function [un, khn] = solveAtFreq(L2, L1, L0, M, whn, nModes, N, opts)
+function [un, khn] = solveAtFreq(L2, L1, L0, M, whn, nModes, geom, opts)
     if all(L2 == 0, 'all') % is linearized as [(ik) L1 + L0 + w^2 M]*u = 0 (is this ever used?)
         if opts.subspace
             [un, khn] = eigs(L0 + whn^2*M, -1i*L1, nModes, "smallestabs");
@@ -92,7 +92,7 @@ function [un, khn] = solveAtFreq(L2, L1, L0, M, whn, nModes, N, opts)
             [un, khn2] = eig(L0 + whn^2*M, L2, 'vector');
             khn = sqrt(khn2);
         end
-        dofy = N+1:2*N;
+        dofy = geom.gdofRedY;
         un(dofy,:) = -1i*un(dofy,:)./khn.'; % eig.vec. was [ux, 1i*k*uy]
     else % quadratic EVP: [(ik)^2 L2 + (ik) L1 + L0 + w^2 M]*u = 0
         if opts.subspace
