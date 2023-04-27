@@ -13,7 +13,7 @@ mats = [p00,p90]; % plys or unit cell that will repeat
 hl = 1.25e-3; % layer thickness
 Nl = 2*6; % S- and A-waves use half the number of points
 plate = Plate(mats, hl*ones(size(mats)), Nl*ones(size(mats)));
-h = sum(plate.geom.h);
+h = plate.h;
 wmax = 3.5e3*2*pi/h; % maximum frequency of interest (for plotting and ZGV-search)
 gew = plate.Lamb; % Lamb and SH do not decouple
 
