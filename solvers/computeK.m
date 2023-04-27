@@ -28,7 +28,10 @@ function dat = computeK(gews, w, nModes, opts)
     if nargin < 4, opts = []; end
     if ~isfield(opts, 'sparse'),   opts.sparse = false;    end
     if ~isfield(opts, 'subspace'), opts.subspace = false;  end
-    if ~isfield(opts, 'parallel'), opts.parallel = false;  end
+    if ~isfield(opts, 'parallel')  % if a parallel pool already exists, then use it!
+        parPool = gcp('nocreate'); % is empty if no parallel pool exists
+        if isempty(parPool), opts.parallel = false; else, opts.parallel = true; end
+    end
     if ~opts.subspace && opts.sparse
         warning('GEWTOOL:computeK:ignoringSparse',...
             'Sparse matrices are only supported in combination with the subspace solver, i.e., eigs(). Switching to subspace method. To hide this message set opts.subspace=true;');
