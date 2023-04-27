@@ -17,16 +17,20 @@ h = 12.5e-3; % thickness
 a = b-h; % inner radius
 N = 20; % number of collocation points
 % fh = linspace(1e-2, 6, 300).'*1e3;
-k = linspace(1e-2, 15, 200)/h;
+k = linspace(1e-1, 15, 100)/h;
 mat = Material('steel_zheng');
 cyl = Cylinder(mat, [a, b], N);
 
 %% plot 
 % plot reference:
 load('data/zheng.mat');
-fig = figure; hold on, ylim([0, 12e3]), xlim([0, 0.4])
-plot(L01.f, L01.cp, 'k'), plot(L02.f, L02.cp, 'k'), plot(L04.f, L04.cp, 'k')
-plot(F11.f, F11.cp, 'k'), plot(F12.f, F12.cp, 'k'), plot(F13.f, F13.cp, 'k')
+fig = figure; hold on, ylim([0, 12e3]), xlim([0, 0.4]), grid off;
+plot(L01.f, L01.cp, 'Color', [.7, .7, .7])
+plot(L02.f, L02.cp, 'Color', [.7, .7, .7])
+plot(L04.f, L04.cp, 'Color', [.7, .7, .7])
+plot(F11.f, F11.cp, 'Color', [.7, .7, .7])
+plot(F12.f, F12.cp, 'Color', [.7, .7, .7])
+plot(F13.f, F13.cp, 'Color', [.7, .7, .7])
 xlabel('f in MHz'), ylabel('cp in m/s'), drawnow
 ax = gca; ax.ColorOrderIndex = 1; % reset color order 
 legend({'', '', '', '', '', 'Zheng'})
@@ -35,14 +39,14 @@ legend({'', '', '', '', '', 'Zheng'})
 n = 0; % circumferential wavenumber (flexural order)
 gew = cyl.fullyCoupled(n);
 dat = computeW(gew, k);
-plot(dat.w(:)/2/pi/1e6, dat.w(:)./dat.k(:), 'r.'); 
+plot(dat.w(:)/2/pi/1e6, dat.w(:)./dat.k(:), 'r.', 'MarkerSize', 8); 
 legend({'', '', '', '', '', 'Zheng', 'n = 0'})
 
 % first order:
 n = 1; % circumferential wavenumber (flexural order)
 gew = cyl.fullyCoupled(n);
 dat = computeW(gew, k);
-plot(dat.w(:)/2/pi/1e6, dat.w(:)./dat.k(:), 'g.'); 
+plot(dat.w(:)/2/pi/1e6, dat.w(:)./dat.k(:), 'b.', 'MarkerSize', 8); 
 legend({'', '', '', '', '', 'Zheng', 'n = 0', 'n = 1'})
 
 % request user to evaluate test:

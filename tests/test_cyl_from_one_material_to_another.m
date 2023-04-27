@@ -15,14 +15,15 @@ zirc = Material('zircaloy');
 steel = Material('steel');
 mats = [zirc, steel];
 n = 0;
-k = linspace(1e-3, 5, 200)/(r(end)-r(1)); % wavenumber-thickness (solve for frequency)
+k = linspace(1e-2, 5, 50)/(r(end)-r(1)); % wavenumber-thickness (solve for frequency)
 
 %% material transition
 % % only first material
 cyl = Cylinder(mats(1), [r(1), r(3)], N(1));
 gew = cyl.fullyCoupled(n);
 dat = computeW(gew, k); 
-fig = figure; plot(dat.k(:), dat.w(:)/2/pi, 'gx'); 
+fig = figure; 
+ph1 = plot(dat.k(:), dat.w(:)/2/pi, 'o', 'MarkerEdgeColor', [.7, .7, .7], 'MarkerFaceColor', [.7, .7, .7]); 
 xlim([0, 5e3]), ylim([0, 2e6]) 
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 
@@ -30,19 +31,19 @@ xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 cyl = Cylinder(mats(2), [r(1), r(3)], N(2));
 gew = cyl.fullyCoupled(n);
 dat = computeW(gew, k); 
-hold on, plot(dat.k(:), dat.w(:)/2/pi, 'cx'); drawnow;
+hold on, ph2 = plot(dat.k(:), dat.w(:)/2/pi, 'x', 'MarkerEdgeColor', [.5, .5, .5], 'MarkerFaceColor', [.5, .5, .5]); drawnow;
 
 % % bilayer problem thick-thin:
-b = linspace(r(1)*(1+1e-4), r(3)*(1-1e-4), 5);
+b = linspace(r(1)*(1+1e-4), r(3)*(1-1e-4), 7);
 cc = colormap; cc = downsample(cc, ceil(size(cc,1)/length(b))); % line colors based on default colormap
 for ii = 1:length(b)
     r0 = [r(1), b(ii), r(3)];
     cyl = Cylinder(mats, r0, N);
     gew = cyl.fullyCoupled(n);
     dat = computeW(gew, k); 
-    plot(dat.k(:), dat.w(:)/2/pi, '.', 'Color', cc(ii,:)); drawnow;
+    ph3 = plot(dat.k, dat.w/2/pi, '-', 'Color', cc(ii,:)); drawnow;
 end 
-legend({'zircaloy', 'steel'}, 'Location','southeast')
+legend([ph1(1), ph2(1), ph3(1)], {'zircaloy', 'steel', 'layered transition'}, 'Location','southeast')
 
 % request user to evaluate test:
 assert( userTestConfirmation(fig) )
