@@ -33,13 +33,13 @@ legend([hS(1), hA(1)], {'symmetric', 'anti-symmetric'}, 'Location', 'southeast')
 title('symmetric and anti-symmetric Lamb waves')
 
 %% compute wavenumbers and plot:
-w = 2*pi*linspace(1e-2, 6, 600).'*1e6; tic; % frequencies where to compute wavenumbers k
+w = 2*pi*linspace(1e-2, 7, 1000).'*1e6; tic; % frequencies where to compute wavenumbers k
 % linearizeInK(gews); % optional: this makes the computation faster
 datCompl = computeK(gews, w); toc;
 figure(3); clf; hold on, cc = lines(3);
 plot3(real(datCompl(1).k(:))/1e3, imag(datCompl(1).k(:))/1e3, datCompl(1).w(:)/2/pi/1e6, '.', 'Color', cc(1,:)); 
 plot3(real(datCompl(2).k(:))/1e3, imag(datCompl(2).k(:))/1e3, datCompl(2).w(:)/2/pi/1e6, '.', 'Color', cc(2,:)); 
-xlim([0, 12]), ylim([-10.5, 10.5]), view(-22, 18)
+xlim([0, 12]), ylim([-10.5, 10.5]), view(22, 18)
 xlabel('Re(k) in rad/mm'), ylabel('Im(k) in rad/mm')
 zlabel('f in MHz')
 title('complex spectrum')
