@@ -110,6 +110,9 @@ while k0<kMax && found<MaxPoints && iter<MaxIter
 end
 if strcmp(warningStatus.state, 'on'), warning('on', 'MATLAB:eigs:NotAllEigsConverged'); end
 
+[wzgv, ind] = sort(wzgv); % sort in frequency before returning
+kzgv = kzgv(ind);
+
 end % ZGV_MFRDScan
 
 % helper function:
