@@ -2,15 +2,15 @@
 
 **Dispersion curves and computation with guided elastic waves (GEWs) in MATLAB.**
 
-`GEWtool` provides extremely fast and reliable computation of guided elastodynamic waves (GEWs) in plates and cylinders. It is simple to use and yet provides full access to the computational results as well as underlying code. You are welcome to contribute to this open source project.
+`GEWtool` provides extremely fast and reliable computation of guided elastodynamic waves (GEWs) in plates and cylinders. It is simple to use and yet provides full access to the computational results as well as the underlying code. You are welcome to contribute to this open source project.
 
 **Features**:
 
-- Layered plates and cylinders
-- Does not miss solutions, super fast 
+- Multi-layered plates and cylinders
+- Finds all solutions, super fast 
+- General anisotropy, dissipation
 - Compute real frequencies, complex wavenumbers or ZGV points
 - Choose polarization (Lamb/SH/coupled) and symmetry (S/A)
-- Materials: general anisotropy, dissipation
 
 Code repository: [<img src="https://www.svgrepo.com/show/35001/github.svg" alt="GitHub" width="27px" />](https://github.com/dakiefer/GEWtool) [https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool)
 
@@ -22,7 +22,7 @@ h = 1e-3;                        % thickness in m
 N = 12;                          % number of nodes (dictates accuracy)
 k = linspace(1e-2, 12, 100)/h;   % wavenumbers to solve for
 plate = Plate(mat, h, N);        % create waveguide description 
-gews = plate.LambSA; tic;        % choose sym/anti-sym Lamb waves (assembles matrices)
+gews = plate.LambSA; tic;        % choose S+A Lamb waves (assembles matrices)
 dat = computeW(gews, k, 4); toc; % solve and save 4 modes (argument optional)
 plot(dat(1).k, dat(1).w/2/pi, 'b'); hold on;        % plot symmetric
 plot(dat(2).k, dat(2).w/2/pi, 'r'); ylim([0, 6e6]); % plot anti-symmetric
@@ -37,10 +37,13 @@ output:
 Proceed by inspecting the laser-ultrasonic excitability of the waves computed above (product of tangential and normal displacements ux·uy):
 
 ```matlab
+k = linspace(1e-2, 12, 200)/h;          % use more wavenumbers
+gew = plate.Lamb;                       % choose all Lamb waves
+dat = computeW(gew, k, 7);              % compute
 exc = excitabilityLUS(gew, dat, 'top'); % ux*uy at top surface (value of 1 at 100x median)
 exc = 20*log10(exc);                    % in decibel
 scatter(dat.k(:)/1e3, dat.w(:)/2/pi/1e6, 15, exc(:), 'filled'), ylim([0, 6]);
-colormap(flipud(colormap)); cb = colorbar; clim([-50, 0]);
+colormap(flipud(colormap)); cb = colorbar; caxis([-50, 0]);
 xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
 title('laser-ultrasonic excitability in dB')
 ```
