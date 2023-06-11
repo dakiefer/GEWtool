@@ -17,21 +17,22 @@ Code repository: [<img src="https://www.svgrepo.com/show/35001/github.svg" alt="
 ## Example: Lamb waves
 
 ```matlab
-mat = Material('steel');        % load from database (or create your own)
-h = 1e-3;                       % thickness in m
-N = 12;                         % number of nodes (dictates accuracy)
-k = linspace(1e-2, 12, 100)/h;  % wavenumbers to solve for
-plate = Plate(mat, h, N);       % create waveguide description 
-gew = plate.Lamb; tic           % choose waves (assemble matrices) 
-dat = computeW(gew, k, 7); toc  % solve and save 7 modes (argument optional)
-plot(dat.k/1e3, dat.w/2/pi/1e6); ylim([0, 6]);   % plot
-xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
+mat = Material('steel');         % load from database (or create your own)
+h = 1e-3;                        % thickness in m
+N = 12;                          % number of nodes (dictates accuracy)
+k = linspace(1e-2, 12, 100)/h;   % wavenumbers to solve for
+plate = Plate(mat, h, N);        % create waveguide description 
+gews = plate.LambSA; tic;        % choose sym/anti-sym Lamb waves (assembles matrices)
+dat = computeW(gews, k, 4); toc; % solve and save 4 modes (argument optional)
+plot(dat(1).k, dat(1).w/2/pi, 'b'); hold on;        % plot symmetric
+plot(dat(2).k, dat(2).w/2/pi, 'r'); ylim([0, 6e6]); % plot anti-symmetric
+xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 ```
 
 output:
-`> Elapsed time is 0.025834 seconds.` 
+`> Elapsed time is 0.010129 seconds.` 
 
-<img src="resourcesAndDeps/img/dispersion_lamb_steel.png" alt="rendering failed" title="Lamb waves in steel" width="450pt">
+<img src="resourcesAndDeps/img/dispersion_lamb_steel.png" alt="rendering failed" title="Lamb waves in steel" width="420pt">
 
 Proceed by inspecting the laser-ultrasonic excitability of the waves computed above (product of tangential and normal displacements ux·uy):
 
