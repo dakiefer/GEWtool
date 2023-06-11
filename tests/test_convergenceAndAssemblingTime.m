@@ -43,23 +43,6 @@ for i=1:numel(N)
     ws(i)=w(indSel);
 end
 
-% plot if the variable "show" has been set to true
-if exist('show', 'var') && show
-    figure(1), hold on, 
-    bar(dofs, time); 
-    title('assembling time for matrices'); 
-    xlabel('matrix size (= 2N)'), ylabel('time in s')
-    
-    figure(2), hold on, plot(dofs,abs(errRel),'o--');
-    ax=gca; ax.YScale='log';
-    xlabel('matrix size (= 2N)'), ylabel('relative error')
-    title('Error w.r.t Rayleigh-Lamb root')
-    % legend({'SCM', 'SEM', 'GEWtool'})
-end
-
-% %%%%%%% UNIT TESTS %%%%%%%
-% run using "runtests"
-
 %% assembling time
 assert( mean(time) < 10e-4 )
 
@@ -70,6 +53,19 @@ indConv = find( diff(convi) ) + 1;  % indices where the drops occur
 assert( length(indConv) == 1 );     % there exists exactly one index where the drop occurs
 
 % %%%%%%% END OF TESTS %%%%%%%
+% plot if the variable "show" has been set to true
+if exist('show', 'var') && show
+    figure(1), hold on, 
+    bar(dofs, time); 
+    title('assembling time for matrices'); 
+    xlabel('matrix size (= 2N)'), ylabel('time in s')
+    
+    figure(2), hold on, plot(dofs,abs(errRel),'o--');
+    ax=gca; ax.YScale='log';
+    xlabel('matrix size (= 2N)'), ylabel('relative error $(\omega - \omega_0)/\omega_0$')
+    title('Error w.r.t Rayleigh-Lamb root')
+    % legend({'SCM', 'SEM', 'GEWtool'})
+end
 
 
 % % HELPER FUNCTIONS:
