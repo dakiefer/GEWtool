@@ -97,6 +97,20 @@ methods
 		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, ones(size(obj.geom.N)));
 		gew.op = obj.assembleLayers(udof, n);
     end
+
+    function dis = isDissipative(obj)
+        % ISDISSIPATIVE - Check if waveguide dissipates energy. 
+        % returns
+        % - true: if any of the layers is composed of a dissipative material
+        % - false: otherwise
+        dis = true; 
+        for l = obj.lay
+            if ~isDissipative(l.mat)
+                dis = false; 
+                return;
+            end
+        end
+    end
     
     function lin = isLinearizableInK(obj)
         % isLinearizableInK - Test if the problem can be linearized in k without increasing the problem size.

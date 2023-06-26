@@ -1,7 +1,9 @@
 function [eElastic] = energyDensityElastic(gew, dat)
 %ENERGYDENSITYELASTIC Compute the elastic energy density.
 
-warning('energyDensityElastic(): Is it valid for viscous media?')
+if isDissipative(gew)
+    warning('energyDensityElastic(): Is it valid for viscous media?')
+end
 
 S = strain(gew, dat);
 T = stress(gew, dat);
