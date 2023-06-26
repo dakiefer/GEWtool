@@ -130,6 +130,22 @@ methods
         end
         obj.c = obj.c(perm,perm,perm,perm);
     end
+
+    function sym = isSymmetric(obj, perm)
+        % ISSYMMETRICONPERM - Test symmetry upon tensor index permutation.
+        % 
+        % Usage: 
+        % sym = obj.isSymmetric();       % default perm = [3,4,1,2]
+        % sym = obj.isSymmetric(perm);
+        % 
+        % Argument: 
+        % - perm: [4x1]-vector of stiffness tensor index permuation 1:4 -> perm
+        %         default: perm = [3,4,1,2] (i.e., cijkl -> cklij).
+        if nargin < 2
+            perm = [3,4,1,2];
+        end
+        cp = permute(obj.c, perm);
+        sym = norm(cp - obj.c,'fro')/norm(obj.c,'fro') < 1e2*eps;
     end
 
     function obj = rotateEuler(obj, a, b, g)
@@ -169,8 +185,8 @@ methods
         obj.c = transformBasis(obj.c, Q);
     end
     
-    function sym = isSymmetricOnAxis(obj, ax)
-        % ISSYMMETRICONAXIS - test if invariant to reflection along axis 'ax'.
+    function sym = isInvariantOnReflection(obj, ax)
+        % ISINVARIANTONREFLECTION - test if invariant to reflection along axis 'ax'.
         % 
         % Arguments:
         % - obj:   Material object.
@@ -193,8 +209,15 @@ methods
 
     function decoupl = decouplesSA(obj)
         % DECOUPLESSA - test if invariant to reflection along y-axis.
-        % Basically an alias to isSymmetricOnAxis().
-        decoupl = obj.isSymmetricOnAxis(2);
+        % Basically an alias to isInvariantOnReflection().
+        decoupl = obj.isInvariantOnReflection(2);
+    end
+
+    function dis = isDissipative(obj)
+        dis = true;
+        if isreal(obj.c) && obj.isSymmetric
+            dis = false;
+        end
     end
 
     function cmin = minWavespeed(obj, en)
