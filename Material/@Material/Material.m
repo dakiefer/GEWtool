@@ -121,14 +121,15 @@ methods
     function obj = permute(obj, perm)
         % permute - Permute the material coordinate system. 
         % The default transformation is ex-ey-ez -> ez-ex-ey, i.e. 
-        % 3->1, 1->2, 2->3, 6->4, 4->5, 5->6, given by perm = [3,1,2,6,4,5].
+        % 1->3, 2->1, 3->2, given by perm = [3,1,2].
         %
         % Argument:
-        % - perm:   [6x1]-vector indicating the permutation 1:6 -> perm.
+        % - perm:   [3x1]-vector indicating the permutation 1:3 -> perm.
         if nargin < 2
-            perm = [3,1,2,6,4,5]; % 3->1, 1->2, 2->3, 6->4, 4->5, 5->6
+            perm = [3,1,2]; % 3->1, 1->2, 2->3
         end
-        obj.C = obj.C(perm,perm);
+        obj.c = obj.c(perm,perm,perm,perm);
+    end
     end
 
     function obj = rotateEuler(obj, a, b, g)
