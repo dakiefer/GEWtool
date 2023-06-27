@@ -106,7 +106,10 @@ function [un, khn] = solveAtFreq(L2, L1, L0, M, whn, nModes, geom, opts)
             khn = -1i*ikhn; % extract kh
         end
     end
-    spurious = isinf(khn) | isnan(khn); khn(spurious) = []; un(:,spurious) = [];
-    [khn, ind] = sort(khn);
+    spurious = isinf(khn) | isnan(khn); 
+    khn(spurious) = []; un(:,spurious) = [];
+    khnRounded = round(khn*1e6)/1e6; % sort on digits with sufficient presition only
+    [~, ind] = sort(khnRounded,'ComparisonMethod','abs'); % sort by real part, 
+    khn = khn(ind);
     un = un(:,ind); % sort
 end
