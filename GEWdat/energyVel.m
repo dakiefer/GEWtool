@@ -1,23 +1,10 @@
-function [ce] = energyVel(gew, dat)
-%ENERGYVEL Compute the energy velocity ce.
+function [cex] = energyVel(gew, dat)
+% ENERGYVEL - Alias to energyVelAxial.
+% 
+% See also: ENERGYVELAXIAL.
+% 
+% 2022-2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-P = powerFlux(gew, dat);
-H = energyTotal(gew, dat);
-ce = P./H;
-
-% NOTE: this function depends on basically all field calculation functions:
-% - GEWintegrate
-% - powerFlux
-%   - poyntingVec
-%       - velocity
-%       - stress
-% - energyTotal
-%   - energyKinetic
-%       - energyDensityKinetic
-%           - velocity
-%   - energyElastic
-%       - energyDensityElastic
-%           - strain
-%           - stress
+cex = energyVelAxial(gew, dat);
 
 end
