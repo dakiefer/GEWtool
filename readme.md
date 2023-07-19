@@ -52,21 +52,11 @@ title('laser-ultrasonic excitability in dB')
 
 ## Installation 
 
-Add `GEWtool` and its subfolders to the Matlab path and save for future sessions. You can achieve this by 
-1. changing to the `GEWtool` folder (e.g., using `cd`)
-2. copy and past the following code:
-```matlab
-installdir = pwd;
-addpath(fullfile(installdir, 'GEWdat'));
-addpath(fullfile(installdir, 'layers'));
-addpath(fullfile(installdir, 'material'));
-addpath(fullfile(installdir, 'material/database'));
-addpath(fullfile(installdir, 'resourcesAndDeps'));
-addpath(fullfile(installdir, 'solvers'));
-addpath(fullfile(installdir, 'utilitiesAndNumerics'));
-addpath(fullfile(installdir, 'waveguides'));
-savepath % make permanent
-```
+Add `GEWtool` and its subfolders to the Matlab path and save for future sessions. To achieve this:
+
+1. change to the `GEWtool` folder (e.g., by navigating or using `cd`)
+2. execute `install`
+
 Enjoy!
 
 ## Getting started
