@@ -3,7 +3,7 @@
 
 cff-version: 1.2.0
 title: GEWtool
-message: 'If this software is useful to you, please cite it!'
+message: 'If this software is useful to you, please cite it together with the relevant publications!'
 type: software
 authors:
   - given-names: Daniel A.

@@ -11,7 +11,7 @@ k = linspace(1e-1, 15, 200);
 w = k*mat.ct;
 
 % list of solvers to compare:
-solver_list = {@(gew) computeW(gew,k), @(gew) computeWold(gew,k)};
+solver_list = {@(gew) computeW(gew,k)};
 
 %% current implementation 
 figure(1), hold off
