@@ -15,7 +15,9 @@ if ~isfield(opts, 'parallel')
         opts.parallel = ~isempty(gcp('nocreate')); % if a parallel pool exists, then use it!
     end
 end
-if islogical(opts.parallel), opts.parallel = inf; else, opts.parallel = 0; end % set the number of workers
+if islogical(opts.parallel) % convert logical value to number of workers
+    if opts.parallel, opts.parallel = inf; else, opts.parallel = 0; 
+end 
 if ~opts.subspace && opts.sparse
     warning('GEWTOOL:ignoringSparse',...
         'Sparse matrices are only supported in combination with the subspace solver, i.e., eigs(). Switching to subspace method. To hide this message set opts.subspace=true;');
