@@ -26,21 +26,8 @@ function dat = computeK(gews, w, nModes, opts)
     % 2022-2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
     if nargin < 4, opts = []; end
-    if ~isfield(opts, 'sparse'),   opts.sparse = false;    end
-    if ~isfield(opts, 'subspace'), opts.subspace = false;  end
-    if ~isfield(opts, 'parallel')  % if a parallel pool already exists, then use it!
-        parPool = gcp('nocreate'); % is empty if no parallel pool exists
-        if isempty(parPool), opts.parallel = false; else, opts.parallel = true; end
-    end
-    if ~opts.subspace && opts.sparse
-        warning('GEWTOOL:computeK:ignoringSparse',...
-            'Sparse matrices are only supported in combination with the subspace solver, i.e., eigs(). Switching to subspace method. To hide this message set opts.subspace=true;');
-        opts.subspace = true; % switch to eigs()
-    end 
-    if opts.parallel, opts.parallel = inf; else, opts.parallel = 0; end % set the number of workers
-    if nargin >= 3 && ~isempty(nModes) && ~isinf(nModes) && ( ~isscalar(nModes) || nModes ~= round(nModes) )
-        error('GEWTOOL:wrongArg', 'Argument "nModes" must be a scalar integer.');
-    end
+    if nargin < 3, nModes = []; end
+    opts = parseSolverOpts(opts,nModes);
     
     if ~isvector(w), error('Angular frequencies should be a [Nx1] array.'); end
     w = w(:).'; % row vector
