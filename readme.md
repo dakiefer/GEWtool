@@ -52,21 +52,22 @@ title('laser-ultrasonic excitability in dB')
 
 ## Installation 
 
-1. Add `GEWtool` and its subfolders to the Matlab path and save for future sessions.
-You can achieve this with (adjust first line):
-  ```matlab
-  installdir = fullfile('~', 'Documents', 'MATLAB'); % adjust to path where you put GEWtool!
-  addpath(fullfile(installdir, 'GEWtool', 'GEWdat'));
-  addpath(fullfile(installdir, 'GEWtool', 'layers'));
-  addpath(fullfile(installdir, 'GEWtool', 'material'));
-  addpath(fullfile(installdir, 'GEWtool', 'material/database'));
-  addpath(fullfile(installdir, 'GEWtool', 'numerics'));
-  addpath(fullfile(installdir, 'GEWtool', 'resourcesAndDeps'));
-  addpath(fullfile(installdir, 'GEWtool', 'solvers'));
-  addpath(fullfile(installdir, 'GEWtool', 'waveguides'));
-  savepath % make permanent
-  ```
-2. Enjoy!
+Add `GEWtool` and its subfolders to the Matlab path and save for future sessions. You can achieve this by 
+1. changing to the `GEWtool` folder (e.g., using `cd`)
+2. copy and past the following code:
+```matlab
+installdir = pwd;
+addpath(fullfile(installdir, 'GEWdat'));
+addpath(fullfile(installdir, 'layers'));
+addpath(fullfile(installdir, 'material'));
+addpath(fullfile(installdir, 'material/database'));
+addpath(fullfile(installdir, 'resourcesAndDeps'));
+addpath(fullfile(installdir, 'solvers'));
+addpath(fullfile(installdir, 'utilitiesAndNumerics'));
+addpath(fullfile(installdir, 'waveguides'));
+savepath % make permanent
+```
+Enjoy!
 
 ## Getting started
 
@@ -99,7 +100,7 @@ The function `computeZGVDirect` depends on the `MultiParEig toolbox` by Bor Ples
 
 ## Author
 
-2022 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris | PSL.
+2022–2023 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris | PSL.
 
 I have several years of experience in waveguide modeling and numerical implementations thereof. In January 2022 I decided to create a new modular and versatile code from scratch. The result is GEWtool. My hope is that it be a valuable research tool and at the same time a helpful educational resource for those interested in numerical methods and elastic waves.
 

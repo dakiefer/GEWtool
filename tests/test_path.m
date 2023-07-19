@@ -15,14 +15,14 @@ addpath(fullfile(installdir, 'GEWtool', 'GEWdat'));
 addpath(fullfile(installdir, 'GEWtool', 'layers'));
 addpath(fullfile(installdir, 'GEWtool', 'material'));
 addpath(fullfile(installdir, 'GEWtool', 'material/database'));
-addpath(fullfile(installdir, 'GEWtool', 'numerics'));
 addpath(fullfile(installdir, 'GEWtool', 'resourcesAndDeps'));
 addpath(fullfile(installdir, 'GEWtool', 'solvers'));
+addpath(fullfile(installdir, 'GEWtool', 'utilitiesAndNumerics'));
 addpath(fullfile(installdir, 'GEWtool', 'waveguides'));
 
 % common variables:
 h = 1e-3;
-N = 12;
+N = 8;
 k = linspace(1e-2, 12, 10)/h; % wavenumbers to solve for
 
 %% Plate example:
@@ -36,4 +36,5 @@ dat = computeW(gew, k);
 
 %% restore path
 % This is run even if the previous test fail (when using "runtests")
+restoredefaultpath; 
 addpath(pp);
