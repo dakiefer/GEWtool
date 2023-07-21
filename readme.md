@@ -88,6 +88,17 @@ GEWtool depends on the functions `collocD` and `lglnodes` created by Greg von Wi
 The function `computeZGVDirect` depends on the `MultiParEig toolbox` by Bor Plestenjak and Andrej Muhič: 
 > Bor Plestenjak (2022). MultiParEig (https://www.mathworks.com/matlabcentral/fileexchange/47844-multipareig), MATLAB Central File Exchange.
 
+## Contributors
+
+Daniel A. Kiefer, Institut Langevin, ESPCI Paris | PSL  
+Original developer and author
+
+Bor Plestenjak, Faculty of Mathematics and Physics, University of Ljubljana, Slovenia  
+Numerical methods to compute ZGV points
+
+Acknowledgments - Many inspiring discussions influenced GEWtool. D. A. Kiefer is thankful to:   
+Hauke Gravenkamp, Claire Prada and Michael Ponschab
+
 ## Author
 
 2022–2023 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris | PSL.
