@@ -9,7 +9,7 @@ authors:
   - given-names: Daniel A.
     family-names: Kiefer
     email: daniel.kiefer@espci.fr
-    affiliation: 'Institut Langevin, ESPCI Paris'
+    affiliation: 'Institut Langevin, ESPCI Paris, Université PSL'
     orcid: 'https://orcid.org/0000-0003-0776-8429'
 #doi: 
 #version: 
@@ -21,3 +21,6 @@ keywords:
   - dispersion
   - Lamb waves
   - anisotropy
+  - elastodynamics
+  - ultrasound
+  - zero-group-velocity

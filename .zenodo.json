@@ -1,0 +1,34 @@
+{
+    "title": "GEWtool",
+    "description": "Compute guided elastic wave (GEW) dispersion in MATLAB.",
+    "creators": [
+        {
+            "name": "Kiefer, Daniel A.",
+            "affiliation": "Institut Langevin, ESPCI Paris, Université PSL",
+            "orcid": "0000-0003-0776-8429"
+        }
+    ],
+    "contributors": [
+        {
+            "type": "RelatedPerson",
+            "name": "Plestenjak, Bor",
+            "affiliation": "Faculty of Mathematics and Physics, University of Ljubljana",
+            "orcid": "0000-0002-0463-7223"
+        }
+    ],
+    "upload_type": "software",
+    "license": "isc",
+    "related_identifiers": [
+        {
+            "relation": "isSupplementTo",
+            "scheme": "url",
+            "resource_type": "software",
+            "identifier": "https://github.com/dakiefer/GEWtool"
+        }
+    ],
+    "references": [ 
+        "D. A. Kiefer, Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering. in FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, no. 42. Erlangen: FAU University Press, 2022. doi: 10.25593/978-3-96147-550-6", 
+        "D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, \"Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,\" The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386\u20131398, Feb. 2023, doi: 10.1121/10.0017252"
+    ],
+    "keywords": ["guided waves", "dispersion", "Lamb waves", "elastodynamics", "ultrasound", "zero-group-velocity", "anisotropy"]
+}

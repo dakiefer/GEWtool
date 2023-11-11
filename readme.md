@@ -1,15 +1,15 @@
 # GEWtool
 
-**Dispersion curves and computation with guided elastic waves (GEWs) in MATLAB.**
+**Compute guided elastic wave (GEW) dispersion in MATLAB.**
 
-`GEWtool` provides extremely fast and reliable computation of guided elastodynamic waves (GEWs) in plates and cylinders. It is simple to use and yet provides full access to the computational results as well as the underlying code. You are welcome to contribute to this open source project.
+`GEWtool` provides extremely fast and reliable computation of guided elastodynamic waves (GEWs) in plates and cylinders. It is simple to use yet provides full access to the computational results as well as the underlying code. You are welcome to contribute to this open-source project.
 
 **Features**:
 
 - Multi-layered plates and cylinders
 - Finds all solutions, super fast 
 - General anisotropy, dissipation
-- Compute real frequencies, complex wavenumbers or ZGV points
+- Compute real frequencies, complex wavenumbers, or ZGV points
 - Choose polarization (Lamb/SH/coupled) and symmetry (S/A)
 
 Code repository: [<img src="https://www.svgrepo.com/show/35001/github.svg" alt="GitHub" width="27px" />](https://github.com/dakiefer/GEWtool) [https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool)
@@ -52,7 +52,7 @@ title('laser-ultrasonic excitability in dB')
 
 ## Installation 
 
-Add `GEWtool` and its subfolders to the Matlab path and save for future sessions. To achieve this:
+Add `GEWtool` and its subfolders to the Matlab path and save it for future sessions. To achieve this:
 
 1. change to the `GEWtool` folder (e.g., by navigating or using `cd`)
 2. execute `install`
@@ -71,14 +71,17 @@ You can also display help for all functions and classes, e.g., by typing `help P
 
 ## Mathematical and physical background
 
-GEWtool implements the *Spectral Element Method (SEM)* (higher-order Finite Elements) to solve the *waveguide problem*, i.e., the boundary value problem that describes wave propagation in the structure. Such an approach is commonly qualified as 'semi-analytical'. Contrary to classical root-finding of the characteristic equation, this method does not miss solutions. Moreover, in contrast to Finite Elements, the Spectral Elements lead to small but dense matrices. 
+GEWtool implements the *Spectral Element Method (SEM)* (higher-order Finite Elements) to solve the *waveguide problem*, i.e., the boundary value problem that describes wave propagation in the structure. Such an approach is commonly qualified as 'semi-analytical'. Contrary to classical root-finding of the characteristic equation, this method does not miss solutions. Moreover, unlike Finite Elements, the Spectral Elements lead to small but dense matrices. 
 
 Solusions are computed with machine precision provided you have set the discretization order `N` sufficiently high. The higher you go in frequency-thickness, the higher `N`  should be. As a rule of thumb: half of the obtained modes will be accurate. The figure below shows the convergence with respect to the Rayleigh-Lamb root of the S1 mode at 5.6 rad/mm in an aluminum plate (solution close to 5 MHz mm). A [Spectral Collocation](https://github.com/dakiefer/GEW_dispersion_script) implementation is shown in comparison. 15 digits accuracy is attained with N = 16 in this case.
 
 <img src="resourcesAndDeps/img/convergence.png" alt="rendering failed" title="relative error w.r.t. Rayleigh-Lamb root" width="450pt">
 
-For general information on the theory of elastic guided wave propagation refer to 
+For general information on the theory of guided elastic wave propagation refer to 
 > D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
+
+For the computation of zero-group-velocity (ZGV) points refer to
+> D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252).  [<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2023_jasa_computing-zero-group-velocity-points/2023_JASA_Computing%20zero-group-velocity%20points.pdf).
 
 ## Dependencies
 
@@ -90,8 +93,8 @@ The function `computeZGVDirect` depends on the `MultiParEig toolbox` by Bor Ples
 
 ## Contributors
 
-Daniel A. Kiefer, Institut Langevin, ESPCI Paris | PSL  
-Original developer and author
+Daniel A. Kiefer, Institut Langevin, ESPCI Paris, Université PSL  
+Author and developer
 
 Bor Plestenjak, Faculty of Mathematics and Physics, University of Ljubljana, Slovenia  
 Numerical methods to compute ZGV points
@@ -101,7 +104,7 @@ Hauke Gravenkamp, Claire Prada and Michael Ponschab
 
 ## Author
 
-2022–2023 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris | PSL.
+2022–2023 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris, Université PSL.
 
 I have several years of experience in waveguide modeling and numerical implementations thereof. In January 2022 I decided to create a new modular and versatile code from scratch. The result is GEWtool. My hope is that it be a valuable research tool and at the same time a helpful educational resource for those interested in numerical methods and elastic waves.
 
