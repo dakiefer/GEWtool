@@ -10,15 +10,15 @@
 pp = path; % save current path
 restoredefaultpath; 
 
-installdir = fullfile('../..'); % adjust to path where you put GEWtool!
-addpath(fullfile(installdir, 'GEWtool', 'GEWdat'));
-addpath(fullfile(installdir, 'GEWtool', 'layers'));
-addpath(fullfile(installdir, 'GEWtool', 'material'));
-addpath(fullfile(installdir, 'GEWtool', 'material/database'));
-addpath(fullfile(installdir, 'GEWtool', 'resourcesAndDeps'));
-addpath(fullfile(installdir, 'GEWtool', 'solvers'));
-addpath(fullfile(installdir, 'GEWtool', 'utilitiesAndNumerics'));
-addpath(fullfile(installdir, 'GEWtool', 'waveguides'));
+installdir = fileparts(fileparts(which('test_path')));
+addpath(fullfile(installdir, 'GEWdat'));
+addpath(fullfile(installdir, 'layers'));
+addpath(fullfile(installdir, 'material'));
+addpath(fullfile(installdir, 'material/database'));
+addpath(fullfile(installdir, 'resourcesAndDeps'));
+addpath(fullfile(installdir, 'solvers'));
+addpath(fullfile(installdir, 'utilitiesAndNumerics'));
+addpath(fullfile(installdir, 'waveguides'));
 
 % common variables:
 h = 1e-3;
