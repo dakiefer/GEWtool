@@ -1,4 +1,5 @@
-# GEWtool
+# GEWtool [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10114243.svg)](https://doi.org/10.5281/zenodo.10114243)
+
 
 **Compute guided elastic wave (GEW) dispersion in MATLAB.**
 
@@ -90,6 +91,12 @@ GEWtool depends on the functions `collocD` and `lglnodes` created by Greg von Wi
 
 The function `computeZGVDirect` depends on the `MultiParEig toolbox` by Bor Plestenjak and Andrej Muhič: 
 > Bor Plestenjak (2022). MultiParEig (https://www.mathworks.com/matlabcentral/fileexchange/47844-multipareig), MATLAB Central File Exchange.
+
+## Citing GEWtool
+
+If this code is useful to you, please cite it as (always indicate the DOI):
+
+> D. A. Kiefer (2023). GEWtool [Computer software]. doi: [10.5281/zenodo.10114243](https://doi.org/10.5281/zenodo.10114243)
 
 ## Contributors
 
