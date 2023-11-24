@@ -69,7 +69,7 @@ methods
 		udof = 1:3;
 		gew = obj;
         gew.geom = Geometry(obj.geom.yItf, obj.geom.N, 3*ones(size(obj.geom.N))); % update 
-		gew.op = obj.assembleLayers(udof, n);
+		gew = obj.assembleLayers(udof, n);
 	end
 
 	function gew = Lamb(obj, n)
@@ -82,7 +82,7 @@ methods
 		udof = 1:2;
 		gew = obj;
 		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
-		gew.op = obj.assembleLayers(udof, n);
+		gew = obj.assembleLayers(udof, n);
     end
 
 	function gew = sh(obj, n)
@@ -95,7 +95,7 @@ methods
 		udof = 3;
 		gew = obj;
 		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, ones(size(obj.geom.N)));
-		gew.op = obj.assembleLayers(udof, n);
+		gew = obj.assembleLayers(udof, n);
     end
 
     function dis = isDissipative(obj)
@@ -216,7 +216,8 @@ methods
         nM = length(obj.cutoffFreq(wmax, 'includeZeroFreq'));
     end
 
-	[op] = assembleLayers(obj, udof, n)
+    % declare functions implemented in external files:
+	gew = assembleLayers(obj, udof, n)
 end
 
 end % class

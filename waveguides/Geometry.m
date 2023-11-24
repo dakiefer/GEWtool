@@ -22,6 +22,7 @@ properties
     gdofDBC      % fixed degrees of freedom
     gdofOfLay    % cell array with global dofs assigned to layers
     Ndof         % total number of degrees of freedom
+    symmetrized = false  % true/false: whether the geometry represents the full or symmetry part
 end
 
 properties (Dependent)

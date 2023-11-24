@@ -59,10 +59,9 @@ methods
         % 
         % See also: fullyCoupled, fullyCoupledS.
         
-        obj = obj.symmetrizeGeometry;
+        if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = 1:3;
-		gew = obj;
-		gew.op = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
+		gew = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
         gdofs = [gew.geom.gdofBC{1}(1,1), gew.geom.gdofBC{1}(3,1)];
         gew = gew.fixGdof(gdofs); % fix ux- and uz-displacements at bottom (y=0)
     end
@@ -73,10 +72,9 @@ methods
         % 
         % See also: fullyCoupled, fullyCoupledA.
         
-        obj = obj.symmetrizeGeometry;
+        if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = 1:3;
-		gew = obj;
-		gew.op = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
+		gew = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(2,1)); % fix uy-displacement at bottom (y=0)
     end
 
@@ -109,11 +107,11 @@ methods
         if ~obj.decouplesLambvsSH
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
-        obj = obj.symmetrizeGeometry;
+        if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = 1:2;
 		gew = obj;
 		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
-		gew.op = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
+		gew = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(2,1)); % fix uy-displacement at bottom (y=0)
     end
     
@@ -126,11 +124,11 @@ methods
         if ~obj.decouplesLambvsSH
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
-        obj = obj.symmetrizeGeometry;
+        if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = 1:2;
 		gew = obj;
 		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
-		gew.op = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
+		gew = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(1,1)); % fix ux-displacement at bottom (y=0)
     end
     
@@ -214,6 +212,7 @@ methods
         end
         yItfList = yItfList - yItfList(1); % zero coordinate at center
         gew = Plate([lays.mat], yItfList, Ns);
+        gew.geom.symmetrized = true;
     end
 
 end % methods

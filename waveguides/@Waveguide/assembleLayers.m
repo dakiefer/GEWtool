@@ -1,8 +1,11 @@
-function op = assembleLayers(obj, udof, n)
+function obj = assembleLayers(obj, udof, n)
 % assembleLayers - Assembles the layer matrices into one global system.
 % Arguments:
 % - udof: vector specifying the displacement degrees of freedom (polarization)
 % - n:    circumferential order for cylindrical waveguide
+% This function modifies the argument "obj" passed by reference.
+% 
+% 2022-2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 % geometry and material:
 geom = obj.geom; lays = obj.lay;
@@ -24,7 +27,11 @@ for l = 1:geom.nLay
      M(dof,dof) =  M(dof,dof) +  Mlay*rhol*hl^2;
 end
 
-% return as structure:
+% reset boundary conditions, if any have been set: 
+obj.geom.gdofDBC = [];
+
+% assign result:
 op.M = M; op.L0 = L0; op.L1 = L1; op.L2 = L2;
+obj.op = op;
 
 end % function
