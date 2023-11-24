@@ -133,6 +133,7 @@ methods
 
     function sym = isSymmetric(obj, perm)
         % ISSYMMETRICONPERM - Test symmetry upon tensor index permutation.
+        % The test is done with a rel. precision of 1e4*eps = 2.2e-12.
         % 
         % Usage: 
         % sym = obj.isSymmetric();       % default perm = [3,4,1,2]
@@ -145,7 +146,7 @@ methods
             perm = [3,4,1,2];
         end
         cp = permute(obj.c, perm);
-        sym = norm(cp - obj.c,'fro')/norm(obj.c,'fro') < 1e2*eps;
+        sym = norm(cp - obj.c,'fro')/norm(obj.c,'fro') < 1e4*eps;
     end
 
     function obj = rotateEuler(obj, a, b, g)
