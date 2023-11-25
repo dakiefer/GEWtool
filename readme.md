@@ -82,7 +82,7 @@ For general information on the theory of guided elastic wave propagation refer t
 > D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
 
 For the computation of zero-group-velocity (ZGV) points refer to
-> D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252).  [<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2023_jasa_computing-zero-group-velocity-points/2023_JASA_Computing%20zero-group-velocity%20points.pdf).
+> D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252).  [<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2023_JASA_Computing_ZGV/2023_JASA_Computing_ZGV.pdf).
 
 ## Dependencies
 
@@ -96,7 +96,7 @@ The function `computeZGVDirect` depends on the `MultiParEig toolbox` by Bor Ples
 
 If this code is useful to you, please cite it as (always indicate the DOI):
 
-> D. A. Kiefer (2023). GEWtool [Computer software]. doi: [10.5281/zenodo.10114243](https://doi.org/10.5281/zenodo.10114243)
+> D. A. Kiefer (2023). GEWtool [Computer software]. doi: [10.5281/zenodo.10114243](https://doi.org/10.5281/zenodo.10114243) ([https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool))
 
 ## Contributors
 
