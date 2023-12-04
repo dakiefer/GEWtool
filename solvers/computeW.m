@@ -52,7 +52,12 @@ function dat = computeW(gews, k, nModes, opts)
         useSubspace = opts.subspace; % extracting option avoids Matlab warning due to parfor loop
         parfor (n = 1:length(kh), opts.parallel)
             if useSubspace
-                [un, whn2] = eigs(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, nModes, "smallestabs");
+                if isfield(opts,'target')
+                    w2target = (opts.target*gew.np.h0/gew.np.fh0)^2;
+                else
+                    w2target = "smallestabs";
+                end
+                [un, whn2] = eigs(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, nModes, w2target);
                 whn2 = diag(whn2); % eigs returns a matrix
             else
                 [un, whn2] = eig(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, 'chol',...
