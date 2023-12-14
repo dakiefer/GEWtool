@@ -59,7 +59,7 @@ B(1:n,1:n) = -P1;        % -P1 in block (1,1)
 B(1:n,n+1:2*n) = -P2;    % -P2 in block (1,2)
 
 if opts.subspace
-    [up, k] = eigs(A, B, nModes, "smallestabs"); % complex wavenumbers -> non-Hermitian
+    [up, k] = eigs(A, B, nModes, opts.target); % complex wavenumbers -> non-Hermitian
     k = diag(k);
 else
     [up, k] = eig(A, B, 'vector'); % complex wavenumbers -> non-Hermitian

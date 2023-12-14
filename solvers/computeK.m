@@ -33,8 +33,12 @@ function dat = computeK(gews, w, nModes, opts)
     w = w(:).'; % row vector
     for i = 1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
+        opti = opts; % clean copy that will be modified and forwarded in this iteration
         wh = w*gew.np.h0;
-        if opts.sparse
+        if isfield(opti,'target') & isnumeric(opti.target)
+            opti.target = opti.target*gews.np.h0;
+        end
+        if opti.sparse
             M = sparse(gew.op.M); L0 = sparse(gew.op.L0); L1 = sparse(gew.op.L1); L2 = sparse(gew.op.L2);
         else
             M = gew.op.M; L0 = gew.op.L0; L1 = gew.op.L1; L2 = gew.op.L2;
@@ -49,9 +53,9 @@ function dat = computeK(gews, w, nModes, opts)
         kh = nan(nModes, length(wh));
         u = zeros(nModes, length(wh), gew.geom.Ndof);
         gdoffree = gew.geom.gdofFree;
-        parfor (ii = 1:length(wh), opts.parallel)
+        parfor (ii = 1:length(wh), opti.parallel)
             whn = wh(ii)/gew.np.fh0; % current frequency-thickness (normalized)
-            [un, khn] = solveAtFreq(L2, L1, L0, M, whn, nModes, gew.geom, opts);
+            [un, khn] = solveAtFreq(L2, L1, L0, M, whn, nModes, gew.geom, opti);
             u(:,ii,gdoffree) = un(:,1:nModes).'; % save
             kh(:,ii) = khn(1:nModes);
         end
@@ -68,7 +72,7 @@ end
 function [un, khn] = solveAtFreq(L2, L1, L0, M, whn, nModes, geom, opts)
     if all(L2 == 0, 'all') % is linearized as [(ik) L1 + L0 + w^2 M]*u = 0 (is this ever used?)
         if opts.subspace
-            [un, khn] = eigs(L0 + whn^2*M, -1i*L1, nModes, "smallestabs");
+            [un, khn] = eigs(L0 + whn^2*M, -1i*L1, nModes, opts.target);
             khn = diag(khn); % eigs returns a matrix
         else
             [un, khn] = eig(L0 + whn^2*M, -1i*L1, 'vector');
@@ -76,7 +80,10 @@ function [un, khn] = solveAtFreq(L2, L1, L0, M, whn, nModes, geom, opts)
 %         [un, ikhi] = polyeig(L0 + whn^2*M, L1); 
     elseif isempty(L1) % is linearized as [(ik)^2 L2 + L0 + w^2 M]*u = 0
         if opts.subspace
-            [un, khn2] = eigs(L0 + whn^2*M, L2, nModes, "smallestabs");
+            if isfield(opts,'target') & isnumeric(opts.target)
+                opts.target = opts.target^2;
+            end
+            [un, khn2] = eigs(L0 + whn^2*M, L2, nModes, opts.target);
             khn = sqrt(diag(khn2)); % eigs returns a matrix
         else
             [un, khn2] = eig(L0 + whn^2*M, L2, 'vector');
@@ -86,6 +93,9 @@ function [un, khn] = solveAtFreq(L2, L1, L0, M, whn, nModes, geom, opts)
         un(dofy,:) = -1i*un(dofy,:)./khn.'; % eig.vec. was [ux, 1i*k*uy]
     else % quadratic EVP: [(ik)^2 L2 + (ik) L1 + L0 + w^2 M]*u = 0
         if opts.subspace
+            if isfield(opts,'target') & isnumeric(opts.target)
+                opts.target = 1i*opts.target;
+            end
             [un, ikhn] = GEWpolyeig(L0 + whn^2*M, L1, L2, nModes, opts);
             khn = -1i*ikhn; % extract kh
         else

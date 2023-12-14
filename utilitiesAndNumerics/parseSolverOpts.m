@@ -23,6 +23,11 @@ if ~opts.subspace && opts.sparse
         'Sparse matrices are only supported in combination with the subspace solver, i.e., eigs(). Switching to subspace method. To hide this message set opts.subspace=true;');
     opts.subspace = true; % switch to eigs()
 end 
+if opts.subspace 
+    if ~isfield(opts,'target')
+        opts.target = "smallestabs";
+    end
+end
 if ~isempty(nModes) && ~isinf(nModes) && ( ~isscalar(nModes) || nModes ~= round(nModes) )
     error('GEWTOOL:wrongArg', 'Argument "nModes" must be a scalar integer.');
 end

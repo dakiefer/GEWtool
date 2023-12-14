@@ -40,6 +40,11 @@ function dat = computeW(gews, k, nModes, opts)
             warning('GEWTOOL:computeW:tooManyModes', 'More modes requested than available. Resetting nModes to the matrix size.')
             nModes = size(gew.op.M,1);
         end
+        if isfield(opts,'target') & isnumeric(opts.target)
+            target = (opts.target*gew.np.h0/gew.np.fh0)^2;
+        else 
+            target = "smallestabs"; % parfor throws error if target undefined
+        end
         kh = k*gew.np.h0;
         if opts.sparse
             M = sparse(gew.op.M); L0 = sparse(gew.op.L0); L1 = sparse(gew.op.L1); L2 = sparse(gew.op.L2);
@@ -52,12 +57,7 @@ function dat = computeW(gews, k, nModes, opts)
         useSubspace = opts.subspace; % extracting option avoids Matlab warning due to parfor loop
         parfor (n = 1:length(kh), opts.parallel)
             if useSubspace
-                if isfield(opts,'target')
-                    w2target = (opts.target*gew.np.h0/gew.np.fh0)^2;
-                else
-                    w2target = "smallestabs";
-                end
-                [un, whn2] = eigs(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, nModes, w2target);
+                [un, whn2] = eigs(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, nModes, target);
                 whn2 = diag(whn2); % eigs returns a matrix
             else
                 [un, whn2] = eig(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, 'chol',...
