@@ -70,6 +70,15 @@ You can also display help for all functions and classes, e.g., by typing `help P
 - Waveguides:  `Plate`, `Cylinder`
 - Solvers: `computeW`, `computeK`, `computeZGV`
 
+## Known limitations 
+
+- Cylinders: The postprocessing tools provided in the folder `GEWdat` are only designed for plates. *Do not use them for cylinders*. Dispersion curves of axial waves in cylinders compute correctly, nonetheless. 
+- Cylinders: only axial waves are supported for now. 
+- Cylinders: only hollow cylinders are supported for now. 
+- Leaky waves: no support for now.
+
+Contact me if you have questions:  [daniel.kiefer@espci.fr](mailto:daniel.kiefer@espci.fr)
+
 ## Mathematical and physical background
 
 GEWtool implements the *Spectral Element Method (SEM)* (higher-order Finite Elements) to solve the *waveguide problem*, i.e., the boundary value problem that describes wave propagation in the structure. Such an approach is commonly qualified as 'semi-analytical'. Contrary to classical root-finding of the characteristic equation, this method does not miss solutions. Moreover, unlike Finite Elements, the Spectral Elements lead to small but dense matrices. 
@@ -78,7 +87,7 @@ Solusions are computed with machine precision provided you have set the discreti
 
 <img src="resourcesAndDeps/img/convergence.png" alt="rendering failed" title="relative error w.r.t. Rayleigh-Lamb root" width="450pt">
 
-For general information on the theory of guided elastic wave propagation refer to 
+For general information on the formulation of the elastic waveguide problem refer to 
 > D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
 
 For the computation of zero-group-velocity (ZGV) points refer to
