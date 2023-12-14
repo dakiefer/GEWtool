@@ -40,22 +40,36 @@ classdef LayerCylindrical < Layer
             % stiffnessOp - stiffness operators L0, L1, L2
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             % relevant material matrices: 
-            cxx = squeeze(cn(1,udof,udof,1));
-            cpp = squeeze(cn(3,udof,udof,3));
-            cpr = squeeze(cn(3,udof,udof,2));
-            cxp = squeeze(cn(1,udof,udof,3));
-            cpx = squeeze(cn(3,udof,udof,1));
-            cxr = squeeze(cn(1,udof,udof,2));
+            cxx = squeeze(cn(1,:,:,1));
+            cpp = squeeze(cn(3,:,:,3));
+            cpr = squeeze(cn(3,:,:,2));
+            cxp = squeeze(cn(1,:,:,3));
+            cpx = squeeze(cn(3,:,:,1));
+            cxr = squeeze(cn(1,:,:,2));
             % differetiation in curvilinear coordinate system:
-            A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; A = squeeze(A(udof, udof));
+            A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
             I = eye(size(A));
+
+            % include terms due to curvature (to be done before reducing to udof!)
+            cxpC = (cxp + cpx)*(1i*n*I + A);
+            cprC = cpr*(1i*n*I + A);
+            cppC = cpp*(1i*n*I + A)^2;
+
+            % reduce to desired polarization (udof):
+            cxx  = squeeze(cxx(udof,udof));
+            cpp  = squeeze(cpp(udof,udof));
+            cpr  = squeeze(cpr(udof,udof));
+            cxp  = squeeze(cxp(udof,udof));
+            cpx  = squeeze(cpx(udof,udof));
+            cxr  = squeeze(cxr(udof,udof));
+            cxpC = squeeze(cxpC(udof,udof));
+            cprC = squeeze(cprC(udof,udof));
+            cppC = squeeze(cppC(udof,udof));
             
             % element stiffness:
             K2 = kron(cxx, obj.PPr);
-            K1 = kron(cxr, obj.PPdr) + kron( (cxp + cpx)*(1i*n*I + A) , obj.PP);
-            k0PPd = cpp + cpr*(1i*n*I + A); % first term in K0
-            k0PPInvr = cpp*(1i*n*I + A)^2 - cpr*(1i*n*I + A); % second term in K0
-            K0 = kron(k0PPd, obj.PPd) + kron(k0PPInvr, obj.PPInvr);
+            K1 = kron(cxr, obj.PPdr) + kron(cxpC, obj.PP);
+            K0 = kron(cpp + cprC, obj.PPd) + kron(cppC - cprC, obj.PPInvr);
             % element flux:
             [G0, G1] = obj.tractionOp(udof, n);
             % combine to polynomial of (ik):
@@ -72,14 +86,20 @@ classdef LayerCylindrical < Layer
             % tractionOp - traction operators (flux, used internally)
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             % relevant material matrices: 
-            crx = squeeze(cn(2,udof,udof,1));
-            crr = squeeze(cn(2,udof,udof,2));
-            crp = squeeze(cn(2,udof,udof,3));
-            A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; A = squeeze(A(udof, udof)); % differetiation in curvilinear coordinate system
+            crx = squeeze(cn(2,:,:,1));
+            crr = squeeze(cn(2,:,:,2));
+            crp = squeeze(cn(2,:,:,3));
+            A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
             I = eye(size(A));
+            % terms due to curvature (to be done before reducing to udof!)
+            crpC = crp*(1i*n*I + A);
+            % reduce to desired polarization (udof):
+            crx   = squeeze(crx(udof,udof));
+            crr   = squeeze(crr(udof,udof));
+            crpC  = squeeze(crpC(udof,udof));
             % normalized element flux:
             G1 = kron( crx , -obj.PPdr.' );
-            G0 = kron( crr , -obj.PdPdr.' )  +  kron( crp*(1i*n*I + A) , -obj.PPd.' );
+            G0 = kron( crr , -obj.PdPdr.' )  +  kron( crpC , -obj.PPd.' );
         end
         
         function decoupl = decouplesLambvsSH(obj)
