@@ -43,8 +43,8 @@ classdef LayerPlate < Layer
             M = kron(rhon,me)/obj.h; % assemble
         end
         
-        function decoupl = decouplesLambvsSH(obj)
-            % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves decouple.
+        function decoupl = decouplesLambvsSH(obj,~)
+            % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves decouple. Argument n is optional and does nothing.
             xy = [1 2]; % Lamb polarization
             z =  3; % SH polarization 
             c1test = obj.mat.c(xy,xy,z,xy); 

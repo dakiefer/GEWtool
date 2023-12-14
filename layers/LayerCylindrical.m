@@ -102,29 +102,40 @@ classdef LayerCylindrical < Layer
             G0 = kron( crr , -obj.PdPdr.' )  +  kron( crpC , -obj.PPd.' );
         end
         
-        function decoupl = decouplesLambvsSH(obj)
+        function decoupl = decouplesLambvsSH(obj,n)
             % decouplesLambvsSH - Tests whether the xr- and phi-polarized waves decouple.
             if length(obj) > 1
                 error('GEWTOOL:decouplesLambvsSH:notimplementedyet', 'Multilayer waveguides do not support this operation at the moment.');
             end
+
             % stiffnessOp stiffness operator 
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
+
             % relevant material matrices: 
             cxx = squeeze(cn(1,:,:,1));
             crr = squeeze(cn(2,:,:,2));
             cpp = squeeze(cn(3,:,:,3));
-            Crp = squeeze(cn(2,:,:,3)) + squeeze(cn(3,:,:,2));
-            Cxp = squeeze(cn(1,:,:,3)) + squeeze(cn(3,:,:,1));
-            Crx = squeeze(cn(2,:,:,1)) + squeeze(cn(1,:,:,2));
+            cxr = squeeze(cn(1,:,:,2));
+            crx = squeeze(cn(2,:,:,1));
+            cxp = squeeze(cn(1,:,:,3));
+            cpx = squeeze(cn(3,:,:,1));
+            crp = squeeze(cn(2,:,:,3));
+            cpr = squeeze(cn(3,:,:,2));
+
             % differetiation in curvilinear coordinate system:
             A = [0, 0, 0; 0, 0, -1; 0, 1, 0];
-            
+            I = eye(size(A));
+            cxpC = (cxp + cpx)*(n*I + A); % take n*I real valued for test!
+            cprC = cpr*(n*I + A);
+            cppC = cpp*(n*I + A)^2;
+            crpC = crp*(n*I + A);
+
             % define dofs and continuous operator coefficients:
-            xy = [1 2]; % Lamb polarization
-            z =  3; % SH polarization 
-            L2 = cxx;
-            L1 = Cxp*A + Crx + Cxp;
-            L0 = crr + Crp*A + 2*cpp - cpp*A*A + Crp + 2*cpp*A;
+            xy = [1 2];   % Lamb polarization: flexural and longitudinal
+            z =  3;       % SH polarization: torsional
+            L2 = cxx; 
+            L1 = cxr + crx + cxpC; 
+            L0 = crr + cpp + crpC + cprC + cppC;
             
             % test 
             test = ~(L2(xy,z) | L2(z,xy).' | L1(xy,z) | L1(z,xy).' | L0(xy,z) | L0(z,xy).');

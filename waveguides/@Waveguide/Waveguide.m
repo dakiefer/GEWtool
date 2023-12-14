@@ -76,7 +76,7 @@ methods
         % Lamb - Assemble wave operators describing the Lamb polarized waves (in-plane).
         % 
         % See also: sh, fullyCoupled, decouplesLambvsSH.
-        if ~obj.decouplesLambvsSH
+        if ~obj.decouplesLambvsSH(n)
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
 		udof = 1:2;
@@ -89,7 +89,7 @@ methods
         % sh - Assemble wave operators describing the shear-horizontal (SH) polarized waves (out-of-plane).
         %
         % See also: Lamb, fullyCoupled, decouplesLambvsSH.
-        if ~obj.decouplesLambvsSH
+        if ~obj.decouplesLambvsSH(n)
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
 		udof = 3;
@@ -148,13 +148,17 @@ methods
         end
     end
     
-    function decoupl = decouplesLambvsSH(obj)
-        % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves decouple.
+    function decoupl = decouplesLambvsSH(obj,n)
+        % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves
+        % decouple. For cylinders this corresponds to decoupling of flexural and
+        % longitudinal waves from torsional waves. 
+        % Arguments: 
+        % - n : circumferential wavenumber (only necessary for cylinders)
         % 
         % See also: Lamb, sh, fullyCoupled.
         lays = obj.lay;
         for l = lays % test each of the layers
-            if ~l.decouplesLambvsSH
+            if ~l.decouplesLambvsSH(n)
                 decoupl = false; return;
             end
         end

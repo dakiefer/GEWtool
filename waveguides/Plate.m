@@ -152,6 +152,14 @@ methods
         gew = sh@Waveguide(obj, n);
     end
 
+    function decoupl = decouplesLambvsSH(obj,~)
+        % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves
+        % decouple.
+        % 
+        % See also: Lamb, sh, fullyCoupled.
+        decoupl = decouplesLambvsSH@Waveguide(obj,0);
+    end
+
     function decoupl = decouplesSA(obj, verb)
         % decouplesSA - Tests whether symmetric and antisymmetric waves decouple.
         % Usage: 
