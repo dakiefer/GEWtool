@@ -1,6 +1,9 @@
 function [S] = strain(gew,dat)
 %STRAIN Compute the strain S.
 
+if isa(gew,"Cylinder")
+    warning('Cylinders do not support this function yet. The results will be wrong.');
+end
 S = cell(gew.geom.nLay, 1); % allocate for each layer
 for i = 1:gew.geom.nLay
     % initialize 

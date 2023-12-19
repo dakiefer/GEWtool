@@ -10,6 +10,9 @@ function [I] = GEWintegrate(gew, f, n)
 % - I: Integrated values (array of dimension p-1)
 %
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+if isa(gew,"Cylinder")
+    warning('Cylinders do not support this function yet. The results will be wrong.');
+end
 if nargin < 3 
     n = 3; % dimension to be integrated;
 end

@@ -5,6 +5,9 @@ function [T] = stress(gew, dat)
 % - wguide: waveguide object
 % 
 
+if isa(gew,"Cylinder")
+    warning('Cylinders do not support this function yet. The results will be wrong.');
+end
 T = cell(gew.geom.nLay, 1); % allocate for each layer
 for i = 1:gew.geom.nLay
     lay = gew.lay(i);
