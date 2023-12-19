@@ -1,0 +1,8 @@
+---
+header-includes: |
+  <style>
+    body {
+      font-family: "Source Sans 3";
+    }
+  </style>
+---
