@@ -1,4 +1,4 @@
-# GEWtool [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10114243.svg)](https://doi.org/10.5281/zenodo.10114243)
+# GEWtool [![DOI](resourcesAndDeps/img/zenodo.10114243.svg)](https://doi.org/10.5281/zenodo.10114243)
 
 
 **Compute guided elastic wave (GEW) dispersion in MATLAB.**
@@ -88,10 +88,10 @@ Solusions are computed with machine precision provided you have set the discreti
 <img src="resourcesAndDeps/img/convergence.png" alt="rendering failed" title="relative error w.r.t. Rayleigh-Lamb root" width="450pt">
 
 For general information on the formulation of the elastic waveguide problem refer to 
-> D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
+> D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [<img src="resourcesAndDeps/img/icon_file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
 
 For the computation of zero-group-velocity (ZGV) points refer to
-> D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252).  [<img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2023_JASA_Computing_ZGV/2023_JASA_Computing_ZGV.pdf).
+> D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252).  [<img src="resourcesAndDeps/img/icon_file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2023_JASA_Computing_ZGV/2023_JASA_Computing_ZGV.pdf).
 
 ## Dependencies
 
@@ -124,6 +124,7 @@ Hauke Gravenkamp, Claire Prada and Michael Ponschab
 
 I have several years of experience in waveguide modeling and numerical implementations thereof. In January 2022 I decided to create a new modular and versatile code from scratch. The result is GEWtool. My hope is that it be a valuable research tool and at the same time a helpful educational resource for those interested in numerical methods and elastic waves.
 
-Contact: [daniel.kiefer@espci.fr](mailto:daniel.kiefer@espci.fr) &nbsp; ● &nbsp; [dakiefer.net](https://dakiefer.net) &nbsp; ● &nbsp; Follow me on [ResearchGate](https://www.researchgate.net/profile/Daniel-Kiefer-5)!
+Contact: [daniel.kiefer@espci.fr](mailto:daniel.kiefer@espci.fr) &nbsp; • &nbsp; [dakiefer.net](https://dakiefer.net) &nbsp; • &nbsp; Follow me on [ResearchGate](https://www.researchgate.net/profile/Daniel-Kiefer-5)!
 
-[<img src="https://user-images.githubusercontent.com/3725269/185571121-f5fcd518-32de-40b2-b4b1-f4ef0610ccd1.svg" alt="Logo Institut Langevin" width="250px" />](https://www.institut-langevin.espci.fr) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [<img src="https://user-images.githubusercontent.com/3725269/185570398-ca2796ab-2bd3-4171-a7a6-af1f74014504.svg" alt="Logo ESPCI Paris" width="260px" />](https://www.espci.psl.eu/en/)
+<a href="https://www.institut-langevin.espci.fr"><img src="resourcesAndDeps/img/logo_institut_langevin.svg" alt="Logo Institut Langevin" width="250px" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.espci.psl.eu/en/"><img src="resourcesAndDeps/img/logo_espci.svg" alt="Logo ESPCI Paris" width="260px" /></a>
+
