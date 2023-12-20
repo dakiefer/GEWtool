@@ -13,7 +13,7 @@
 - Compute real frequencies, complex wavenumbers, or ZGV points
 - Choose polarization (Lamb/SH/coupled) and symmetry (S/A)
 
-Code repository: [<img src="https://www.svgrepo.com/show/35001/github.svg" alt="GitHub" width="27px" />](https://github.com/dakiefer/GEWtool) [https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool)
+[![GitHub](resourcesAndDeps/img/logo_github.svg)](https://github.com/dakiefer/GEWtool) Code repository: [https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool)
 
 ## Example: Lamb waves
 
@@ -33,7 +33,7 @@ xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 output:
 `> Elapsed time is 0.010129 seconds.` 
 
-<img src="resourcesAndDeps/img/dispersion_lamb_steel.png" alt="rendering failed" title="Lamb waves in steel" width="420pt">
+![Lamb waves in steel](resourcesAndDeps/img/dispersion_lamb_steel.png)\
 
 Proceed by inspecting the laser-ultrasonic excitability of the waves computed above (product of tangential and normal displacements ux·uy):
 
@@ -49,7 +49,7 @@ xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
 title('laser-ultrasonic excitability in dB')
 ```
 
-<img src="resourcesAndDeps/img/lus_excitability.png" alt="rendering failed" title="LUS excitability" width="450pt">
+![LUS excitability](resourcesAndDeps/img/lus_excitability.png)\
 
 ## Installation 
 
@@ -85,27 +85,29 @@ GEWtool implements the *Spectral Element Method (SEM)* (higher-order Finite Elem
 
 Solusions are computed with machine precision provided you have set the discretization order `N` sufficiently high. The higher you go in frequency-thickness, the higher `N`  should be. As a rule of thumb: half of the obtained modes will be accurate. The figure below shows the convergence with respect to the Rayleigh-Lamb root of the S1 mode at 5.6 rad/mm in an aluminum plate (solution close to 5 MHz mm). A [Spectral Collocation](https://github.com/dakiefer/GEW_dispersion_script) implementation is shown in comparison. 15 digits accuracy is attained with N = 16 in this case.
 
-<img src="resourcesAndDeps/img/convergence.png" alt="rendering failed" title="relative error w.r.t. Rayleigh-Lamb root" width="450pt">
+![relative error w.r.t. Rayleigh-Lamb root](resourcesAndDeps/img/convergence.png)\
 
 For general information on the formulation of the elastic waveguide problem refer to 
-> D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [<img src="resourcesAndDeps/img/icon_file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
+> D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
 
 For the computation of zero-group-velocity (ZGV) points refer to
-> D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252).  [<img src="resourcesAndDeps/img/icon_file-pdf.svg" alt="PDF" height="15pt"/>](https://dakiefer.net/publication/2023_JASA_Computing_ZGV/2023_JASA_Computing_ZGV.pdf).
+> D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_JASA_Computing_ZGV/2023_JASA_Computing_ZGV.pdf).
 
 ## Dependencies
 
 GEWtool depends on the functions `collocD` and `lglnodes` created by Greg von Winckel. They are bundled together with their license files in the `resourcesAndDeps` directory. You may also find them on
-> Greg von Winckel, MATLAB Central File Exchange, https://fr.mathworks.com/matlabcentral/profile/authors/869721.
+
+> Greg von Winckel, MATLAB Central File Exchange, [https://fr.mathworks.com/matlabcentral/profile/authors/869721](https://fr.mathworks.com/matlabcentral/profile/authors/869721).
 
 The function `computeZGVDirect` depends on the `MultiParEig toolbox` by Bor Plestenjak and Andrej Muhič: 
-> Bor Plestenjak (2022). MultiParEig (https://www.mathworks.com/matlabcentral/fileexchange/47844-multipareig), MATLAB Central File Exchange.
+
+> Bor Plestenjak (2022). MultiParEig ([https://www.mathworks.com/matlabcentral/fileexchange/47844-multipareig](https://www.mathworks.com/matlabcentral/fileexchange/47844-multipareig)), MATLAB Central File Exchange.
 
 ## Citing GEWtool
 
-If this code is useful to you, please cite it as (always indicate the DOI):
+If this code is useful to you, please cite it as (always indicating either the project DOI or the version DOI from Zenodo):
 
-> D. A. Kiefer (2023). GEWtool [Computer software]. doi: [10.5281/zenodo.10114243](https://doi.org/10.5281/zenodo.10114243) ([https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool))
+> D. A. Kiefer (2023). GEWtool. doi: [10.5281/zenodo.10114243](https://doi.org/10.5281/zenodo.10114243) ([https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool))
 
 ## Contributors
 
@@ -126,5 +128,4 @@ I have several years of experience in waveguide modeling and numerical implement
 
 Contact: [daniel.kiefer@espci.fr](mailto:daniel.kiefer@espci.fr) &nbsp; • &nbsp; [dakiefer.net](https://dakiefer.net) &nbsp; • &nbsp; Follow me on [ResearchGate](https://www.researchgate.net/profile/Daniel-Kiefer-5)!
 
-<a href="https://www.institut-langevin.espci.fr"><img src="resourcesAndDeps/img/logo_institut_langevin.svg" alt="Logo Institut Langevin" width="250px" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.espci.psl.eu/en/"><img src="resourcesAndDeps/img/logo_espci.svg" alt="Logo ESPCI Paris" width="260px" /></a>
-
+[![Logo Institut Langevin](resourcesAndDeps/img/logo_institut_langevin.svg)](https://www.institut-langevin.espci.fr)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Logo ESPCI](resourcesAndDeps/img/logo_espci.svg)](https://www.espci.psl.eu/en/)
