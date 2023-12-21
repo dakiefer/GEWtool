@@ -33,7 +33,7 @@ assert(distMax < 1e-4);
 
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
-    figure; hold on; 
+    figure; hold on; title('w-target')
     plot(datFull.k/1e3, datFull.w/2/pi/1e6, '-', 'Color',[1 1 1]*0.5);
     plot(dat.k/1e3, dat.w/2/pi/1e6, '.b', 'MarkerSize',8);
     yline(wtarget/2/pi/1e6,'r')
@@ -65,7 +65,7 @@ assert(distMax < (k(2)-k(1))/1e3);
 
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
-    figure; hold on; 
+    figure; hold on; title('k-target')
     plot(datFull.k/1e3, datFull.w/2/pi/1e6, '-', 'Color',[1 1 1]*0.5);
     plot(real(dat.k)/1e3, dat.w/2/pi/1e6, '.b', 'MarkerSize',8);
     xline(ktarget/1e3,'r')
@@ -99,7 +99,7 @@ assert(distMax < (k(2)-k(1))/1e3);
 
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
-    figure; hold on; 
+    figure; hold on; title('k-target - linearizeInK')
     plot(datFull.k/1e3, datFull.w/2/pi/1e6, '-', 'Color',[1 1 1]*0.5);
     plot(real(dat.k)/1e3, dat.w/2/pi/1e6, '.b', 'MarkerSize',8);
     xline(ktarget/1e3,'r')
