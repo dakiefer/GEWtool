@@ -1,4 +1,4 @@
-# GEWtool [![DOI](resourcesAndDeps/img/zenodo.10114243.svg)](https://doi.org/10.5281/zenodo.10114243)
+# GEWtool [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10114243.svg)](https://doi.org/10.5281/zenodo.10114243)
 
 
 **Compute guided elastic wave (GEW) dispersion in MATLAB.**
