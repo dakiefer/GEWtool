@@ -15,7 +15,7 @@ function [dat] = computeZGVScan(gew, wmax, opts)
 % explicitly, as this might speed up the computation. 
 %
 % dat = computeZGVScan(gew, wmax):   Also specify the maximum angular frequency
-% wmax in Hz that you are interested in. wmax defines kMax and nModes via the
+% wmax in rad/s that you are interested in. wmax defines kMax and nModes via the
 % longitudinal wave speed. We conjecture that ZGVs cannot exist at phase
 % velocities below the minimum bulk longitudinal wave speed.
 %
@@ -31,8 +31,7 @@ function [dat] = computeZGVScan(gew, wmax, opts)
 %        Reducing Neigs can considerably speed up the computation, especially if
 %        you have large matrices. If it is too small, you will miss solutions.
 %        The default value is determined depending on the number of modes within the
-%        frequency range of interest (wmax) and kMax = wmax/cmin, where cmin is
-%        the slowest plane wave speed in x-direction of all layers.
+%        frequency range of interest (wmax). 
 %      - Dk: (kMax/(6*nModes+1)): Increment for the target k0 in rad/m where to search
 %        for ZGV points. Increase Dk to speed up the computation. Smaller Dk make it
 %        more likely that all ZGV points will be found. The default is estimated

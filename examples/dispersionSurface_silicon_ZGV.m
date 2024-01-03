@@ -15,20 +15,21 @@ mat45 = mat0.rotateEuler(0, -45/180*pi, 0);  % x-axis aligned with [010] crystal
 h = 524.6e-6;   % plate thickness 
 N = 16;         % number of nodes (discretization)
 nMode = 3;      % index of mode to plot
+wmax = 2*pi*10e6;  % maximum angular frequency of interest (for faster computation)
 
 %% compute ZGV points along both principal axes of silicon
 % Note that this block will only be valid for cubic materials. adapt if necessary.
 % compute ZGV at  0°/[110] (ZGV2, saddle point): 
 plate = Plate(mat0, h, N);
-gew = plate.fullyCoupledS;    % symmetric waves only (Lamb and SH coupled)
-zgv0 = computeZGVScan(gew);   % compute ZGV point (frequency and wavenumber)
+gew = plate.fullyCoupledS;        % symmetric waves only (Lamb and SH coupled)
+zgv0 = computeZGVScan(gew,wmax);  % compute ZGV point (frequency and wavenumber)
 w0 = zgv0.w(1); k0 = zgv0.k(1); 
 clear tgv; % clear pre-existing data structures, if any 
 tgv(1) = computeZGV(gew, w0, k0); % later we compute all TGVs
 % compute ZGV at 45°/[010] (ZGV1, minimum):
 plate = Plate(mat45, h, N);
-gew = plate.fullyCoupledS;    % symmetric waves only (Lamb and SH coupled)
-zgv45 = computeZGVScan(gew);  % compute ZGV point (frequency and wavenumber)
+gew = plate.fullyCoupledS;        % symmetric waves only (Lamb and SH coupled)
+zgv45 = computeZGVScan(gew,wmax); % compute ZGV point (frequency and wavenumber)
 w45 = zgv45.w(1); k45 = zgv45.k(1);
 % combine ZGV data for later plotting:
 thetaZGV0 = [0,pi/2,pi,-pi/2];
@@ -71,7 +72,7 @@ for i = 1:length(thetas), W(i,:)=dat(i).w(:,nMode); end
 
 %% contour plot
 figure(34); clf; hold on, grid off; axis equal;
-title(sprintf('%s: S1/S2b mode dispersion contours', mat0.name))
+title(sprintf('%s (%s)', mat0.name, mat0.symmetry))
 klim = max([kX_TGV, kY_TGV])*1.3; 
 xlim([-1, 1]*klim/1e3), ylim([-1, 1]*klim/1e3) % set limits
 clim([0.998*wZGVmin/2/pi/1e6, 1.001*wZGVmax/2/pi/1e6]);
