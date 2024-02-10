@@ -6,7 +6,7 @@
 % 
 % 2022-2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-mat = Material('steel');        % load from database (or create your own)
+mat = MaterialIsotropic('steel');        % load from database (or create your own)
 h = 1e-3;                       % thickness in m
 N = 14;                         % number of nodes (dictates accuracy)
 k = linspace(1e-2, 12, 100)/h;  % wavenumbers to solve for
@@ -23,11 +23,10 @@ title('Lamb waves')
 %% compute symmetric/anti-symmetric waves separately:
 gews = plate.LambSA; tic; % assembles matrices for both the sym/anti-sym Lamb waves
 datSA = computeW(gews, k); toc;
-datS = datSA(1); % symmetric waves
-datA = datSA(2); % anti-symmetric waves
 figure(2); clf; hold on, cc = lines(3);
-hS = plot(datS.k/1e3, datS.w/2/pi/1e6, 'Color', cc(1,:)); 
-hA = plot(datA.k/1e3, datA.w/2/pi/1e6, 'Color', cc(2,:)); ylim([0, 6]);
+hS = plot(datSA(1).k/1e3, datSA(1).w/2/pi/1e6, 'Color', cc(1,:)); % symmetric waves
+hA = plot(datSA(2).k/1e3, datSA(2).w/2/pi/1e6, 'Color', cc(2,:)); % anti-symmetric waves
+ylim([0, 6]);
 xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
 legend([hS(1), hA(1)], {'symmetric', 'anti-symmetric'}, 'Location', 'southeast')
 title('symmetric and anti-symmetric Lamb waves')

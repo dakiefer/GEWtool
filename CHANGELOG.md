@@ -2,7 +2,7 @@
 
 Documents the changes to GEWtool.
 
-## 1.1.0 (2023-12-19)
+## 1.1.0 (2023-12-23)
 
 - FEATURE Provide targets for the angular frequency or the wavenumbers. You can pass the target in `opts.target` when calling `computeW()` or `computeK()`.
 - FEATURE Introduce aliases for common terminology used in cylindrical waveguides: `longitudinal` -> `Lamb(0)`; `torsional` -> `sh(0)`, and `flexural(n)` -> `fullyCoupled(n)`.

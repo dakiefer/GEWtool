@@ -7,6 +7,6 @@
 	 [0,0,0,4.54E+10,0,0],
 	 [0,0,0,0,4.54E+10,0],
 	 [0,0,0,0,0,4.54E+10]],
-"symmetry": "anisotropic",
+"symmetry": "cubic",
 "source": "Brennan Dubuc: Computation of propagating and non-propagating guided modes in nonuniformly stressed plates using spectral methods"
 }
