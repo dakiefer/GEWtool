@@ -28,6 +28,7 @@ properties (Dependent)
     cl       % (quasi)-longitudinal wave speed in x-direction
     ct       % first (quasi)-transverse wave speed in x-direction
     ct2      % second (quasi)-transverse waves speed in x-direction
+    AU       % universal anisotropy index (doi 10.1103/PhysRevLett.101.055504)
 end
 
 methods
@@ -121,6 +122,15 @@ methods
     function ct2 = get.ct2(obj)
         cs = wavespeeds(obj);
         ct2 = cs(3);
+    end
+    function AU = get.AU(obj) 
+        switch  obj.symmetry
+            case {'cubic', 'isotropic'}
+                A = 2*obj.C(4,4)/(obj.C(1,1)-obj.C(1,2)); % Zener anisotropy index
+                AU = 6/5*(sqrt(A) - 1/sqrt(A))^2;
+            otherwise
+                AU = nan;
+        end
     end
 
     function obj = permute(obj, perm)
