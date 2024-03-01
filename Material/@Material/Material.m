@@ -261,8 +261,10 @@ methods
     end
 
     [s, e0] = slownessCurve(obj, alpha, ek)
-    plotSlownessCurve(varargin)
     [cs, eu] = wavespeeds(obj, ek)
+    [ce] = energyVel(obj, ek)
+    plotSlownessCurve(obj, erot, varargin)
+    plotRayCurve(obj, erot, varargin)
     save(obj,path)
 
     %% overload operators: 
