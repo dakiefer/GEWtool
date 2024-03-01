@@ -1,4 +1,4 @@
-function [s, e0] = slownessCurve(obj, alpha, erot)
+function [s, ea] = slownessCurve(obj, alpha, erot)
 
 if nargin == 3
     erot = erot(:)/norm(erot); % normalize
@@ -8,19 +8,19 @@ elseif nargin < 2
     error('GEWTOOL:slownessCurve:wrongNumberOfArgs', 'Specify the rotation angles as second argument (vector).');
 end
 if ~isvector(alpha)
-    error('GEWTOOL:slownessCurve:wrongArg', 'The angles alpha should be specified as a vector.');
+    error('GEWTOOL:slownessCurve:wrongArg', 'The set of angles alpha should be specified as a vector.');
 end
 
-eks = null(erot.'); % svd to compute orthogonal vectors to erot
-e0 = eks(:,1); % use one of the vectors
+ebasis = null(erot.'); % svd to compute orthogonal vectors to erot
+ea = ebasis(:,1); % first basis vector spanning the plane normal to erot
+eb = ebasis(:,2); % second basis vector spanning the plane normal to erot
 
 N = length(alpha);
 cs = zeros(3, N);
-for ii = 1:N
-    alpha0 = alpha(ii);
-    % Rodrigues' rotation formula (last term is zero due to e0*erot = 0): 
-    enew = cos(alpha0)*e0 + sin(alpha0)*cross(erot, e0); %  + (1 - cos(p0))*sum(e0.*erot)*erot;
-    cs(:,ii) = obj.wavespeeds(enew);
+for i = 1:N
+    % Rodrigues' rotation formula (last term is zero due to ea*erot = 0): 
+    eki = cos(alpha(i))*ea + sin(alpha(i))*eb; %  + (1 - cos(p0))*sum(ea.*erot)*erot;
+    cs(:,i) = obj.wavespeeds(eki);
 end
 s = 1./cs.'; % slowness
 
