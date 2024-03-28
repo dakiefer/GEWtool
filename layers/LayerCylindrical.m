@@ -5,7 +5,7 @@ classdef LayerCylindrical < Layer
 %
 % See also Cylinder, Waveguide.
 % 
-% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
     properties 
         PPr     % integral of weighted product matrix of ansatz functions ∫P*P r dr
@@ -20,16 +20,20 @@ classdef LayerCylindrical < Layer
     methods
         function obj = LayerCylindrical(mat, rs, N)
             % LayerCylindrical - Create a LayerCylindrical object.
-            obj = obj@Layer(mat, rs, N);
-
+            [yn, ~] = Layer.nodes(N);  % nodal coordinates and integration weights
+            h = rs(end)-rs(1); % layer thickness
+            if rs(1)/h < 1e-2  % if inner radius is close to zero
+                basis = Layer.basisGaussLegendre(yn); % avoid singularity at r = 0
+            else
+                basis = Layer.basisGaussLobattoLumped(yn); % faster integration, diagonal mass
+            end
+            obj = obj@Layer(mat, rs, N, basis);
             % % element matrices specific to cylindrical coordinates:
-            [yi, wi] = Layer.nodes(N);  % nodal coordinates and integration weights
-            [P, Pd] = Layer.basis(yi);  % polynomial basis
-            rn = (obj.r)/obj.h; % radial coordinates normalized to thickness
-            obj.PPr = LayerCylindrical.elemPPr(P, wi, rn);          % ∫P*P r dr
-            obj.PPInvr = LayerCylindrical.elemPPInvr(P, wi, rn);    % ∫P*P 1/r dr 
-            obj.PPdr = LayerCylindrical.elemPPdr(P, Pd, wi, rn);    % ∫P*P' r dr 
-            obj.PdPdr = LayerCylindrical.elemPdPdr(Pd, wi, rn);     % ∫P'*P' r dr 
+            basis.r = basis.y(:) + rs(1)/h; % map nodes on [0, 1] -> [r1,r2]/(r2-r1)
+            obj.PPr = LayerCylindrical.elemPPr(basis.P, basis.w, basis.r);             % ∫P*P r dr
+            obj.PPInvr = LayerCylindrical.elemPPInvr(basis.P, basis.w, basis.r);       % ∫P*P 1/r dr 
+            obj.PPdr = LayerCylindrical.elemPPdr(basis.P, basis.Pd, basis.w, basis.r); % ∫P*P' r dr 
+            obj.PdPdr = LayerCylindrical.elemPdPdr(basis.Pd, basis.w, basis.r);        % ∫P'*P' r dr 
         end
 
         function r = get.r(obj)
@@ -159,27 +163,31 @@ classdef LayerCylindrical < Layer
 
     methods (Static)
         function ppr = elemPPr(P, w, r) 
-            % elemPPr - integral ∫P*P*1/r dr of basis functions P
-            PtimesP = P.*permute(P,[1 3 2]); % size: [nodal points, len P, len P]
-            PtimesPr = r(:).*PtimesP;
+            % elemPPr - integral ∫P*P*r dr of basis functions P
+            PtimesP = P.*permute(P,[1 3 2]); % size: [integration points, len P, len P]
+            PtimesPr = r.*PtimesP;
             ppr = squeeze( sum(w.'.*PtimesPr,1) );
         end
         function ppri = elemPPInvr(P, w, r) 
             % elemPPInvr - integral ∫P*P*1/r dr of basis functions P
-            PtimesP = P.*permute(P,[1 3 2]); % size: [nodal points, len P, len P]
-            PtimesPr = (1./r(:)).*PtimesP;
+            if r(1) <= 10*eps
+                error('GEWTOOL:LayerCylindrical',...
+                    'Integrating at r=0 is not possible due to the singularity of 1/r. Switch integration scheme.');
+            end
+            PtimesP = P.*permute(P,[1 3 2]); % size: [integration points, len P, len P]
+            PtimesPr = 1./r.*PtimesP;
             ppri = squeeze( sum(w.'.*PtimesPr,1) );
         end
         function ppdr = elemPPdr(P, Pd, w, r) 
-            % elemPPdr - integral ∫P*P'*1/r dr of basis functions P
-            PtimesPd = P.*permute(Pd,[1 3 2]); % size: [nodal points, len P, len P]
-            PtimesPdr = r(:).*PtimesPd;
+            % elemPPdr - integral ∫P*P'*r dr of basis functions P
+            PtimesPd = P.*permute(Pd,[1 3 2]); % size: [integration points, len P, len P]
+            PtimesPdr = r.*PtimesPd;
             ppdr = squeeze( sum(w.'.*PtimesPdr,1) );
         end
         function ppdr = elemPdPdr(Pd, w, r) 
-            % elemPdPdr - integral ∫P*P'*1/r dr of basis functions P
-            PdtimesPd = Pd.*permute(Pd,[1 3 2]); % size: [nodal points, len P, len P]
-            PdtimesPdr = r(:).*PdtimesPd;
+            % elemPdPdr - integral ∫P'*P'*r dr of basis functions P
+            PdtimesPd = Pd.*permute(Pd,[1 3 2]); % size: [integration points, len P, len P]
+            PdtimesPdr = r.*PdtimesPd;
             ppdr = squeeze( sum(w.'.*PdtimesPdr,1) );
         end
     end

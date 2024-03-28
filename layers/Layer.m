@@ -5,7 +5,7 @@ classdef Layer
 %
 % See also Plate, Cylinder, Waveguide.
 % 
-% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
     properties (Access = public)
         y   % nodal points in physical domain
@@ -21,26 +21,29 @@ classdef Layer
     end
 
     methods
-        function obj = Layer(mat, ylim, N)
+        function obj = Layer(mat, ylim, N, basis)
             % Layer - Create a Layer object.
             % Arguments:
             % - mat:   [1 x 1] material of class "Material" or struct
             %          with mat.rho [1 x 1] and mat.c [3 x 3 x 3 x 3].
             % - ylim:  [1 x 2] coordinates of lower and upper interface.
             % - N:     discretization order [1 x 1] (number of nodal points)
-
+            % - b:     (optional) polynomial basis 
+    
+            [yn, wn] = Layer.nodes(N);  % Gauss-Lobatto element nodes 
+            if nargin < 4 
+                basis = Layer.basisGaussLobattoLumped(yn); % default polynomial basis
+            end
+            obj.D1 = collocD(yn); % save differentiation matrix for later post-processing
             % % element matrices:
-            [yi, wi] = Layer.nodes(N);  % nodal coordinates and integration weights
-            [P, Pd] = Layer.basis(yi, N);  % polynomial basis
-            obj.D1 = collocD(yi);       % differentiation matrix for given basis and nodes (post-processing)
-            obj.PP = Layer.elemPP(P, wi);
-            obj.PPd = Layer.elemPPd(P, Pd, wi);
-            obj.PdPd = Layer.elemPdPd(Pd, wi);
+            obj.PP = Layer.elemPP(basis.P, basis.w);
+            obj.PPd = Layer.elemPPd(basis.P, basis.Pd, basis.w);
+            obj.PdPd = Layer.elemPdPd(basis.Pd, basis.w);
             % % save coordinates and other properties:
             obj.h = ylim(end) - ylim(1); % physical thickness
-            obj.y = obj.h*yi + ylim(1);
-            obj.w = wi; % integration weights on unit domain (post-processing)
-            obj.eta = yi;
+            obj.y = obj.h*yn + ylim(1);
+            obj.w = wn; % integration weights on unit domain (post-processing)
+            obj.eta = yn;
             obj.mat = mat; % material
             obj.N = N; % polynomial order
         end
@@ -72,32 +75,61 @@ classdef Layer
             g0 = squeeze( sum(w.'.*PdtimesPd,1) );
         end
 
-        function [yi, wi] = nodes(N)
-            % nodes - nodal coordinates and integration weights.
-
-            % % For Chebyshev polynomials on Chebyshev points: 
-%             [yi, wi] = chebpts(2*N, [0 1]); % integration weights: integrate exactly P*P
-            % % For Lagrange polynomials with GLL points:
-            [yi, wi] = lglnodes(N-1); yi = flip(yi); wi = wi.';
-            wi = wi/2; yi = yi/2 + 1/2; % scale to [0, 1]
+        function [yn, wn] = nodes(N)
+            % nodes - nodal points and integration weights.
+            % Gauss-Lobatto points yn on unit domain [0, 1] and the
+            % corresponding integration weights.
+            [yn, wn] = lglnodes(N-1); yn = flip(yn); wn = wn.';
+            wn = wn/2; yn = yn/2 + 1/2; % scale to [0, 1]
         end
 
-        function [P, Pd] = basis(yi, N)
-            % basis - ansatz functions and their derivatives sampled at nodes.
-            if nargin < 2
-                N = length(yi); % polynomial order is equal to number of quadrature points
+        function basis = basisGaussLobattoLumped(yn)
+            % basisGaussLobattoLumped - sampled ansatz functions and their derivatives.
+            % Returns the N ansatz functions P(y) and their derivatives sampled at
+            % the integration nodes yi. Here we use the N element nodes yn € [0,1] as
+            % integration nodes yi. This is an inaccurate integration scheme for the
+            % polynomials P(y)*P(y) of order (N-1)^2 that appear in the mass matrix.
+            % Gauss-Lobatto quadrature is accurate up to polynomial order 2*Ni-3,
+            % where Ni are the number of integration nodes. The advantage of using
+            % Ni = N is that we obtain a diagnoal mass matrix ∫P*Pdy.
+            N = length(yn); % number of nodes, polynomial order is N-1
+            % % Lagrange polynomials as basis:
+            Pn = eye(N); % P(yn,i) ith-Lagrange polynomial Pi(y) sampled at nodes yn
+            Dy = collocD(yn); % differentiation matrix
+            Pdn = squeeze(sum(Dy.*shiftdim(Pn, -1), 2)); % differentiated Pi sampled at yn
+            % % Use the element nodes yn as integration points (yi = yn):
+            [yi, wi] = lglnodes(N-1);  % integration nodes and weights
+            yi = flip(yi)/2 + 1/2; wi = wi.'/2; % scale to [0, 1]
+            basis.P = Pn;   basis.Pd = Pdn;    basis.w = wi;     basis.y = yi;
+        end
+
+        function basis = basisGaussLegendre(yn)
+            % basisGaussLegendre - sampled ansatz functions and their derivatives.
+            % Returns the N ansatz functions P(y) and their derivatives sampled at
+            % the integration nodes yi. Here we use Ni >= N^2/2-N+1 Gauss-Legendre
+            % integration nodes yi € (0,1). Ni is chosen such as to obtain an exact
+            % integration scheme. Gauss-Legendre quadrature is exact up to
+            % polynomial order 2*Ni - 3. The mass matrix ∫P*Pdy is no longer
+            % diagonal. The integration nodes yi exclude the element border, which
+            % avoids the singularity at r = 0 in cylindrical coordinates. 
+            N = length(yn);  % number of nodes, polynomial order is N-1
+            Ni = ceil(N^2/2)-N+1;  % number of quadrature points
+            % % Lagrange polynomials as basis:
+            Pn = eye(N); % P(yn,i) ith-Lagrange polynomial Pi(y) sampled at nodes yn
+            Dy = collocD(yn); % differentiation matrix
+            Pdn = squeeze(sum(Dy.*shiftdim(Pn, -1), 2));  % differentiated Pi sampled at yn
+            % % interpolate to integration points:
+            [yi, wi] = lgwt(Ni,0,1); % Gauss-Legendre points and weights
+            yi = flip(yi); % integration points 
+            wi = wi.'; % integration weights 
+            Pi = zeros(Ni,N);  % P(yi,i) ith-Lagrange polynomial Pi(y) sampled at nodes yi
+            Pdi = zeros(Ni,N); % similar but for Pi'(y) 
+            for j = 1:N 
+                Pi(:,j)  = barylag([yn,Pn(:,j)],yi);  % interpolate Pj(y) to yi
+                Pdi(:,j) = barylag([yn,Pdn(:,j)],yi); % interpolate Pj'(y) to yi
             end
-            % % For Chebyshev polynomials: 
-%             Dy = diffmat(N, [0 1]); % differentiation matrix on integration grid yi
-%             Psi = chebpoly(0:N-1, [0 1]); % Chebyshev polynomials
-%             P = Psi(yi,:); % along 1st dim: samples at yi, along 2nd dim: polynomial order
-%             Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials
-            % % Lagrange polynomials:
-            P = eye(length(yi)); % Psi(yi,:);
-            Dy = collocD(yi);
-            Pd = squeeze(sum(Dy.*shiftdim(P, -1), 2)); % differentiated polynomials;
+            basis.P = Pi;   basis.Pd = Pdi;    basis.w = wi;    basis.y = yi;
         end
-
 
         %% overload operators: 
         function ret = eq(a, b)

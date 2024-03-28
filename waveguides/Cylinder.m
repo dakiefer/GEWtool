@@ -10,7 +10,7 @@ classdef Cylinder < Waveguide
 %
 % See also Cylinder.Cylinder, Plate, Waveguide.
 % 
-% 2022-2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 methods 
 	function obj = Cylinder(mats, rs, Ns)
@@ -36,11 +36,12 @@ methods
     end
 
     function gew = longitudinal(obj)
-        % LONGITUDINAL - Assemble operators for the longitudinal/compressional modes.
-        % The longitudional modes (also called compressional) are ux-ur-polarized 
-        % and are akin to Lamb waves in a plate. The modes might exist only for
-        % circumferential order zero (n=0). Otherwise they are coupled with the
-        % torsional waves. They are usually labeled L(0,m).
+        % LONGITUDINAL - Assemble operators for the longitudinal/compressional
+        % modes. The longitudional modes (also called compressional) are
+        % ux-ur-polarized and are akin to Lamb waves in a plate. The modes exist
+        % only for circumferential order zero (n=0) when the material has
+        % appropriate symmetries. Otherwise they are coupled with the torsional
+        % waves. They are usually labeled L(0,m).
         % 
         % See also: torsional, flexural, decouplesLambvsSH.
         n = 0;
@@ -48,11 +49,11 @@ methods
     end
 
     function gew = torsional(obj)
-        % TORSIONAL - Assemble operators for the torsional modes.
-        % The torsional modes are polarized in uPhi and are akin to SH waves in
-        % a plate. The modes might exist only for circumferential order zero
-        % (n=0). Otherwise they are coupled with the longitudinal waves. They
-        % are usually labeled as T(0,m).
+        % TORSIONAL - Assemble operators for the torsional modes. The torsional
+        % modes are polarized in uPhi and are akin to SH waves in a plate. The
+        % modes exist only for circumferential order zero (n=0) when the
+        % material exhibits appropriate symmetries. Otherwise they are coupled
+        % with the longitudinal waves. They are usually labeled as T(0,m).
         % 
         % See also: longitudinal, flexural, decouplesLambvsSH.
         n = 0;
