@@ -7,7 +7,7 @@
 
 **Features**:
 
-- Multi-layered plates and cylinders
+- Multi-layered plates, tubes and rods
 - Finds all solutions, super fast 
 - General anisotropy, dissipation
 - Compute real frequencies, complex wavenumbers, or ZGV points
@@ -33,7 +33,7 @@ xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 output:
 `> Elapsed time is 0.010129 seconds.` 
 
-![Lamb waves in steel](resourcesAndDeps/img/dispersion_lamb_steel.png)\
+![Lamb waves in steel](resourcesAndDeps/img/dispersion_lamb_steel.png)
 
 Proceed by inspecting the laser-ultrasonic excitability of the waves computed above (product of tangential and normal displacements ux·uy):
 
@@ -49,7 +49,7 @@ xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
 title('laser-ultrasonic excitability in dB')
 ```
 
-![LUS excitability](resourcesAndDeps/img/lus_excitability.png)\
+![LUS excitability](resourcesAndDeps/img/lus_excitability.png)
 
 ## Installation 
 
@@ -74,7 +74,6 @@ You can also display help for all functions and classes, e.g., by typing `help P
 
 - Cylinders: The postprocessing tools provided in the folder `GEWdat` are only designed for plates. *Do not use them for cylinders*. Dispersion curves of axial waves in cylinders compute correctly, nonetheless. 
 - Cylinders: only axial waves are supported for now. 
-- Cylinders: only hollow cylinders are supported for now. 
 - Leaky waves: no support for now.
 
 Contact me if you have questions:  [daniel.kiefer@espci.fr](mailto:daniel.kiefer@espci.fr)
@@ -85,7 +84,7 @@ GEWtool implements the *Spectral Element Method (SEM)* (higher-order Finite Elem
 
 Solusions are computed with machine precision provided you have set the discretization order `N` sufficiently high. The higher you go in frequency-thickness, the higher `N`  should be. As a rule of thumb: half of the obtained modes will be accurate. The figure below shows the convergence with respect to the Rayleigh-Lamb root of the S1 mode at 5.6 rad/mm in an aluminum plate (solution close to 5 MHz mm). A [Spectral Collocation](https://github.com/dakiefer/GEW_dispersion_script) implementation is shown in comparison. 15 digits accuracy is attained with N = 16 in this case.
 
-![relative error w.r.t. Rayleigh-Lamb root](resourcesAndDeps/img/convergence.png)\
+![relative error w.r.t. Rayleigh-Lamb root](resourcesAndDeps/img/convergence.png)
 
 For general information on the formulation of the elastic waveguide problem refer to 
 > D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
@@ -95,7 +94,7 @@ For the computation of zero-group-velocity (ZGV) points refer to
 
 ## Dependencies
 
-GEWtool depends on the functions `collocD` and `lglnodes` created by Greg von Winckel. They are bundled together with their license files in the `resourcesAndDeps` directory. You may also find them on
+GEWtool depends on the functions `collocD` , `lglnodes`, `lgwt` and `barylag` created by Greg von Winckel. They are bundled together with their license files in the `resourcesAndDeps` directory. You may also find them on
 
 > Greg von Winckel, MATLAB Central File Exchange, [https://fr.mathworks.com/matlabcentral/profile/authors/869721](https://fr.mathworks.com/matlabcentral/profile/authors/869721).
 
@@ -105,7 +104,7 @@ The function `computeZGVDirect` depends on the `MultiParEig toolbox` by Bor Ples
 
 ## Citing GEWtool
 
-If this code is useful to you, please cite it as (always indicating either the project DOI or the version DOI from Zenodo):
+If this code is useful to you, please cite it as (always indicating the DOI):
 
 > D. A. Kiefer (2023). GEWtool. doi: [10.5281/zenodo.10114243](https://doi.org/10.5281/zenodo.10114243) ([https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool))
 
@@ -122,7 +121,7 @@ Hauke Gravenkamp, Claire Prada and Michael Ponschab
 
 ## Author
 
-2022–2023 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris, Université PSL.
+2022–2024 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris, Université PSL.
 
 I have several years of experience in waveguide modeling and numerical implementations thereof. In January 2022 I decided to create a new modular and versatile code from scratch. The result is GEWtool. My hope is that it be a valuable research tool and at the same time a helpful educational resource for those interested in numerical methods and elastic waves.
 
