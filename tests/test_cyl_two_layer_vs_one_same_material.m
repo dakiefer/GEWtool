@@ -1,5 +1,8 @@
 % Run using: runtests()
 % Test cylinder: single layer vs. double layer of same material and thickness.
+% Before running, you can set 
+% >> show = true; 
+% to visualize the output.
 %
 % see also: 
 % https://fr.mathworks.com/help/matlab/matlab_prog/write-script-based-unit-tests.html
@@ -9,9 +12,7 @@
 % specify parameters:
 r = [20e-3, 20.5e-3, 21e-3]; % radial interface coordinates of layers in m
 N = [15, 15]; % number of discretization points
-mat.rho = 7900; lbd = 1.1538e11; mu = 7.6923e10; % steel material
-II = eye(3).*shiftdim(eye(3), -2); % 4th order "unit tensor"
-mat.c = lbd*II + mu*(permute(II, [1 3 4 2]) + permute(II, [1 3 2 4])); % stiffness tensor
+mat = MaterialIsotropic('steel');
 n = 0; % circumferential order
 nModes = 10;
 k = linspace(1e-2, 15, 200)/(r(end)-r(1)); % wavenumber (solve for frequency)
