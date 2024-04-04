@@ -14,8 +14,8 @@ gews = plate.LambSA; tic;        % choose S+A Lamb waves (assembles matrices)
 dat = computeW(gews, k, 4); toc; % solve and save 4 modes (argument optional)
 
 figure(1); clf; hold on
-hS = plot(dat(1).k/1e3, dat(1).w/2/pi/1e6, 'Color', "#0072BD"); % plot symmetric
-hA = plot(dat(2).k/1e3, dat(2).w/2/pi/1e6, 'Color', "#D95319"); % plot anti-symmetric
+hS = plot(dat(1).k/1e3, dat(1).w/2/pi/1e6, 'Color', "#3B518B"); % plot symmetric
+hA = plot(dat(2).k/1e3, dat(2).w/2/pi/1e6, 'Color', "#5EC962"); % plot anti-symmetric
 ylim([0, 6]); 
 xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
 legend([hS(1), hA(1)], {'symmetric', 'anti-symmetric'}, 'Location', 'southeast')
