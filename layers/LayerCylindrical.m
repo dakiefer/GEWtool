@@ -55,25 +55,23 @@ classdef LayerCylindrical < Layer
             I = eye(size(A));
 
             % include terms due to curvature (to be done before reducing to udof!)
-            cxpC = (cxp + cpx)*(1i*n*I + A);
-            cprC = cpr*(1i*n*I + A);
-            cppC = cpp*(1i*n*I + A)^2;
+            cxpA = cxp*(A + 1i*n*I);
+            Acpx = (A + 1i*n*I)*cpx; 
+            Acpr = (A + 1i*n*I)*cpr; 
+            AcppA = (A + 1i*n*I)*cpp*(A + 1i*n*I); 
 
             % reduce to desired polarization (udof):
             cxx  = squeeze(cxx(udof,udof));
-            cpp  = squeeze(cpp(udof,udof));
-            cpr  = squeeze(cpr(udof,udof));
-            cxp  = squeeze(cxp(udof,udof));
-            cpx  = squeeze(cpx(udof,udof));
             cxr  = squeeze(cxr(udof,udof));
-            cxpC = squeeze(cxpC(udof,udof));
-            cprC = squeeze(cprC(udof,udof));
-            cppC = squeeze(cppC(udof,udof));
+            cxpA = squeeze(cxpA(udof,udof));
+            Acpx = squeeze(Acpx(udof,udof));
+            Acpr = squeeze(Acpr(udof,udof));
+            AcppA = squeeze(AcppA(udof,udof));
             
             % element stiffness:
             K2 = kron(cxx, obj.PPr);
-            K1 = kron(cxr, obj.PPdr) + kron(cxpC, obj.PP);
-            K0 = kron(cpp + cprC, obj.PPd) + kron(cppC - cprC, obj.PPInvr);
+            K1 = kron(cxr, obj.PPdr) + kron(cxpA + Acpx, obj.PP);
+            K0 = kron(Acpr, obj.PPd) + kron(AcppA, obj.PPInvr);
             % element flux:
             [G0, G1] = obj.tractionOp(udof, n);
             % combine to polynomial of (ik):
@@ -96,14 +94,14 @@ classdef LayerCylindrical < Layer
             A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
             I = eye(size(A));
             % terms due to curvature (to be done before reducing to udof!)
-            crpC = crp*(1i*n*I + A);
+            crpA = crp*(A + 1i*n*I);
             % reduce to desired polarization (udof):
             crx   = squeeze(crx(udof,udof));
             crr   = squeeze(crr(udof,udof));
-            crpC  = squeeze(crpC(udof,udof));
+            crpA  = squeeze(crpA(udof,udof));
             % normalized element flux:
             G1 = kron( crx , -obj.PPdr.' );
-            G0 = kron( crr , -obj.PdPdr.' )  +  kron( crpC , -obj.PPd.' );
+            G0 = kron( crr , -obj.PdPdr.' )  +  kron( crpA , -obj.PPd.' );
         end
         
         function decoupl = decouplesLambvsSH(obj,n)
@@ -129,17 +127,18 @@ classdef LayerCylindrical < Layer
             % differetiation in curvilinear coordinate system:
             A = [0, 0, 0; 0, 0, -1; 0, 1, 0];
             I = eye(size(A));
-            cxpC = (cxp + cpx)*(n*I + A); % take n*I real valued for test!
-            cprC = cpr*(n*I + A);
-            cppC = cpp*(n*I + A)^2;
-            crpC = crp*(n*I + A);
+            cxpA = cxp*(A + 1i*n*I);
+            Acpx = (A + 1i*n*I)*cpx; 
+            Acpr = (A + 1i*n*I)*cpr; 
+            AcppA = (A + 1i*n*I)*cpp*(A + 1i*n*I); 
+            crpA = crp*(A + 1i*n*I);
 
             % define dofs and continuous operator coefficients:
-            xy = [1 2];   % Lamb polarization: flexural and longitudinal
-            z =  3;       % SH polarization: torsional
-            L2 = cxx; 
-            L1 = cxr + crx + cxpC; 
-            L0 = crr + cpp + crpC + cprC + cppC;
+            xy = [1 2];    % Lamb polarization: flexural and longitudinal
+            z =  3;        % SH polarization: torsional
+            L2 = abs(cxx); % complex values: we only want to know if certain component are zero or not
+            L1 = abs(cxr + crx + cxpA + Acpx);
+            L0 = abs(AcppA + Acpr + crr + crpA);
             
             % test 
             test = ~(L2(xy,z) | L2(z,xy).' | L1(xy,z) | L1(z,xy).' | L0(xy,z) | L0(z,xy).');
