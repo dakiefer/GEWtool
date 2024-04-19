@@ -88,7 +88,7 @@ classdef Layer
             % Returns the N ansatz functions P(y) and their derivatives sampled at
             % the integration nodes yi. Here we use the N element nodes yn € [0,1] as
             % integration nodes yi. This is an inaccurate integration scheme for the
-            % polynomials P(y)*P(y) of order (N-1)^2 that appear in the mass matrix.
+            % polynomials P(y)*P(y) of order 2(N-1) that appear in the mass matrix.
             % Gauss-Lobatto quadrature is accurate up to polynomial order 2*Ni-3,
             % where Ni are the number of integration nodes. The advantage of using
             % Ni = N is that we obtain a diagnoal mass matrix ∫P*Pdy.
@@ -104,16 +104,16 @@ classdef Layer
         end
 
         function basis = basisGaussLegendre(yn)
-            % basisGaussLegendre - sampled ansatz functions and their derivatives.
-            % Returns the N ansatz functions P(y) and their derivatives sampled at
-            % the integration nodes yi. Here we use Ni >= N^2/2-N+1 Gauss-Legendre
-            % integration nodes yi € (0,1). Ni is chosen such as to obtain an exact
+            % basisGaussLegendre - sampled ansatz functions and their derivatives. 
+            % Returns the N ansatz functions P(y) and their derivatives sampled
+            % at the integration nodes yi. Here we use Ni = N Gauss-Legendre
+            % integration nodes yi € (0,1), which results in an exact
             % integration scheme. Gauss-Legendre quadrature is exact up to
-            % polynomial order 2*Ni - 3. The mass matrix ∫P*Pdy is no longer
-            % diagonal. The integration nodes yi exclude the element border, which
-            % avoids the singularity at r = 0 in cylindrical coordinates. 
+            % polynomial order 2*Ni - 1. The mass matrix ∫P*Pdy is no longer
+            % diagonal. The integration nodes yi exclude the element border,
+            % which avoids the singularity at r = 0 in cylindrical coordinates.
             N = length(yn);  % number of nodes, polynomial order is N-1
-            Ni = ceil(N^2/2)-N+1;  % number of quadrature points
+            Ni = N;  % number of quadrature points
             % % Lagrange polynomials as basis:
             Pn = eye(N); % P(yn,i) ith-Lagrange polynomial Pi(y) sampled at nodes yn
             Dy = collocD(yn); % differentiation matrix
