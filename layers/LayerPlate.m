@@ -13,34 +13,29 @@ classdef LayerPlate < Layer
             obj = obj@Layer(mat, ys, N);
         end
         
-        function [L0, L1, L2] = stiffnessOp(obj, udof, varargin)
+        function [L0, L1, L2] = stiffnessOp(obj, udof, hl, ~)
             % stiffnessOp - stiffness operators L0, L1, L2
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             % relevant material matrices: 
             cxx = squeeze(cn(1,udof,udof,1));
             cxy = squeeze(cn(1,udof,udof,2)); 
             % assemble:
-            K2 = kron(cxx, obj.PP/obj.h); K1 = kron(cxy, obj.PPd)/obj.h; % stiffness
-            [G0, G1] = obj.tractionOp(udof, varargin{:}); % flux
+            K2 = kron(cxx, obj.PP)*hl; 
+            K1 = kron(cxy, obj.PPd); % stiffness
+            [G0, G1] = obj.tractionOp(udof, hl); % flux
             % combine to polynomial of (ik):
             L0 = G0; L1 = K1 + G1; L2 = K2;
         end
         
-        function [G0, G1] = tractionOp(obj, udof, varargin)
+        function [G0, G1] = tractionOp(obj, udof, hl, ~)
             % tractionOp - traction operator (flux, used internally)
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             % relevant material matrices: 
             cyx = squeeze(cn(2,udof,udof,1));
             cyy = squeeze(cn(2,udof,udof,2));
             % normalized element flux
-            G1 = kron(cyx, -obj.PPd.')/obj.h; G0 = kron(cyy, -obj.PdPd.')/obj.h; % assemble
-        end
-
-        function M = massOp(obj, udof)
-            % massOp - mass operator M
-            rhon = eye(length(udof)); % normalized mass matrix (for each dof in u) 
-            me = obj.PP; % element mass
-            M = kron(rhon,me)/obj.h; % assemble
+            G1 = kron(cyx, -obj.PPd.'); 
+            G0 = kron(cyy, -obj.PdPd.')/hl; % assemble
         end
         
         function decoupl = decouplesLambvsSH(obj,~)

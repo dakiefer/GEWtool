@@ -1,8 +1,8 @@
 function [cg] = groupVel(gew, dat)
 %GROUPVEL compute the group velocities of guided wave solutions.
 
-if isa(gew,"Cylinder")
-    warning('Cylinders do not support this function yet. The results will be wrong.');
+if isa(gew,"CylinderCircumferential")
+    warning('Circumferential waves do not support this function yet. The results might be wrong.');
 end
 M = gew.op.M; % mass matrix 
 L2 = gew.op.L2; % stiffness matrix in k^2

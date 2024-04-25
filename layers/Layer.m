@@ -48,11 +48,11 @@ classdef Layer
             obj.N = N; % polynomial order
         end
 
-        function M = massOp(obj, udof)
+        function M = massOp(obj, udof, hl)
             % massOp mass operator 
             rhon = eye(length(udof)); % normalized mass matrix (for each dof in u) 
             me = obj.PP; % element mass
-            M = kron(rhon,me); % assemble
+            M = kron(rhon,me)*hl; % assemble
         end
     end % methods
 
@@ -152,8 +152,8 @@ classdef Layer
     end
 
     methods (Abstract)
-        [L0, L1, L2] = stiffnessOp(obj, udof, n)
-        [B0, B1] = tractionOp(obj, udof, n)
+        [L0, L1, L2] = stiffnessOp(obj, udof, hl, n)
+        [B0, B1] = tractionOp(obj, udof, hl, n)
     end
 
 end % class
