@@ -42,19 +42,19 @@ classdef LayerCylindrical < Layer
 
         function [L0, L1, L2] = stiffnessOp(obj, udof, hl, n)
             % stiffnessOp - stiffness operators L0, L1, L2
-            cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
+            
             % relevant material matrices: 
+            cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             cxx = squeeze(cn(1,:,:,1));
             cpp = squeeze(cn(3,:,:,3));
             cpr = squeeze(cn(3,:,:,2));
             cxp = squeeze(cn(1,:,:,3));
             cpx = squeeze(cn(3,:,:,1));
             cxr = squeeze(cn(1,:,:,2));
-            % differetiation in curvilinear coordinate system:
-            A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
-            I = eye(size(A));
 
             % include terms due to curvature (to be done before reducing to udof!)
+            A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
+            I = eye(size(A));
             cxpA = cxp*(A + 1i*n*I);
             Acpx = (A + 1i*n*I)*cpx; 
             Acpr = (A + 1i*n*I)*cpr; 
@@ -87,8 +87,9 @@ classdef LayerCylindrical < Layer
 
         function [G0, G1] = tractionOp(obj, udof, hl, n)
             % tractionOp - traction operators (flux, used internally)
-            cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
+            
             % relevant material matrices: 
+            cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             crx = squeeze(cn(2,:,:,1));
             crr = squeeze(cn(2,:,:,2));
             crp = squeeze(cn(2,:,:,3));
@@ -106,15 +107,10 @@ classdef LayerCylindrical < Layer
         end
         
         function decoupl = decouplesLambvsSH(obj,n)
-            % decouplesLambvsSH - Tests whether the xr- and phi-polarized waves decouple.
-            if length(obj) > 1
-                error('GEWTOOL:decouplesLambvsSH:notimplementedyet', 'Multilayer waveguides do not support this operation at the moment.');
-            end
-
-            % stiffnessOp stiffness operator 
-            cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
+            % decouplesLambvsSH - Tests whether the x-r- and phi-polarized waves decouple.
 
             % relevant material matrices: 
+            cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             cxx = squeeze(cn(1,:,:,1));
             crr = squeeze(cn(2,:,:,2));
             cpp = squeeze(cn(3,:,:,3));
@@ -125,8 +121,8 @@ classdef LayerCylindrical < Layer
             crp = squeeze(cn(2,:,:,3));
             cpr = squeeze(cn(3,:,:,2));
 
-            % differetiation in curvilinear coordinate system:
-            A = [0, 0, 0; 0, 0, -1; 0, 1, 0];
+            % include terms due to curvature (to be done before reducing to udof!)
+            A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
             I = eye(size(A));
             cxpA = cxp*(A + 1i*n*I);
             Acpx = (A + 1i*n*I)*cpx; 
@@ -135,15 +131,12 @@ classdef LayerCylindrical < Layer
             crpA = crp*(A + 1i*n*I);
 
             % define dofs and continuous operator coefficients:
-            xy = [1 2];    % Lamb polarization: flexural and longitudinal
-            z =  3;        % SH polarization: torsional
-            L2 = abs(cxx); % complex values: we only want to know if certain component are zero or not
-            L1 = abs(cxr + crx + cxpA + Acpx);
-            L0 = abs(AcppA + Acpr + crr + crpA);
-            
-            % test 
-            test = ~(L2(xy,z) | L2(z,xy).' | L1(xy,z) | L1(z,xy).' | L0(xy,z) | L0(z,xy).');
-            decoupl = any(test(:));
+            xr = [1 2];    % Lamb polarization (axial): flexural and longitudinal
+            p =  3;        % SH polarization (axial): torsional
+            iszero = @(cc) all( cc(xr,p) == 0 ) && all( cc(p,xr) == 0);
+
+            decoupl = iszero(cxx) && iszero(cxr) && iszero(cxpA + Acpx) && iszero(Acpr) ...
+                && iszero(AcppA) && iszero(crx) && iszero(crr) && iszero(crpA);
         end
 
         %% overload operators: 
