@@ -1,5 +1,6 @@
 classdef Waveguide < matlab.mixin.Copyable
 % Waveguide - Represents guided waves in plates or cylinders.
+% Waveguide objects are handle objects, i.e., they are passed by reference.
 % Usually, you do not need to use this class directly. For simpler interfacing, use 
 % the derived classes "Plate" or "Cylinder" instead.
 % 
@@ -62,14 +63,28 @@ methods
         h = obj.geom.yItf(end)-obj.geom.yItf(1);
     end
 
+    function obj = polarization(obj, udof, n)
+        % POLARIZATION - Assemble wave operators for given polarization and order.
+        % Argument:
+        % - udof:   desired polarization (displacement components) as a vector.
+        %           e.g. [1 2 3], [1 2], [3].
+        % - n:      order of the waves (circumferential order in cylinders).
+        %           ignore if not needed. default: 0.
+        % 
+        % See also: Lamb, sh, decouplesLambvsSH.
+        Nudof = length(udof);
+        if any(obj.geom.Nudof ~= Nudof) % update geometry if necessary
+            obj.geom = Geometry(obj.geom.yItf, obj.geom.N, Nudof*ones(obj.geom.nLay)); 
+        end
+		obj.assembleLayers(udof, n);
+	end
+
 	function gew = fullyCoupled(obj, n)
         % fullyCoupled - Assemble wave operators describing the coupled set of Lamb- and SH-polarized waves.
         % 
         % See also: Lamb, sh, decouplesLambvsSH.
 		udof = 1:3;
-		gew = obj;
-        gew.geom = Geometry(obj.geom.yItf, obj.geom.N, 3*ones(size(obj.geom.N))); % update 
-		gew = obj.assembleLayers(udof, n);
+        gew = obj.polarization(udof, n);
 	end
 
 	function gew = Lamb(obj, n)
@@ -80,9 +95,7 @@ methods
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
 		udof = 1:2;
-		gew = obj;
-		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
-		gew = obj.assembleLayers(udof, n);
+        gew = obj.polarization(udof, n);
     end
 
 	function gew = sh(obj, n)
@@ -93,9 +106,7 @@ methods
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
 		udof = 3;
-		gew = obj;
-		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, ones(size(obj.geom.N)));
-		gew = obj.assembleLayers(udof, n);
+		gew = obj.polarization(udof, n);
     end
 
     function dis = isDissipative(obj)
