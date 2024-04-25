@@ -12,8 +12,6 @@ classdef LayerCylindrical < Layer
         PPdr    % integral of weighted product matrix of ansatz functions ∫P*P' r dr 
         PdPdr   % integral of weighted product matrix of ansatz functions ∫P'*P' r dr 
         PPInvr  % integral of weighted product matrix of ansatz functions ∫P*P 1/r dr 
-        PPInvrr % integral of weighted product matrix of ansatz functions ∫P*P 1/r^2 dr 
-        PPdInvr % integral of weighted product matrix of ansatz functions ∫P*P' 1/r dr 
     end
     properties (Dependent)
         r % alias to the nodal coordinates obj.y
@@ -36,8 +34,6 @@ classdef LayerCylindrical < Layer
             obj.PPdr = LayerCylindrical.elemPPdr(basis.P, basis.Pd, basis.w, basis.r); % ∫P*P' r dr 
             obj.PdPdr = LayerCylindrical.elemPdPdr(basis.Pd, basis.w, basis.r);        % ∫P'*P' r dr 
             obj.PPInvr = LayerCylindrical.elemPPInvr(basis.P, basis.w, basis.r);       % ∫P*P 1/r dr 
-            obj.PPInvrr = LayerCylindrical.elemPPInvrr(basis.P, basis.w, basis.r);     % ∫P*P 1/r^2 dr 
-            obj.PPdInvr = LayerCylindrical.elemPPdInvr(basis.P, basis.Pd, basis.w, basis.r); % ∫P*P' 1/r dr 
         end
 
         function r = get.r(obj)
@@ -166,36 +162,6 @@ classdef LayerCylindrical < Layer
     end % methods
 
     methods (Static)
-        function ppri = elemPPInvr(P, w, r) 
-            % elemPPInvr - integral ∫P*P*1/r dr of basis functions P
-            if r(1) <= 10*eps
-                error('GEWTOOL:LayerCylindrical',...
-                    'Integrating at r=0 is not possible due to the singularity of 1/r. Switch integration scheme.');
-            end
-            PtimesP = P.*permute(P,[1 3 2]); % size: [integration points, len P, len P]
-            PtimesPr = 1./r.*PtimesP;
-            ppri = squeeze( sum(w.'.*PtimesPr,1) );
-        end
-        function ppri2 = elemPPInvrr(P, w, r) 
-            % elemPPInvr - integral ∫P*P*1/r^2 dr of basis functions P
-            if r(1) <= 10*eps
-                error('GEWTOOL:LayerCylindrical',...
-                    'Integrating at r=0 is not possible due to the singularity of 1/r. Switch integration scheme.');
-            end
-            PtimesP = P.*permute(P,[1 3 2]); % size: [integration points, len P, len P]
-            PtimesPr2 = 1./(r.^2).*PtimesP;
-            ppri2 = squeeze( sum(w.'.*PtimesPr2,1) );
-        end
-        function ppdri = elemPPdInvr(P, Pd, w, r) 
-            % elemPPInvr - integral ∫P*P'*1/r dr of basis functions P
-            if r(1) <= 10*eps
-                error('GEWTOOL:LayerCylindrical',...
-                    'Integrating at r=0 is not possible due to the singularity of 1/r. Switch integration scheme.');
-            end
-            PtimesPd = P.*permute(Pd,[1 3 2]); % size: [integration points, len P, len P]
-            PtimesPdri = 1./r.*PtimesPd;
-            ppdri = squeeze( sum(w.'.*PtimesPdri,1) );
-        end
         function ppr = elemPPr(P, w, r) 
             % elemPPr - integral ∫P*P*r dr of basis functions P
             PtimesP = P.*permute(P,[1 3 2]); % size: [integration points, len P, len P]
@@ -213,6 +179,16 @@ classdef LayerCylindrical < Layer
             PdtimesPd = Pd.*permute(Pd,[1 3 2]); % size: [integration points, len P, len P]
             PdtimesPdr = r.*PdtimesPd;
             ppdr = squeeze( sum(w.'.*PdtimesPdr,1) );
+        end
+        function ppri = elemPPInvr(P, w, r) 
+            % elemPPInvr - integral ∫P*P*1/r dr of basis functions P
+            if r(1) <= 10*eps
+                error('GEWTOOL:LayerCylindrical',...
+                    'Integrating at r=0 is not possible due to the singularity of 1/r. Switch integration scheme.');
+            end
+            PtimesP = P.*permute(P,[1 3 2]); % size: [integration points, len P, len P]
+            PtimesPr = 1./r.*PtimesP;
+            ppri = squeeze( sum(w.'.*PtimesPr,1) );
         end
     end
 end
