@@ -12,7 +12,7 @@ rho = 2680; ct = 3145; cl = 6243; % aluminum material parameters
 mat = MaterialIsotropic('aluminum', lbd, mu, rho);
 r = 1e-3;                            % radius r
 N = 15;                              % number of nodes (dictates accuracy)
-k = linspace(1e-4, 15, 150)/r;       % wavenumbers to solve for
+k = linspace(1e-4, 15, 100)/r;       % wavenumbers to solve for
 cyl = Cylinder(mat, [0, r], N);      % create waveguide description 
 load("data/disperse_rod_axial.mat","disperse"); % load reference
 
@@ -27,8 +27,8 @@ datF = computeW(flex, k);
 fig = figure(1); clf; hold on
 rdisp = 1e-3;
 hdisp = plot(1e3*disperse.k*2*pi*rdisp, 2*pi*1e6*disperse.f*rdisp/ct, '-', 'Color',0.7*[1,1,1]);
-hL = plot(datL.k*r, datL.w*r/ct, 'k.'); % plot longitudinal in blue 'Color', "#3B518B"
-hF = plot(datF.k*r, datF.w*r/ct, 'k.'); % plot torsional in red 'Color', "#5EC962"
+hL = plot(datL.k*r, datL.w*r/ct, 'k.', 'MarkerSize', 8); % plot longitudinal in blue 'Color', "#3B518B"
+hF = plot(datF.k*r, datF.w*r/ct, 'k.', 'MarkerSize', 8); % plot torsional in red 'Color', "#5EC962"
 ylim([0, 10]); xlim([0, 10]);
 xlabel('$k r$'), ylabel('$\omega r / c_t$')
 legend([hL(1), hdisp(1)], {'GEWtool','disperse'}, 'Location','south east')
