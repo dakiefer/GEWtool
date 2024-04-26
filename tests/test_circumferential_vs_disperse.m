@@ -27,7 +27,7 @@ ylim([0, 10]); xlim([0, 25]);
 ph = plot(dat.k*ro/rm/1e3, dat.w/2/pi/1e6, 'k.', 'MarkerSize', 8);
 xlabel('wavenumber k in rad/mm'), ylabel('frequency w/2pi in MHz')
 legend([ph(1), hdisp(1)], {'GEWtool', 'Disperse'}, 'Location','southeast')
-title('circumferential waves: wavenumbers at r = (ri + ro)/2')
+title('circumferential waves: k at r = (ri + ro)/2')
 
 % request user to evaluate test:
 assert( userTestConfirmation(fig) )
