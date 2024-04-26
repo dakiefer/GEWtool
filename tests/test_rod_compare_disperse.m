@@ -1,7 +1,6 @@
-% Run using: runtests()
-% Compare axial waves in a solid rod to the solutions computed using disperse.
+% Compare axial waves in a solid rod to the solutions computed using Disperse.
 %
-% see also: 
+% Run using: runtests(). see also: 
 % https://fr.mathworks.com/help/matlab/matlab_prog/write-script-based-unit-tests.html
 %
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
