@@ -7,7 +7,7 @@
 mat = MaterialIsotropic('steel');       % load from material/database
 r = [10e-3, 11e-3]; h = r(end) - r(1);  % radii and thickness 
 N = 8;                                  % number of nodes
-k = linspace(0, 4, 200)/h; % wavenumbers to solve for
+k = linspace(0, 4, 300)/h; % wavenumbers to solve for
 cyl = Cylinder(mat, r, N); % create waveguide description 
 
 %% compute and plot
