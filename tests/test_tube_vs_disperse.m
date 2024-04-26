@@ -13,7 +13,7 @@ mat = Material('noname', lbd, mu, rho);
 N = 12;
 k = linspace(1e-3, 0.5, 80)/h; % wavenumber-thickness (solve for frequency)
 cyl = Cylinder(mat, [a, b], N);
-load('data/disperse.mat')
+load('data/disperse_tube_axial.mat')
 
 %% plot
 gew = cyl.fullyCoupled(0); % first order circumferential
@@ -25,11 +25,11 @@ dat1 = computeW(gew, k);
 fig = figure; hold on
 xlim([0, 0.5]), ylim([0, 200]), grid off;
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
-plot(disperse.k/1e-3, disperse.f*1e6, '.', 'Color', [.7, .7, .7])
+phDisp = plot(disperse.k/1e-3, disperse.f*1e6, '.', 'Color', 0.7*[1 1 1]);
 ax = gca; ax.ColorOrderIndex = 1; % reset color order 
-plot(dat0.k(:), dat0.w(:)/2/pi, '.', 'MarkerSize', 8); 
-plot(dat1.k(:), dat1.w(:)/2/pi, '.', 'MarkerSize', 8); 
-legend({'disperse', 'n = 0', 'n = 1'})
+phGEW = plot(dat0.k(:), dat0.w(:)/2/pi, 'k.', 'MarkerSize', 8); 
+plot(dat1.k(:), dat1.w(:)/2/pi, 'k.', 'MarkerSize', 8); 
+legend([phGEW(1), phDisp(1)], {'GEWtool', 'Disperse'})
 
 % request user to evaluate test:
 assert( userTestConfirmation(fig) )
