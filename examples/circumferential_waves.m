@@ -12,23 +12,23 @@
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 mat = MaterialIsotropic('aluminum');
-h = 1e-3; ri = 1e-3; ro = ri+h; % inner and outer radii and more
-N = 10; % number of nodes
-cyl = CylinderCircumferential(mat, [ri,ro], N); % circumferential geometry
-k = linspace(1e-4, 20e3, 150); % (in rad/m) prescribe wavenumbers at middle radius rm
+h = 1e-3; ri = 1e-3; ro = ri+h; % thickness, inner and outer radii
+N = 10; % number of nodes on radial coordinate
+cyl = CylinderCircumferential(mat, [ri,ro], N); % cylindrical geometry + circumf. prop.
+k = linspace(1e-4, 20e3, 150); % (in rad/m) prescribe wavenumbers at outer radius ro
 
 % compute Lamb-like
-gew = cyl.Lamb; % polarized in r-phi
-datL = computeW(gew, k, 12);  % compute
+gew = cyl.Lamb;                 % polarized in r-phi (radial-angular directions)
+datL = computeW(gew, k, 12);    % compute
 % compute SH-like
-gew = cyl.sh; % polarized in r-phi
-datSH = computeW(gew, k, 8);  % compute
+gew = cyl.sh;                   % polarized in x (axial direction)
+datSH = computeW(gew, k, 8);    % compute
 
 % plot frequency-wavenumber dispersion 
 fig = figure(1); clf; hold on;
 phSH = plot(datSH.k/1e3, datSH.w/2/pi/1e6, 'Color', "#5EC962");
 phL = plot(datL.k/1e3, datL.w/2/pi/1e6, 'Color', "#3B518B");
-ylim([0, 6]);
-xlabel('wavenumber k in rad/mm'), ylabel('frequency w/2pi in MHz')
-legend([phL(1), phSH(1)], {'ur-uphi', 'ux'}, 'Location','southeast')
+ylim([0, 6]); xlim([0, 10]);
+xlabel('wavenumber ko in rad/mm'), ylabel('frequency w/2pi in MHz')
+legend([phL(1), phSH(1)], {'r-phi-polarized', 'x-polarized'}, 'Location','southeast')
 title(sprintf('circumferential waves (ri: %g mm, ro: %g mm)', ri/1e-3, ro/1e-3));
