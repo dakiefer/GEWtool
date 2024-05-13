@@ -81,8 +81,7 @@ classdef LayerCylindrical < Layer
         function M = massOp(obj, udof, hl)
             % massOp - mass operator M
             rhon = eye(length(udof)); % normalized mass matrix (for each dof in u) 
-            M = kron(rhon, obj.PPr); % assemble
-            M = M*hl^2;
+            M = kron(rhon, obj.PPr)*hl^2; % assemble
         end
 
         function [G0, G1] = tractionOp(obj, udof, hl, n)
