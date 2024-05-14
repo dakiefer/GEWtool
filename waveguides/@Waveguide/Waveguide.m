@@ -39,6 +39,10 @@ methods
             Ns = Ns*ones(size(mats)); % expand into a vector of nodal numbers
         end
 		if nargin < 4, Nudof = 3*ones(size(Ns)); end % do after expanding Ns!
+        if any(diff(rs) <= 0)
+            error('GEWTOOL:Waveguide',...
+            'All layers should have a positive thickness.');
+        end
         obj.geom = Geometry(rs, Ns, Nudof);
         % convert mats to Material class:
         if isstruct(mats) % convert from struct to objects of Material class
