@@ -3,15 +3,15 @@
 
 **Compute guided elastic wave (GEW) dispersion in MATLAB.**
 
-`GEWtool` provides extremely fast and reliable computation of guided elastodynamic waves (GEWs) in plates and cylinders. It is simple to use yet provides full access to the computational results as well as the underlying code. You are welcome to contribute to this open-source project.
+`GEWtool` is an advanced system to compute and postprocess guided elastodynamic waves (GEWs) in plates and cylinders. It is simple to use yet provides full access to the computational results as well as the underlying code. You are welcome to contribute to this open-source project.
 
 **Features**:
 
 - Multi-layered plates, tubes and rods
-- Finds all solutions, super fast 
+- Super fast, guarantees to find all solutions
 - General anisotropy, dissipation
 - Compute real frequencies, complex wavenumbers, or ZGV points
-- Choose polarization (Lamb/SH/coupled) and symmetry (S/A)
+- Choose polarization (Lamb/SH/coupled) and parity (S/A)
 
 [![GitHub](resourcesAndDeps/img/logo_github.svg)](https://github.com/dakiefer/GEWtool) Code repository: [https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool)
 
@@ -25,15 +25,15 @@ k = linspace(1e-2, 12, 100)/h;   % wavenumbers to solve for
 plate = Plate(mat, h, N);        % create waveguide description 
 gews = plate.LambSA; tic;        % choose S+A Lamb waves (assembles matrices)
 dat = computeW(gews, k, 4); toc; % solve and save 4 modes (argument optional)
-plot(dat(1).k, dat(1).w/2/pi, 'b'); hold on;        % plot symmetric
-plot(dat(2).k, dat(2).w/2/pi, 'r'); ylim([0, 6e6]); % plot anti-symmetric
+plot(dat(1).k, dat(1).w/2/pi, 'Color', "#3B518B"); hold on;        % symmetric
+plot(dat(2).k, dat(2).w/2/pi, 'Color', "#5EC962"); ylim([0, 6e6]); % anti-sym
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 ```
 
 output:
 `> Elapsed time is 0.010129 seconds.` 
 
-![Lamb waves in steel](resourcesAndDeps/img/dispersion_lamb_steel.png)
+![Lamb waves in steel](resourcesAndDeps/img/dispersion_lamb_steel.jpg)
 
 Proceed by inspecting the laser-ultrasonic excitability of the waves computed above (product of tangential and normal displacements ux·uy):
 
@@ -49,7 +49,7 @@ xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
 title('laser-ultrasonic excitability in dB')
 ```
 
-![LUS excitability](resourcesAndDeps/img/lus_excitability.png)
+![LUS excitability](resourcesAndDeps/img/lus_excitability.jpg)
 
 ## Installation 
 
@@ -72,7 +72,7 @@ You can also display help for all functions and classes, e.g., by typing `help P
 
 ## Known limitations 
 
-- Cylinders: The postprocessing tools provided in the folder `GEWdat` are only designed for plates. *Do not use them for cylinders*. Dispersion curves of axial waves in cylinders compute correctly, nonetheless. 
+- Cylinders: at the moment, the postprocessing tools provided in the folder `GEWdat` are mostly designed for plates. *Use them with care*. Dispersion curves of waves in cylinders compute correctly, nonetheless. 
 - Cylinders: only axial waves are supported for now. 
 - Leaky waves: no support for now.
 
@@ -94,7 +94,7 @@ For the computation of zero-group-velocity (ZGV) points refer to
 
 ## Dependencies
 
-GEWtool depends on the functions `collocD` , `lglnodes`, `lgwt` and `barylag` created by Greg von Winckel. They are bundled together with their license files in the `resourcesAndDeps` directory. You may also find them on
+GEWtool depends on the functions `barylag`, `collocD` , `lglnodes` and `lgwt` created by Greg von Winckel. They are bundled together with their license files in the `resourcesAndDeps` directory. You may also find them on
 
 > Greg von Winckel, MATLAB Central File Exchange, [https://fr.mathworks.com/matlabcentral/profile/authors/869721](https://fr.mathworks.com/matlabcentral/profile/authors/869721).
 
@@ -106,7 +106,7 @@ The function `computeZGVDirect` depends on the `MultiParEig toolbox` by Bor Ples
 
 If this code is useful to you, please cite it as (always indicating the DOI):
 
-> D. A. Kiefer (2023). GEWtool. doi: [10.5281/zenodo.10114243](https://doi.org/10.5281/zenodo.10114243) ([https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool))
+> D. A. Kiefer (2023). GEWtool. [https://doi.org/10.5281/zenodo.10114243](https://doi.org/10.5281/zenodo.10114243) ([https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool))
 
 ## Contributors
 
@@ -117,7 +117,7 @@ Bor Plestenjak, Faculty of Mathematics and Physics, University of Ljubljana, Slo
 Numerical methods to compute ZGV points
 
 Acknowledgments - Many inspiring discussions influenced GEWtool. D. A. Kiefer is thankful to:   
-Hauke Gravenkamp, Claire Prada and Michael Ponschab
+Hauke Gravenkamp, Pierre Chantelot, Claire Prada and Michael Ponschab
 
 ## Author
 
