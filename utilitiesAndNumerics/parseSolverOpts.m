@@ -1,4 +1,4 @@
-function opts = parseSolverOpts(opts, nModes)
+function opts = parseSolverOpts(opts, op, nModes)
 % DEFAULTSOLVEROPTS - Parse the solver options.
 % Returns a structure specifying the options for the solvers computeK() and
 % computeW(). The user specified options are extended by the default values of
@@ -31,5 +31,7 @@ end
 if ~isempty(nModes) && ~isinf(nModes) && ( ~isscalar(nModes) || nModes ~= round(nModes) )
     error('GEWTOOL:wrongArg', 'Argument "nModes" must be a scalar integer.');
 end
+if ~isfield(opts, 'eigenvecs'), opts.eigenvecs = true; end % default: compute eigenvectors
+if ~isfield(opts, 'standardEVP'), opts.standardEVP = isdiag(op.M); end % default value
 
 end

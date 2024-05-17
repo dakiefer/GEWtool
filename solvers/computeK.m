@@ -27,13 +27,12 @@ function dat = computeK(gews, w, nModes, opts)
 
     if nargin < 4, opts = []; end
     if nargin < 3, nModes = []; end
-    opts = parseSolverOpts(opts,nModes);
     
     if ~isvector(w), error('Angular frequencies should be a [Nx1] array.'); end
     w = w(:).'; % row vector
     for i = 1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
-        opti = opts; % clean copy that will be modified and forwarded in this iteration
+        opti = parseSolverOpts(opts,gew.op,nModes); % opti will be modified in the iteration
         wh = w*gew.np.h0;
         if isfield(opti,'target') & isnumeric(opti.target)
             opti.target = opti.target*gews.np.h0;

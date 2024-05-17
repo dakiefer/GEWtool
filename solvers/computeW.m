@@ -27,12 +27,12 @@ function dat = computeW(gews, k, nModes, opts)
 
     if nargin < 4, opts = []; end
     if nargin < 3, nModes = []; end
-    opts = parseSolverOpts(opts,nModes);
     
     if ~isvector(k), error('Wavenumbers should be a [1xN] array.'); end
     k = k(:); % column vector
     for i=1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
+        opti = parseSolverOpts(opts,gew.op,nModes); % opti might be modified in the iteration
         if nargin < 3 || isempty(nModes) || isinf(nModes) % default
             nModes = size(gew.op.M,1); 
         end
@@ -40,13 +40,13 @@ function dat = computeW(gews, k, nModes, opts)
             warning('GEWTOOL:computeW:tooManyModes', 'More modes requested than available. Resetting nModes to the matrix size.')
             nModes = size(gew.op.M,1);
         end
-        if isfield(opts,'target') & isnumeric(opts.target)
-            target = (opts.target*gew.np.h0/gew.np.fh0)^2;
+        if isfield(opti,'target') & isnumeric(opti.target)
+            target = (opti.target*gew.np.h0/gew.np.fh0)^2;
         else 
             target = "smallestabs"; % parfor throws error if target undefined
         end
         kh = k*gew.np.h0;
-        if opts.sparse
+        if opti.sparse
             M = sparse(gew.op.M); L0 = sparse(gew.op.L0); L1 = sparse(gew.op.L1); L2 = sparse(gew.op.L2);
         else
             M = gew.op.M; L0 = gew.op.L0; L1 = gew.op.L1; L2 = gew.op.L2;
@@ -54,8 +54,8 @@ function dat = computeW(gews, k, nModes, opts)
         whn = nan(length(kh), nModes);
         u = zeros(length(kh), nModes, gew.geom.Ndof);
         gdoffree = setdiff([gew.geom.gdofOfLay{:}], gew.geom.gdofDBC(:).');
-        useSubspace = opts.subspace; % extracting option avoids Matlab warning due to parfor loop
-        parfor (n = 1:length(kh), opts.parallel)
+        useSubspace = opti.subspace; % extracting option avoids Matlab warning due to parfor loop
+        parfor (n = 1:length(kh), opti.parallel)
             if useSubspace
                 [un, whn2] = eigs(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, nModes, target);
                 whn2 = diag(whn2); % eigs returns a matrix
