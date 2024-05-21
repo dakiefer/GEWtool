@@ -10,6 +10,11 @@ function dat = computeW(gews, k, nModes, opts)
     % - k:       Wavenumbers to specify in rad/m. Vector valued.
     % - nModes:  (optional) Number of modes to compute/save (discards the highest frequencies).
     % - opts:    (optional) A structure of options. Possible fields are: 
+    %            - 'eigenvecs': true (default) | false. Whether to compute
+    %               eigenvectors.
+    %            - 'standardEVP': true | false. Whether to convert the
+    %               generalized eigenvalue problem to a standard one. Default: true
+    %               if M is diagonal, false otherwise.
     %            - 'sparse': false (default) | true. Use sparse matrices.
     %            - 'subspace': false (default) | true. Use eigs() instead of eig().
     %            - 'parallel': false (default) | true. Multi-core computation.
@@ -23,7 +28,7 @@ function dat = computeW(gews, k, nModes, opts)
     % 
     % See also computeK, Waveguide.
     % 
-    % 2022-2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+    % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
     if nargin < 4, opts = []; end
     if nargin < 3, nModes = []; end
@@ -41,40 +46,99 @@ function dat = computeW(gews, k, nModes, opts)
             nModes = size(gew.op.M,1);
         end
         if isfield(opti,'target') & isnumeric(opti.target)
-            target = (opti.target*gew.np.h0/gew.np.fh0)^2;
+            opti.target = (opti.target*gew.np.h0/gew.np.fh0)^2;
         else 
-            target = "smallestabs"; % parfor throws error if target undefined
+            opti.target = 'smallestabs'; % parfor throws error if target undefined
         end
-        kh = k*gew.np.h0;
         if opti.sparse
             M = sparse(gew.op.M); L0 = sparse(gew.op.L0); L1 = sparse(gew.op.L1); L2 = sparse(gew.op.L2);
         else
             M = gew.op.M; L0 = gew.op.L0; L1 = gew.op.L1; L2 = gew.op.L2;
         end
-        whn = nan(length(kh), nModes);
-        u = zeros(length(kh), nModes, gew.geom.Ndof);
-        gdoffree = setdiff([gew.geom.gdofOfLay{:}], gew.geom.gdofDBC(:).');
-        useSubspace = opti.subspace; % extracting option avoids Matlab warning due to parfor loop
-        parfor (n = 1:length(kh), opti.parallel)
-            if useSubspace
-                [un, whn2] = eigs(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, nModes, target);
-                whn2 = diag(whn2); % eigs returns a matrix
-            else
-                [un, whn2] = eig(-(1i*kh(n))^2*L2 - (1i*kh(n))*L1 - L0, M, 'chol',...
-                'vector'); % Choleski guarantees real eigenvalues, M needs to be positive definite, faster than qz
+        if opti.standardEVP
+            [H2, H1, H0, T] = transformToStandardEVP(L2, L1, L0, M);
+            solveAtK = @(kh) solveEVP(kh^2*H2 - 1i*kh*H1 - H0, nModes, opti);
+            opti.T = T; 
+        else
+            solveAtK = @(kh) solveGEP(kh^2*L2 - 1i*kh*L1 - L0, M, nModes, opti);
+        end
+        gdoffree = gew.geom.gdofFree;
+        kh = k*gew.np.h0;
+        whn = nan(length(kh), nModes); % allocate
+        if opti.eigenvecs
+            u = zeros(length(kh), nModes, gew.geom.Ndof); % allocate
+            parfor (n = 1:length(kh), opti.parallel)
+                [lbd, eVec] = solveAtK(kh(n));
+                [whnn, un] = retrieveWu(lbd, eVec, nModes, opti); 
+                whn(n,:) = whnn;
+                u(n,:,gdoffree) = un.'; % save
             end
-            [whnn, ind] = sort(sqrt(whn2));
-            un = un(:,ind);
-            whn(n,:) = real(whnn(1:nModes)); % save
-            u(n,:,gdoffree) = un(:,1:nModes).'; % save
+        else
+            parfor (n = 1:length(kh), opti.parallel)
+                lbd = solveAtK(kh(n));
+                whn(n,:) = retrieveW(lbd, nModes);
+            end
         end
         % save to output variable:
+        if ~gew.isDissipative
+            whn = real(whn); % remove imaginary part due to numerical inaccuracy
+        end
         dat(i).w = whn*gew.np.fh0/gew.np.h0;
         dat(i).k = kh.*ones(size(whn))/gew.np.h0;
-        dat(i).u = cell(gew.geom.nLay, 1);
-        for l = 1:gew.geom.nLay
-            ulay = u(:,:,gew.geom.gdofOfLay{l});
-            dat(i).u{l} = reshape(ulay, [size(whn), gew.geom.N(l), gew.geom.Nudof(l)]);
+        if opti.eigenvecs
+            dat(i).u = cell(gew.geom.nLay, 1);
+            for l = 1:gew.geom.nLay
+                ulay = u(:,:,gew.geom.gdofOfLay{l});
+                dat(i).u{l} = reshape(ulay, [size(whn), gew.geom.N(l), gew.geom.Nudof(l)]);
+            end
         end
+    end
+end
+
+function whn = retrieveW(lbd, nModes)
+    whn = sort(sqrt(lbd));
+    whn = whn(1:nModes);
+end
+
+function [whn, un] = retrieveWu(lbd, eVec, nModes, opti)
+    [whn, ind] = sort(sqrt(lbd));
+    whn = whn(1:nModes);
+    eVec = eVec(:,ind); eVec = eVec(:,1:nModes);
+    if opti.standardEVP % transform eigenvectors back to displacements
+        eVec = opti.T*eVec;
+    end
+    un = eVec;
+end
+
+function [H2, H1, H0, T] = transformToStandardEVP(L2, L1, L0, M)
+    % transformToStandardEVP - transform to a standard eigenvalue problem
+    % (-ik^2*L2 - ik*L1 - L0)*u = lbd*M*u   ->   (-ik^2*H2 - ik*H1 - H0)*y = lbd*I*y
+    % Using T = M^(-1/2), we transform into Hi = T*Li*T. The original eigenvectors 
+    % can be recovered from u = T*y. 
+    %
+    % Arguments:
+    % - L2, L1, L0, M: matrices of the original eigenvalue problem   
+    %
+    % Return values:
+    % - H2, H1, H0:   Matrices of the standard eigenvalue problem (EVP)
+    % - T:            Matrix that transforms eigenvectors y to u, i.e., T*y = u
+    % 
+    % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+    %        Malte Röntgen, LAUM, Le Mans Université, France
+    if isdiag(M)
+        if issparse(M)
+            T = sparse(diag(1./sqrt(diag(M))));
+        else
+            T = diag(1./sqrt(diag(M))); % usually the case in GEWtool
+        end
+    else
+        T = M^(-1/2); 
+    end
+    H2 = T*L2*T; H1 = T*L1*T; H0 = T*L0*T;
+    % recover Hermitean symmetry:
+    if ishermitian(L2) && ishermitian(1i*L1) && ishermitian(L0) && ishermitian(T)
+        H2 = (H2 + H2')/2;
+        H1 = (H1 - H1')/2; % skew-hermitian
+        H0 = (H0 + H0')/2;
     end
 end

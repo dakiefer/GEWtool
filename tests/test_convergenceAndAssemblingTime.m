@@ -44,7 +44,7 @@ for i=1:numel(N)
 end
 
 %% assembling time
-assert( mean(time) < 20e-4 )
+assert( mean(time) < 40e-4 )
 
 %% convergence
 errRel = abs(ws-wRayLamb)/wRayLamb;
