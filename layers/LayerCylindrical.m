@@ -51,14 +51,18 @@ classdef LayerCylindrical < Layer
             cxp = squeeze(cn(1,:,:,3));
             cpx = squeeze(cn(3,:,:,1));
             cxr = squeeze(cn(1,:,:,2));
+            crx = squeeze(cn(2,:,:,1)); % boundary flux
+            crr = squeeze(cn(2,:,:,2)); % boundary flux
+            crp = squeeze(cn(2,:,:,3)); % boundary flux
 
             % include terms due to curvature (to be done before reducing to udof!)
             A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
             I = eye(size(A));
             cxpA = cxp*(A + 1i*n*I);
-            Acpx = (A + 1i*n*I)*cpx; 
-            Acpr = (A + 1i*n*I)*cpr; 
-            AcppA = (A + 1i*n*I)*cpp*(A + 1i*n*I); 
+            Acpx = (A + 1i*n*I)*cpx;
+            Acpr = (A + 1i*n*I)*cpr;
+            AcppA = (A + 1i*n*I)*cpp*(A + 1i*n*I);
+            crpA = crp*(A + 1i*n*I); % flux
 
             % reduce to desired polarization (udof):
             cxx  = squeeze(cxx(udof,udof));
@@ -67,42 +71,30 @@ classdef LayerCylindrical < Layer
             Acpx = squeeze(Acpx(udof,udof));
             Acpr = squeeze(Acpr(udof,udof));
             AcppA = squeeze(AcppA(udof,udof));
+            crx   = squeeze(crx(udof,udof));  % boundary flux
+            crr   = squeeze(crr(udof,udof));  % boundary flux
+            crpA  = squeeze(crpA(udof,udof)); % boundary flux
             
-            % element stiffness:
-            K2 = kron(cxx, obj.PPr)*hl^2;
-            K1 = kron(cxr, obj.PPdr)*hl + kron(cxpA + Acpx, obj.PP)*hl;
-            K0 = kron(Acpr, obj.PPd) + kron(AcppA, obj.PPInvr);
-            % element flux:
-            [G0, G1] = obj.tractionOp(udof, hl, n);  % not yet scaled by hl
+            % assemble element stiffness terms:
+            K2xx = kron(cxx,   obj.PPr);
+            K0pp = kron(AcppA, obj.PPInvr);
+            G0rr = kron(crr,  -obj.PdPdr.');
+            K1xr = kron(cxr,   obj.PPdr);
+            G1xr = kron(crx,  -obj.PPdr.');
+            K0pr = kron(Acpr,  obj.PPd);
+            G0pr = kron(crpA, -obj.PPd.');
+            K1xp = kron(cxpA + Acpx, obj.PP);
+            
             % combine to polynomial of (ik):
-            L2 = K2; L1 = K1 + G1; L0 = K0 + G0;
+            L2 = K2xx*hl^2; 
+            L1 = (K1xr + G1xr + K1xp)*hl;   % add in this order to preserve hermiticity!
+            L0 = K0pr + G0pr + K0pp + G0rr; % add in this order to preserve hermiticity!
         end
 
         function M = massOp(obj, udof, hl)
             % massOp - mass operator M
             rhon = eye(length(udof)); % normalized mass matrix (for each dof in u) 
             M = kron(rhon, obj.PPr)*hl^2; % assemble
-        end
-
-        function [G0, G1] = tractionOp(obj, udof, hl, n)
-            % tractionOp - traction operators (flux, used internally)
-            
-            % relevant material matrices: 
-            cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
-            crx = squeeze(cn(2,:,:,1));
-            crr = squeeze(cn(2,:,:,2));
-            crp = squeeze(cn(2,:,:,3));
-            A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
-            I = eye(size(A));
-            % terms due to curvature (to be done before reducing to udof!)
-            crpA = crp*(A + 1i*n*I);
-            % reduce to desired polarization (udof):
-            crx   = squeeze(crx(udof,udof));
-            crr   = squeeze(crr(udof,udof));
-            crpA  = squeeze(crpA(udof,udof));
-            % normalized element flux:
-            G1 = kron( crx , -obj.PPdr.' )*hl;
-            G0 = kron( crr , -obj.PdPdr.' )  +  kron( crpA , -obj.PPd.' );
         end
         
         function decoupl = decouplesLambvsSH(obj,n)

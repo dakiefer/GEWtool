@@ -153,7 +153,6 @@ classdef Layer
 
     methods (Abstract)
         [L0, L1, L2] = stiffnessOp(obj, udof, hl, n)
-        [B0, B1] = tractionOp(obj, udof, hl, n)
     end
 
 end % class
