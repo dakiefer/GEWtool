@@ -67,16 +67,16 @@ function dat = computeW(gews, k, nModes, opts)
         whn = nan(length(kh), nModes); % allocate
         if opti.eigenvecs
             u = zeros(length(kh), nModes, gew.geom.Ndof); % allocate
-            parfor (n = 1:length(kh), opti.parallel)
-                [lbd, eVec] = solveAtK(kh(n));
-                [whnn, un] = retrieveWu(lbd, eVec, nModes, opti); 
-                whn(n,:) = whnn;
-                u(n,:,gdoffree) = un.'; % save
+            parfor (j = 1:length(kh), opti.parallel)
+                [lbd, eVec] = solveAtK(kh(j));
+                [whnj, uj] = retrieveWu(lbd, eVec, nModes, opti); 
+                whn(j,:) = whnj;
+                u(j,:,gdoffree) = uj.'; % save
             end
         else
-            parfor (n = 1:length(kh), opti.parallel)
-                lbd = solveAtK(kh(n));
-                whn(n,:) = retrieveW(lbd, nModes);
+            parfor (j = 1:length(kh), opti.parallel)
+                lbd = solveAtK(kh(j));
+                whn(j,:) = retrieveW(lbd, nModes);
             end
         end
         % save to output variable:

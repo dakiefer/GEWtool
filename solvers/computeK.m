@@ -68,10 +68,17 @@ function dat = computeK(gews, w, nModes, opts)
             [A, B, AA] = linearizePolyEig(L2, L1, L0, M);
             opti.linearization = 'companion';
         end
+        n = size(L0,1);
         if opti.standardEVP
             [H, HH, T] = transformToStandardEVP(A, B, AA);
             solveAtW = @(wh) solveEVP(H + wh^2*HH, nModes, opti);
-            opti.T = T; 
+            switch opti.linearization 
+                case 'companion'
+                    secondBlockInd = (n+1):2*n;
+                    opti.T = T(secondBlockInd,:); % eigenvector is [ik*u, u]
+                case 'k2'
+                    opti.T = T;
+            end
         else
             solveAtW = @(wh) solveGEP(A + wh^2*AA, B, nModes, opti);
         end
@@ -81,16 +88,16 @@ function dat = computeK(gews, w, nModes, opts)
         kh = nan(nModes, length(whn));
         if opti.eigenvecs
             u = zeros(nModes, length(whn), gew.geom.Ndof); % allocate
-            parfor (n = 1:length(kh), opti.parallel)
-                [lbd, eVec] = solveAtW(whn(n));
-                [khn, un] = retrieveKu(lbd, eVec, nModes, opti, geom);
-                kh(:,n) = khn; 
-                u(:,n,gdoffree) = un.';
+            parfor (j = 1:length(kh), opti.parallel)
+                [lbd, eVec] = solveAtW(whn(j));
+                [khj, uj] = retrieveKu(lbd, eVec, nModes, opti, geom);
+                kh(:,j) = khj; 
+                u(:,j,gdoffree) = uj.';
             end
         else
-            parfor (n = 1:length(kh), opti.parallel)
-                lbd = solveAtW(whn(n));
-                kh(:,n) = retrieveK(lbd, nModes, opti);
+            parfor (j = 1:length(kh), opti.parallel)
+                lbd = solveAtW(whn(j));
+                kh(:,j) = retrieveK(lbd, nModes, opti);
             end
         end
         dat(i).k = kh/gew.np.h0;
@@ -133,12 +140,11 @@ function [khn, un] = retrieveKu(lbd, eVec, nModes, opti, geom)
     [~, ind] = sort(khnRounded,'ComparisonMethod','abs'); % sort by real part, 
     khn = khn(ind); khn = khn(1:nModes); % sort and crop
     eVec = eVec(:,ind); eVec = eVec(:,1:nModes); % sort and crop
-    if opti.standardEVP 
+    if     strcmp(opti.linearization,'companion') &&  opti.standardEVP 
         eVec = opti.T*eVec; % transform eigenvectors back 
-    end
-    if strcmp(opti.linearization, 'companion')
-        n = size(eVec,1)/2;
-        eVec = eVec(n+1:2*n,:); % crop 
+    elseif strcmp(opti.linearization,'companion') && ~opti.standardEVP
+        n = length(eVec)/2;
+        eVec = eVec(n+1:2*n,:); % eigenvectors are [ik*u, u] 
     end
     un = eVec;
 end
