@@ -12,6 +12,7 @@ properties (Access = public)
 	geom        % geometry object describing the discretized, multilayered structure
 	lay Layer = LayerPlate.empty   % layers [1 x Nlay]
 	op = [] 	% operators describing the wave propagation
+    udof = []   % polarization: displacement components accounted for
 	np  		% normalization parameters (material parameters, geometry)
 end % properties
 
@@ -78,9 +79,10 @@ methods
         % See also: Lamb, sh, decouplesLambvsSH.
         Nudof = length(udof);
         if any(obj.geom.Nudof ~= Nudof) % update geometry if necessary
-            obj.geom = Geometry(obj.geom.yItf, obj.geom.N, Nudof*ones(obj.geom.nLay)); 
+            obj.geom = Geometry(obj.geom.yItf, obj.geom.N, Nudof*ones(obj.geom.nLay,1)); 
         end
 		obj.assembleLayers(udof, n);
+        obj.udof = udof;
 	end
 
 	function gew = fullyCoupled(obj, n)
