@@ -186,17 +186,21 @@ methods
         obj.c = transformBasis(obj.c, Q);
     end
     
-    function sym = isInvariantOnReflection(obj, ax)
+    function sym = isInvariantOnReflection(obj, ax, tol)
         % ISINVARIANTONREFLECTION - test if invariant to reflection along axis 'ax'.
         % 
         % Arguments:
         % - obj:   Material object.
         % - ax:    axis as a scalar integer 1 = x, 2 = y, or 3 = z. (Default: 2)
+        % - tol:   tolerance for finite precision test. (Default: 1e4*eps)
+        if nargin < 3
+            tol = 1e4*eps;
+        end
         if nargin < 2
             ax = 2; % default is y-axis
         end
         matR = obj.reflect(ax);
-        sym = ~any(obj.c - matR.c, 'all'); % all zero -> true
+        sym = all((obj.c - matR.c)/obj.c(1,1,1,1) <= tol, 'all'); % all zero -> true
     end
 
     function decoupl = decouplesXYvsZ(obj)
