@@ -29,11 +29,11 @@ methods
         % N = 20; % discretization (number of nodal points)
         % plate = Plate(mat, h, N); % create waveguide description
         % 
-        if length(ys) == 1 && length(mats) > 1 % use same thickness for all layers
+        if isscalar(ys) && length(mats) > 1 % use same thickness for all layers
             ys = ys*ones(size(mats)); % expand into a vector of thicknesses
         end
         if length(mats) == length(ys) % thicknesses have been provided
-            if length(ys) == 1
+            if isscalar(ys)
                 ys = ys*[-1/2, 1/2]; % single layer has centered coordinate 
             else
                 ys = [0, cumsum(ys)]; % coordinates of interfaces starting from 0
@@ -61,7 +61,7 @@ methods
         
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = 1:3;
-		gew = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
+        gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gdofs = [gew.geom.gdofBC{1}(1,1), gew.geom.gdofBC{1}(3,1)];
         gew = gew.fixGdof(gdofs); % fix ux- and uz-displacements at bottom (y=0)
     end
@@ -74,7 +74,7 @@ methods
         
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = 1:3;
-		gew = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
+		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(2,1)); % fix uy-displacement at bottom (y=0)
     end
 
@@ -109,9 +109,7 @@ methods
         end
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = 1:2;
-		gew = obj;
-		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
-		gew = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
+		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(2,1)); % fix uy-displacement at bottom (y=0)
     end
     
@@ -126,9 +124,7 @@ methods
         end
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = 1:2;
-		gew = obj;
-		gew.geom = Geometry(obj.geom.yItf, obj.geom.N, 2*ones(size(obj.geom.N)));
-		gew = obj.assembleLayers(udof, 0); % n = 0 (circumferential order)
+		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(1,1)); % fix ux-displacement at bottom (y=0)
     end
     
