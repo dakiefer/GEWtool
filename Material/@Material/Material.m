@@ -97,6 +97,11 @@ methods
         obj.rho = data.rho;
         obj.name = data.name;
         obj.symmetry = data.symmetry;
+        if any(diag(obj.C) <= 0)
+            warning('GEWTOOL:Material:stability', 'The material has nonpositive diagonal entries.');
+        elseif any(eig(obj.C) <= 0)
+            warning('GEWTOOL:Material:stability', 'The material exhibits nonpositive eigenvalue(s).');
+        end
     end
 
     function C = get.C(obj)
