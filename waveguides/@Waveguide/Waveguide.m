@@ -151,6 +151,15 @@ methods
         % linearizeInK - Linearizes the problem in the wavenumber k without increasing size. 
         % The matrices are manipulated without increasing their size. Use this before passing 
         % to the solver for faster computation of wavenumbers.
+        %
+        % Literature
+        % [1] E. Kausel, “An explicit solution for the Green functions for
+        % dynamic loads in layered media,” Massachusetts Institute Of
+        % Technology, Research Report R81-13, 1981.
+        % [2] H. Gravenkamp, “Efficient simulation of elastic guided waves
+        % interacting with notches, adhesive joints, delaminations and inclined
+        % edges in plate structures,” Ultrasonics, vol. 82, pp. 101–113, Jan.
+        % 2018, doi: 10.1016/j.ultras.2017.07.019.
         for obj = gews % note: the objects are "by reference", i.e., the original ones are changed
             if ~obj.isLinearizableInK
                 warning('GEWTOOL:Waveguide:nonlinearizable', 'This problem is not linearizable as intended.');
