@@ -53,7 +53,7 @@ title('laser-ultrasonic excitability in dB')
 
 ## Installation 
 
-Add `GEWtool` and its subfolders to the Matlab path and save it for future sessions. To achieve this:
+Add `GEWtool` and the relevant subfolders to the Matlab path and save it for future sessions. To achieve this:
 
 1. change to the `GEWtool` folder (e.g., by navigating or using `cd`)
 2. execute `install`
@@ -110,14 +110,17 @@ If this code is useful to you, please cite it as (always indicating the DOI):
 
 ## Contributors
 
-Daniel A. Kiefer, Institut Langevin, ESPCI Paris, Université PSL  
+**Daniel A. Kiefer**, Institut Langevin, ESPCI Paris, Université PSL  
 Author and developer
 
-Bor Plestenjak, Faculty of Mathematics and Physics, University of Ljubljana, Slovenia  
+**Bor Plestenjak**, Faculty of Mathematics and Physics, University of Ljubljana, Slovenia  
 Numerical methods to compute ZGV points
 
+**Gatien Clement**,  Institut Langevin, ESPCI Paris, Université PSL  
+Homogenization, quaternions, rotation angles
+
 Acknowledgments - Many inspiring discussions influenced GEWtool. D. A. Kiefer is thankful to:   
-Hauke Gravenkamp, Pierre Chantelot, Claire Prada and Michael Ponschab
+Hauke Gravenkamp, Pierre Chantelot, Claire Prada, Clemens Grünsteidl and Michael Ponschab
 
 ## Author
 
