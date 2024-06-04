@@ -124,13 +124,14 @@ methods
         ct2 = cs(3);
     end
     function AU = get.AU(obj) 
-        switch  obj.symmetry
-            case {'cubic', 'isotropic'}
-                A = 2*obj.C(4,4)/(obj.C(1,1)-obj.C(1,2)); % Zener anisotropy index
-                AU = 6/5*(sqrt(A) - 1/sqrt(A))^2;
-            otherwise
-                AU = nan;
+        if obj.symmetry == "isotropic" || ...
+                (obj.symmetry == "cubic" && length(unique(obj.C(obj.C ~= 0))) == 3) % ensures principal axis
+            A = 2*obj.C(4,4)/(obj.C(1,1)-obj.C(1,2)); % Zener anisotropy index
+            AU = 6/5*(sqrt(A) - 1/sqrt(A))^2;
+        else
+            AU = AUanisotropyIndex(obj,1200);
         end
+        AU = round(AU,3); 
     end
 
     function obj = permute(obj, perm)
