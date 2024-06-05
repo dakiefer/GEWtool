@@ -24,7 +24,7 @@ end
 Cnorm = norm(mat.C); 
 C0 = mat.C/Cnorm; 
 pointsXYZ = sphereLattice(4, N); % nearly equidistant distribution of points on 4d-sphere in Cartesian coordinates
-[theta,phi,psi] = coordinatesToEulerAngles(pointsXYZ,1,3,1); % Euler angles for x-z-x-rotation
+[theta,phi,psi] = quaternionToEulerAngles(pointsXYZ,1,3,1); % Euler angles for x-z-x-rotation
 
 % uniform Voigt and Reuss homogenization: 
 Cvoigt = zeros(6,6); Sreuss = zeros(6,6);

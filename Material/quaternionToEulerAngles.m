@@ -1,5 +1,5 @@
-function [theta1, theta2, theta3] = coordinatesToEulerAngles(q, i, j, k)
-% coordinatesToEulerAngles - Convert Cartesian coordinates on a (hpyer-)sphere to Euler angles.
+function [theta1, theta2, theta3] = quaternionToEulerAngles(q, i, j, k)
+% quaternionToEulerAngles - Convert Cartesian coordinates on a (hpyer-)sphere to Euler angles.
 %
 % Arguments: 
 % - q          (Nx4 real) N points in Cartesian coordinates on the unit-hypersphere in R4.

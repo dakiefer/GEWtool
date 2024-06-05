@@ -12,8 +12,8 @@ function B = rotateEuler(A, varargin)
 % Alternative Arguments:
 % - A:       (3x3x...x3 numeric) nth-order tensor (all dimensions 3)
 % - angleX:  (scalar numeric) angle in rad to turn around axis x
-% - angleY:  (scalar numeric) angle in rad to turn around axis y'
-% - angleZ:  (scalar numeric) angle in rad to turn around axis z''
+% - angleY:  (scalar numeric) angle in rad to turn around axis y
+% - angleZ:  (scalar numeric) angle in rad to turn around axis z
 % This is an extrinsic, passive rotation around x-y-z (in that order). Thereby, 
 % x-y-z is the original fixed coordinate system. Note that these are improper
 % Euler angles (also called Cardan angles or Tait–Bryan angles).
