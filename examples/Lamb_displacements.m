@@ -2,87 +2,81 @@
 % The displacements and the y-tractions are visualized. These need to be
 % continuous across the layer boundaries. 
 % 
-% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-mat1 = Material('zircaloy'); % transversely isotropic
-mat2 = Material('chromium'); % isotropic
-h1 = 0.7e-3; h2 = 0.3e-3; % thicknesses
-N1 = 20; N2 = 10; % number of nodes
-k = linspace(1e-2, 10, 100)/(h1+h2); % wavenumbers for dispersion curves
-
+% setup bi-layered waveguide:
+mat1 = Material('zircaloy');   % anisotropic
+mat2 = Material('chromium');    % isotropic
+h1 = 0.8e-3; h2 = 0.2e-3;       % thicknesses
+N1 = 8; N2 = 6;                % number of nodes
+k = linspace(1e-2, 10, 100)/(h1+h2);  % wavenumbers to compute dispersion curves
 plate = Plate([mat1, mat2], [h1, h2], [N1, N2]); % plate model
-gew = plate.Lamb; % assemble matrices for Lamb-polarized waves
-dat = computeW(gew,k,10); % compute solutions and keep 10 modes
+gew = plate.Lamb;               % assemble matrices for Lamb-polarized waves
+dat = computeW(gew,k,8);       % compute solutions and keep 10 modes
 
 % plot dispersion curves:
 figure(1), clf, hold on 
-plot(dat.k, dat.w/2/pi); ylim([0, 6]*1e6)
+plot(dat.k, dat.w/2/pi, 'k'); ylim([0, 4]*1e6)
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 
 %% Retrieve modal field:
-% select a mode:
 indw = 5; % modes are ordered from low to high frequencies at constant k
-[~, indk] = min(abs(k - 3000)); % at this specific wavenumber 
+[~, indk] = min(abs(k - 3000)); % the closest to this specific wavenumber 
+datMode = extractModes(dat,indk,indw); % returns a data structure consistent to ''dat'' but ony with this mode
+u = datMode.u;                  % nodal displacements
+T = stress(gew, datMode);       % nodal stress
+
 figure(1), 
 ph = plot(dat.k(indk,indw), dat.w(indk,indw)/2/pi, 'rd'); % show in disp. curve
 legend(ph, {'selection'}, 'Location', 'southeast')
 
-% nodal points:
-y1 = gew.geom.y{1}; y2 = gew.geom.y{2};  % nodal points of the layers
-y = [y1; y2]; 
-
-% retrieve displacements: 
-u1 = squeeze(dat.u{1}(indk,indw,:,:)); % displacements of layer 1
-u2 = squeeze(dat.u{2}(indk,indw,:,:)); % displacements of layer 2
-ux = [u1(:,1); u2(:,1)];
-uy = [u1(:,2); u2(:,2)];
-
-% retrieve the stresses (y-traction is ey*T = [Tyx, Tyy]):
-T = stress(gew, dat); % provided by GEWdat
-T1 = squeeze(T{1}(indk,indw,:,2,:));
-T2 = squeeze(T{2}(indk,indw,:,2,:));
-Tyx = [T1(:,1); T2(:,1)];
-Tyy = [T1(:,2); T2(:,2)];
+% interploate onto finer grid for plotting purposes:
+[ui, yi] = GEWinterpolate(gew, u, 200); % interpolate onto 200 equi-distnat coordinates
+uix = ui(:,1); uiy = ui(:,2);           % interpolated displacement components
+Ti = GEWinterpolate(gew, T, yi);        % interpolate stress on same grid
+Tiyx = Ti(:,2,1); Tiyy = Ti(:,2,2);     % interpolated stress components
 
 %%  plot the modal displacements 
 % All displacement components need to be continuous across the layer interfaces.
 figure(2), clf
+
 subplot(2,1,1); hold on, % plot ux
-plot(real(ux), y/1e-3, '-*');
-plot(imag(ux), y/1e-3, '-*');
-yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
-    'LabelVerticalAlignment', 'middle')
+plot(real(uix), yi/1e-3, 'Color', '#3B518B', 'DisplayName', 'Re $u_x$');
+plot(imag(uix), yi/1e-3, 'Color', '#5EC962', 'DisplayName', 'Im $u_x$');
+yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, ...
+    'LineWidth', 1,'LabelVerticalAlignment', 'middle', 'HandleVisibility','off')
 ylim([gew.geom.yItf(1), gew.geom.yItf(end)]/1e-3)
 xlabel('modal displacement ux'), ylabel('y in mm')
-legend({'real ux', 'imag ux'}, 'Location','best')
+legend('Location','northeastoutside')
 
 subplot(2,1,2); hold on % plot uy
-plot(real(uy), y/1e-3, '-*');
-plot(imag(uy), y/1e-3, '-*');
-yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
-    'LabelVerticalAlignment', 'middle')
+plot(real(uiy), yi/1e-3, 'Color', '#3B518B', 'DisplayName', 'Re $u_y$');
+plot(imag(uiy), yi/1e-3, 'Color', '#5EC962', 'DisplayName', 'Im $u_y$');
+yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, ...
+    'LineWidth', 1,'LabelVerticalAlignment', 'middle', 'HandleVisibility','off')
 ylim([gew.geom.yItf(1), gew.geom.yItf(end)]/1e-3)
 xlabel('modal displacement uy'), ylabel('y in mm')
-legend({'real uy', 'imag uy'}, 'Location','best')
+legend('Location','northeastoutside')
 
 %% plot also the modal stresses
 % The stress components Tyx and Tyy need to be continuous across the layers. Moreover, 
 % they vanish at the boundaries. 
 figure(3), clf,
+
 subplot(2,1,1); hold on, % plot Tyx
-plot(real(Tyx), y/1e-3, '-*');
-plot(imag(Tyx), y/1e-3, '-*');
-yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
-    'LabelVerticalAlignment', 'middle')
+plot(real(Tiyx), yi/1e-3, 'Color', '#3B518B', 'DisplayName', 'Re $T_{yx}$');
+plot(imag(Tiyx), yi/1e-3, 'Color', '#5EC962', 'DisplayName', 'Im $T_{yx}$');
+yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, ...
+    'LineWidth', 1,'LabelVerticalAlignment', 'middle', 'HandleVisibility','off')
 ylim([gew.geom.yItf(1), gew.geom.yItf(end)]/1e-3)
 xlabel('modal stress Tyx'), ylabel('y in mm')
-legend({'real Tyx', 'imag Tyx'}, 'Location','best')
+legend('Location','northeastoutside')
 
 subplot(2,1,2); hold on, % plot Tyy
-plot(real(Tyy), y/1e-3, '-*');
-plot(imag(Tyy), y/1e-3, '-*');
-yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
-    'LabelVerticalAlignment', 'middle')
+plot(real(Tiyy), yi/1e-3, 'Color', '#3B518B', 'DisplayName', 'Re $T_{yy}$');
+plot(imag(Tiyy), yi/1e-3, 'Color', '#5EC962', 'DisplayName', 'Im $T_{yy}$');
+yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, ...
+    'LineWidth', 1,'LabelVerticalAlignment', 'middle', 'HandleVisibility','off')
 ylim([gew.geom.yItf(1), gew.geom.yItf(end)]/1e-3)
 xlabel('modal stress Tyy'), ylabel('y in mm')
-legend({'real Tyy', 'imag Tyy'}, 'Location','best')
+legend('Location','northeastoutside')
