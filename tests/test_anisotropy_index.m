@@ -6,6 +6,18 @@
 %
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+%% test homogenization
+% Verify that homogenization with a uniform orientation distribution leads to an
+% isotropic material. 
+mat = Material('triclinic');
+[voigt,reuss] = homogenizeUniform(mat,10000);
+assert(voigt.AU < 1e-3);
+assert(reuss.AU < 1e-3);
+Cv = voigt.C; Cv = Cv/norm(Cv); Cv = round(Cv,3);
+assert(testIsotropy(Cv));
+Cr = reuss.C; Cr = Cr/norm(Cr); Cr = round(Cr,3);
+assert(testIsotropy(Cr))
+
 %% test isotropic material
 mat0 = Material('aluminum'); 
 assert(mat0.AU == 0);
@@ -42,3 +54,20 @@ mat = mat0.rotateEuler(0,pi/5,0);
 assert(mat.AU == AU);
 mat = mat0.rotateEuler(0,0,pi/3); 
 assert(mat.AU == AU);
+
+function ret = testIsotropy(C)
+    ret = false; 
+    if ~issymmetric(C), return; end
+    indZero = [4 5 6 10 11 12 16 17 18 19 20 21]; 
+    if C(indZero) ~= 0, return; end
+    lbd = C(1,2); 
+    if ~(C(1,3) == lbd && C(2,3) == lbd), return; end
+    mu = C(4,4); 
+    if ~(C(5,5) == mu && C(6,6) == mu), return; end
+    if ~(   abs(C(1,1) -lbd-2*mu) < 1e-2 &&...
+            abs(C(2,2) -lbd-2*mu) < 1e-2 && ...
+            abs(C(3,3) -lbd-2*mu) < 1e-2 ) % use bigger tolerance than in rounding of C
+        return; 
+    end
+    ret = true; 
+end
