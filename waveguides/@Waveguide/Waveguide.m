@@ -79,7 +79,9 @@ methods
         % See also: Lamb, sh, decouplesLambvsSH.
         Nudof = length(udof);
         if any(obj.geom.Nudof ~= Nudof) % update geometry if necessary
-            obj.geom = Geometry(obj.geom.yItf, obj.geom.N, Nudof*ones(obj.geom.nLay,1)); 
+            geomNew = Geometry(obj.geom.yItf, obj.geom.N, Nudof*ones(obj.geom.nLay,1)); 
+            geomNew.symmetrized = obj.geom.symmetrized;
+            obj.geom = geomNew; 
         end
 		obj.assembleLayers(udof, n);
         obj.udof = udof;

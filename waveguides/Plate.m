@@ -179,10 +179,7 @@ methods
         lMid = ceil(obj.geom.nLay/2);
         for l = 1:lMid
             if obj.lay(l) ~= obj.lay(end-(l-1))
-                if nargin == 2 && strcmp(verb, 'v')
-                    warning('GEWTOOL:decouplesSA:laySym', 'The layered structure is not symmetric.');
-                end
-                return;
+                error('GEWTOOL:decouplesSA:laySym', 'The layered structure is not symmetric.');
             end
         end
         decoupl = true;
