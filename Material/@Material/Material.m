@@ -147,22 +147,26 @@ methods
         obj.c = obj.c(perm,perm,perm,perm);
     end
 
-    function sym = isSymmetric(obj, perm)
+    function sym = isSymmetric(obj, perm, tol)
         % ISSYMMETRICONPERM - Test symmetry upon tensor index permutation.
-        % The test is done with a rel. precision of 1e4*eps = 2.2e-12.
         % 
         % Usage: 
         % sym = obj.isSymmetric();       % default perm = [3,4,1,2]
         % sym = obj.isSymmetric(perm);
+        % sym = obj.isSymmetric(perm, tol); % also provide rel. tolerance for testing
         % 
         % Argument: 
         % - perm: [4x1]-vector of stiffness tensor index permuation 1:4 -> perm
         %         default: perm = [3,4,1,2] (i.e., cijkl -> cklij).
-        if nargin < 2
+        % - tol:  (scalar, default: 0) relative tolerance for testing symmetry
+        if nargin < 3
+            tol = 0;
+        end
+        if nargin < 2 || isempty(perm)
             perm = [3,4,1,2];
         end
-        cp = permute(obj.c, perm);
-        sym = norm(cp - obj.c,'fro')/norm(obj.c,'fro') < 1e4*eps;
+        cperm = permute(obj.c, perm);
+        sym = all( abs(cperm - obj.c) <= tol*norm(obj.c,'fro'), 'all');
     end
 
     function obj = rotateEuler(obj, varargin)
