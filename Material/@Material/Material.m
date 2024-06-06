@@ -200,7 +200,8 @@ methods
         % (Elastic waves in solids), vol. 1, 2 vols. London: ISTE éditions, 2021.
         %
         % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
-        obj.c = rotateEuler(obj.c, varargin{:});
+        R = eulerAnglesToRotationMatrix(varargin{:});
+        obj = transformBasis(obj,R); % 
     end
 
     function obj = reflect(obj, ax)
@@ -213,16 +214,30 @@ methods
               0,   1,   0;
               0,   0,   1]; % reflexion ex -> -ex
         Q = circshift(Qx, [ax-1, ax-1]);
-        obj = obj.transformBasis(Q);
+        obj = obj.transformBasis(Q); % keeps symmetry
     end
 
     function obj = transformBasis(obj, Q)
         % TRANSFORMBASIS - Change of basis "Q" applied to stiffness tensor.
+        % Symmetries are conserved and numerical errors are removed by rounding
+        % to 12 digits with respect to the Frobenius norm.
         %
         % Arguments:
         % - obj: Material object.
         % - Q:   Orthogonal matrix discribing the transformation, e.g., a rotation.
-        obj.c = transformBasis(obj.c, Q);
+        cn = norm(obj.c, 'fro'); % normalization constant
+        crot = transformBasis(obj.c/cn, Q);
+        crot = round( crot, floor(-log10(eps))-3 )*cn; % 12 digits accuracy + upscaling
+        if obj.isSymmetric
+            crot = (crot + permute(crot, [3 4 1 2]))/2; % avoid assymetry due to rotation
+        end
+        if obj.isSymmetric([2 1 3 4])
+            crot = (crot + permute(crot, [2 1 3 4]))/2; % avoid assymetry due to rotation
+        end
+        if obj.isSymmetric([1 2 4 3])
+            crot = (crot + permute(crot, [1 2 4 3]))/2; % avoid assymetry due to rotation
+        end
+        obj.c = crot;
     end
     
     function sym = isInvariantOnReflection(obj, ax, tol)
