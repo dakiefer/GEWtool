@@ -28,6 +28,9 @@ methods
         % cyl = Cylinder(mat, r, N);
         %
         % See also: Cylinder, Plate.
+        if isscalar(rs) || ( isvector(rs) && length(mats) ~= length(rs)-1 )
+            error('GEWTOOL:Cylinder', 'Second argument should be a 2-vector containing the inner radius and outer radius as well as interfaces between the layers, all in ascending order.');
+        end
 		obj = obj@Waveguide(mats, rs, Ns);% converts mats 
         obj.lay = LayerCylindrical.empty; % initialize with correct class
 		for ii = 1:length(obj.mat)
