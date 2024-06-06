@@ -254,7 +254,8 @@ methods
             ax = 2; % default is y-axis
         end
         matR = obj.reflect(ax);
-        sym = all((obj.c - matR.c)/obj.c(1,1,1,1) <= tol, 'all'); % all zero -> true
+        matOrig = obj.transformBasis(eye(3)); % same rounding as in matR
+        sym = all((matOrig.c - matR.c)/matOrig.c(1,1,1,1) <= tol, 'all'); % all zero -> true
     end
 
     function decoupl = decouplesXYvsZ(obj)
