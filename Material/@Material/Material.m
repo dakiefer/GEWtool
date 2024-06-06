@@ -279,6 +279,13 @@ methods
         end
     end
 
+    function cons = isConservative(obj)
+        cons = false;
+        if isreal(obj.c) && obj.isSymmetric
+            cons = true;
+        end
+    end
+
     function cmin = minWavespeed(obj, en)
         % CMIN - Approximate minimum plane wave speed in the en-plane. 
         if nargin < 2
