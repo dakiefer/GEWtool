@@ -32,9 +32,9 @@
         }
     ],
     "references": [ 
-        "D. A. Kiefer, S. Mezil, and C. Prada, \"Beating resonance patterns and extreme power flux skewing in anisotropic elastic plates,\" Science Advances, vol. 9, no. 51, p. eadk6846, Dec. 2023, doi: <a href=http://doi.org/10.1126/sciadv.adk6846>10.1126/sciadv.adk6846</a>",
-        "D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, \"Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,\" The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386\u20131398, Feb. 2023, doi: <a href=http://doi.org/10.1121/10.0017252>10.1121/10.0017252</a>",
-        "D. A. Kiefer, Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering. in FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, no. 42. Erlangen: FAU University Press, 2022. doi: <a href=http://doi.org/10.25593/978-3-96147-550-6>10.25593/978-3-96147-550-6</a>"
+        "D. A. Kiefer, S. Mezil, and C. Prada, \"Beating resonance patterns and extreme power flux skewing in anisotropic elastic plates,\" Science Advances, vol. 9, no. 51, p. eadk6846, Dec. 2023, http://doi.org/10.1126/sciadv.adk6846",
+        "D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, \"Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,\" The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, http://doi.org/10.1121/10.0017252",
+        "D. A. Kiefer, Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering. in FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, no. 42. Erlangen: FAU University Press, 2022. http://doi.org/10.25593/978-3-96147-550-6"
     ],
     "keywords": ["guided waves", "dispersion", "Lamb waves", "elastodynamics", "ultrasound", "zero-group-velocity", "anisotropy"]
 }
