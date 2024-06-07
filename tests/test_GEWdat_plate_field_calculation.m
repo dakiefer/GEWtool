@@ -6,9 +6,6 @@
 %
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-% % options : 
-show = false;
-
 % % load pre-computed fields:
 load('data/Lamb_ref_fields.mat')
 warnStat = warning; warning off; % save state and turn off
