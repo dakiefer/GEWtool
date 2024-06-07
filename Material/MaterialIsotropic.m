@@ -48,18 +48,27 @@ classdef MaterialIsotropic < Material
             lambda = obj.C(1,2);
         end
         function obj = set.lambda(obj, lbd)
+            if lbd <= 0
+                error('GEWTOOL:Material:setrange', 'The Lamé parameter λ needs to be greater than zero.');
+            end
             obj.c = MaterialIsotropic.lame2stiffnessTensor(lbd, obj.mu);
         end
         function mu = get.mu(obj)
             mu = obj.C(4,4);
         end
         function obj = set.mu(obj, mu) 
+            if mu <= 0
+                error('GEWTOOL:Material:setrange', 'The Lamé parameter μ needs to be greater than zero.');
+            end
             obj.c = MaterialIsotropic.lame2stiffnessTensor(obj.lambda, mu);
         end
         function E = get.E(obj)
             [E, ~] = MaterialIsotropic.lame2Enu(obj.lambda, obj.mu);
         end
         function obj = set.E(obj, E)
+            if E <= 0
+                error('GEWTOOL:Material:setrange', 'The Young''s modulus needs to be greater than zero.');
+            end
             [lbd, mu] = MaterialIsotropic.Enu2lame(E, obj.nu);
             obj.c = MaterialIsotropic.lame2stiffnessTensor(lbd, mu);
         end
@@ -67,6 +76,9 @@ classdef MaterialIsotropic < Material
             [~, nu] = MaterialIsotropic.lame2Enu(obj.lambda, obj.mu);
         end
         function obj = set.nu(obj, nu)
+            if nu <= -1 || nu >= 0.5
+                error('GEWTOOL:Material:setrange', 'The Poisson ratio needs to be in the range -1 < nu < 0.5.');
+            end
             [lbd, mu] = MaterialIsotropic.Enu2lame(obj.E, nu);
             obj.c = MaterialIsotropic.lame2stiffnessTensor(lbd, mu);
         end
