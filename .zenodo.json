@@ -1,6 +1,6 @@
 {
     "title": "GEWtool",
-    "description": "<p><strong>Compute guided elastic wave (GEW) dispersion in MATLAB.</strong></p><p><code>GEWtool</code> is an advanced system to compute and postprocess guided elastodynamic waves (GEWs) in plates and cylinders. It is simple to use yet provides full access to the computational results as well as the underlying code. You are welcome to contribute to this open-source project.</p><p><strong>Features</strong>:</p><ul><li>Multi-layered plates, tubes and rods</li><li>Super fast, guarantees to find all solutions</li><li>General anisotropy, dissipation</li><li>Compute real frequencies, complex wavenumbers, or ZGV points</li><li>Choose polarization (Lamb/SH/coupled) and parity (S/A)</li></ul>",
+    "description": "<p><strong>Compute guided elastic wave (GEW) dispersion in MATLAB.</strong></p><p><code>GEWtool</code> is an advanced system to compute and postprocess guided elastodynamic waves (GEWs) in plates and cylinders. It is simple to use yet provides full access to the computational results as well as the underlying code. You are welcome to contribute to this open-source project.</p><p><strong>Features</strong>:</p><ul><li>Multi-layered plates, tubes and rods</li><li>Super fast, guarantees to find all solutions</li><li>General anisotropy, dissipation</li><li>Compute real frequencies, complex wavenumbers, or ZGV points</li><li>Choose polarization (Lamb/SH/coupled) and parity (S/A)</li></ul><p><strong>More information:</strong>: <a href=https://github.com/dakiefer/GEWtool>https://github.com/dakiefer/GEWtool</a></p>",
     "creators": [
         {
             "name": "Kiefer, Daniel A.",
@@ -14,6 +14,11 @@
             "name": "Plestenjak, Bor",
             "affiliation": "Faculty of Mathematics and Physics, University of Ljubljana",
             "orcid": "0000-0002-0463-7223"
+        },
+        {
+            "type": "RelatedPerson",
+            "name": "Clement, Gatien",
+            "affiliation": "Institut Langevin, ESPCI Paris, Université PSL"
         }
     ],
     "upload_type": "software",
@@ -27,8 +32,9 @@
         }
     ],
     "references": [ 
-        "D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, \"Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,\" The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386\u20131398, Feb. 2023, doi: 10.1121/10.0017252",
-        "D. A. Kiefer, Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering. in FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, no. 42. Erlangen: FAU University Press, 2022. doi: 10.25593/978-3-96147-550-6"
+        "D. A. Kiefer, S. Mezil, and C. Prada, \"Beating resonance patterns and extreme power flux skewing in anisotropic elastic plates,\" Science Advances, vol. 9, no. 51, p. eadk6846, Dec. 2023, doi: <a href=http://doi.org/10.1126/sciadv.adk6846>10.1126/sciadv.adk6846</a>",
+        "D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, \"Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,\" The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386\u20131398, Feb. 2023, doi: <a href=http://doi.org/10.1121/10.0017252>10.1121/10.0017252</a>",
+        "D. A. Kiefer, Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering. in FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, no. 42. Erlangen: FAU University Press, 2022. doi: <a href=http://doi.org/10.25593/978-3-96147-550-6>10.25593/978-3-96147-550-6</a>"
     ],
     "keywords": ["guided waves", "dispersion", "Lamb waves", "elastodynamics", "ultrasound", "zero-group-velocity", "anisotropy"]
 }
