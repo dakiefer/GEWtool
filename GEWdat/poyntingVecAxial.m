@@ -1,5 +1,5 @@
 function [px] = poyntingVecAxial(gew, dat)
-% POYNTINGVEC - Axial component of the power flux density vectors. 
+% poyntingVecAxial - Axial component of the power flux density vectors. 
 % 
 % The Poynting vector is p = -1/2 v^* . T . Its real part represents the
 % time-averaged power flux density vector. The x-component is aligned with the

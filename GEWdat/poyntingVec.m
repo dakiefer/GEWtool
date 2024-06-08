@@ -1,5 +1,12 @@
 function [p] = poyntingVec(gew, dat)
-%POYNTINGVEC compute the poynting vectors, i.e., power flux density vectors. 
+% poyntingVec - Power flux density vectors.
+% 
+% The Poynting vector is p = -1/2 v^* . T . Its real part represents the
+% time-averaged power flux density vectors. 
+% 
+% See also: poyntingVec, velocity, stress, powerFlux
+% 
+% 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 v = velocity(dat);
 T = stress(gew, dat);
