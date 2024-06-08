@@ -15,7 +15,14 @@ T = stress(gew, dat); % inefficient: we compute components that we don't need
 
 pz = cell(gew.geom.nLay,1);
 for l = 1:gew.geom.nLay
-    pz{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,:,3)), 4); % reduce T to components that yield pz
+    if gew.geom.Nudof(l) == 3
+        pz{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,:,3)), 4); % reduce T to components that yield pz
+    else
+        pz{l} = zeros([size(dat.w), gew.geom.N(l)]);
+    end
 end
+
+% TODO: at the moment, all layers are required to have the same number of
+% polarization degrees of freedom, i.e., Nudof is the same for all layers.
 
 end
