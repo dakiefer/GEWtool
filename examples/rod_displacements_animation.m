@@ -36,7 +36,7 @@ Z = real(ue(:,:,1))/1e-3;
 figure('Position', [100, 600, 600, 350]); clf; 
 mPlot = mesh(X, Y, Z, 'EdgeColor','k');
 title(sprintf('rod: mode %d', nW));
-zlim([-1.05 1.05]*scale/1e-3);
+zlim([-1.05 1.05]*scale/1e-3); xlim([-1.1 1.1]); ylim([-1.1 1.1]);
 axis off;
 
 % iterate over time
