@@ -1,29 +1,35 @@
 function [cex] = energyVelAxial(gew, dat)
-% ENERGYVELAXIAL - Compute the energy velocity ce along the waveguide.
-% The energy velocity is the radio of total axial power flux to the total 
-% stored energy. 
+% ENERGYVELAXIAL - Energy velocity component ce_x along the wave vector k.
+% The energy velocity vector ce is the radio of the total power flux vector P to the 
+% total stored energy H: ce = P/H . 
+% The axial component is the x-component, i.e., ce_x = P_x/H. 
 % 
-% See also: ENERGYVELTRANSVERSE, POWERFLUXAXIAL.
+% See also: ENERGYVEL, ENERGYVELTRANSVERSE, POWERFLUXAXIAL, POWERFLUX
 % 
-% 2022-2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-P = powerFlux(gew, dat);
+Px = powerFluxAxial(gew, dat); % component aligned with k-vector
 H = energyTotal(gew, dat);
-cex = P./H;
+cex = Px./H;
 
-% NOTE: this function depends on basically all field calculation functions:
+% NOTE: this function depends on many of the field calculation functions:
 % - GEWintegrate
 % - powerFlux
 %   - poyntingVec
 %       - velocity
 %       - stress
-% - energyTotal
+% - energyTotal 
 %   - energyKinetic
 %       - energyDensityKinetic
 %           - velocity
+% 
+% Additionally, without equipartion of energy, it also epends on
 %   - energyElastic
 %       - energyDensityElastic
 %           - strain
 %           - stress
+% 
+% Accordingly, energy velocity computations can be used to test the correct
+% impementation of the field computation functions.
 
 end

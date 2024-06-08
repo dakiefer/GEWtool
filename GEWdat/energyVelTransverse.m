@@ -8,7 +8,7 @@ function [cez] = energyVelTransverse(gew, dat)
 % 
 % 2022-2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-Pz = powerFluxTransverse(gew, dat);
+Pz = powerFluxTransverse(gew, dat); % orthogonal to k and plate's normal
 H = energyTotal(gew, dat);
 cez = Pz./H;
 
