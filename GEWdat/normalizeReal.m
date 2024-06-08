@@ -5,7 +5,7 @@ if any(dat.k ~= dat.k(:,1), 'all') % orthogonality for constant frequency!
     error('GEWTOOL:normalizeReal:nonconstk', 'Use this normalization for constant constant wavenumber computations only.');
 end
 
-P = powerFlux(gew, dat); % power flux of each mode
+P = powerFluxMag(gew, dat); % power flux of each mode
 
 % normalize each of the layers in the same way:
 for l = 1:length(gew.lay) 
