@@ -1,8 +1,25 @@
 function [cg] = groupVelAxial(gew, dat)
-%GROUPVEL compute the group velocities of guided wave solutions.
+% groupVelAxial - Group velocity component cg_x = dw/dk along the wave vector k.
+% 
+% The axial group velocity is computed based on the eigenvectors. No explicit
+% differntiation of the solutions is performed, i.e., the accuracy is
+% independent of the discretization of your k-w axes and the computation is
+% performed for every single mode independently. 
+% 
+% The group velocity is only meaningul for nondissipative waveguides. In a more
+% general setting, you can compute the energy velocity, which for the
+% nondissipative case is identical to the group velocity.
+% 
+% See also: energyVel, energyVelVec.
+% 
+% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if isa(gew,"CylinderCircumferential")
     warning('Circumferential waves do not support this function yet. The results might be wrong.');
+end
+if gew.isDissipative
+    warning('GEWTOOL:groupVel:dissipative', ...
+        'The waveguide is dissipative and the group velocity is not meaningful. You should compute the energy velocity instead. I will proceed anyways.');
 end
 M = gew.op.M; % mass matrix 
 L2 = gew.op.L2; % stiffness matrix in k^2
