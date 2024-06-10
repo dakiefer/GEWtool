@@ -17,7 +17,7 @@ mat = Material('steel');
 guide = Plate(mat, h, N);
 gew = guide.LambS;
 dat = computeW(gew, k, 6); 
-cgx = real(groupVel(gew,dat));
+cgx = real(groupVelAxial(gew,dat));
 cex = real(energyVelAxial(gew,dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
@@ -36,7 +36,7 @@ mat = Material('steel');
 guide = Plate(mat, h, N);
 gew = guide.LambA;
 dat = computeW(gew, k, 6); 
-cgx = real(groupVel(gew,dat));
+cgx = real(groupVelAxial(gew,dat));
 cex = real(energyVelAxial(gew,dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
@@ -55,7 +55,7 @@ mat = Material('steel');
 guide = Plate(mat, h, N);
 gew = guide.Lamb;
 dat = computeW(gew, k, 6); 
-cgx = real(groupVel(gew,dat));
+cgx = real(groupVelAxial(gew,dat));
 cex = real(energyVelAxial(gew,dat));
 
 % S and A modes might cross. Wrong sorting leads to large errors in dwdk. Test
@@ -76,7 +76,7 @@ mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
 guide = Plate(mat, h, N);
 gew = guide.fullyCoupled;
 dat = computeW(gew, k, 6); 
-cgx = real(groupVel(gew,dat));
+cgx = real(groupVelAxial(gew,dat));
 cex = real(energyVelAxial(gew,dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
@@ -96,7 +96,7 @@ mat2 = Material('aluminum');
 guide = Plate([mat mat2], h/2, round(N/2));
 gew = guide.Lamb;
 dat = computeW(gew, k, 6); 
-cgx = real(groupVel(gew,dat));
+cgx = real(groupVelAxial(gew,dat));
 cex = real(energyVelAxial(gew,dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
@@ -119,7 +119,7 @@ end
 % guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 % gew = guide.longitudinal;
 % dat = computeW(gew, k, 6); 
-% cg = real(groupVel(gew,dat));
+% cg = real(groupVelAxial(gew,dat));
 % ce = real(energyVelAxial(gew,dat));
 % 
 % devCgCe = abs(cg - ce)/mat.cl;
@@ -139,7 +139,7 @@ end
 % guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 % gew = guide.fullyCoupled(0);
 % dat = computeW(gew, k, 6); 
-% cg = real(groupVel(gew,dat));
+% cg = real(groupVelAxial(gew,dat));
 % ce = real(energyVelAxial(gew,dat));
 % 
 % devCgCe = abs(cg - ce)/mat.cl;
@@ -159,7 +159,7 @@ end
 % guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 % gew = guide.fullyCoupled(1);
 % dat = computeW(gew, k, 6); 
-% cg = real(groupVel(gew,dat));
+% cg = real(groupVelAxial(gew,dat));
 % ce = real(energyVelAxial(gew,dat));
 % 
 % devCgCe = abs(cg - ce)/mat.cl;
