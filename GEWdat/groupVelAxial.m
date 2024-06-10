@@ -1,4 +1,4 @@
-function [cg] = groupVel(gew, dat)
+function [cg] = groupVelAxial(gew, dat)
 %GROUPVEL compute the group velocities of guided wave solutions.
 
 if isa(gew,"CylinderCircumferential")
