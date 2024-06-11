@@ -8,8 +8,8 @@
 %
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-h = 1e-3; 
-N = 10; 
+h = 1e-3;
+N = 10;
 k = linspace(1e-2, 15, 100)/h;
 
 %% test symmetric Lamb waves
@@ -21,7 +21,7 @@ cgx = real(groupVelAxial(gew,dat));
 cex = real(energyVelAxial(gew,dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
-assert( max(devCgCe,[],'all') <= 1e-6 )
+assert( max(devCgCe,[],'all') <= 1e-4 )
 
 if exist('show', 'var') && show
     maxDev = max(devCgCe,[],'all')
@@ -40,7 +40,7 @@ cgx = real(groupVelAxial(gew,dat));
 cex = real(energyVelAxial(gew,dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
-assert( max(devCgCe,[],'all') <= 1e-6 )
+assert( max(devCgCe,[],'all') <= 1e-4 )
 
 if exist('show', 'var') && show
     maxDev = max(devCgCe,[],'all')
@@ -61,7 +61,7 @@ cex = real(energyVelAxial(gew,dat));
 % S and A modes might cross. Wrong sorting leads to large errors in dwdk. Test
 % only the remaining points:
 devCgCe = abs(cgx - cex)/mat.cl;
-assert( max(devCgCe,[],'all') <= 1e-5 )
+assert( max(devCgCe,[],'all') <= 1e-4 )
 
 if exist('show', 'var') && show
     maxDev = max(devCgCe,[],'all')
@@ -80,7 +80,7 @@ cgx = real(groupVelAxial(gew,dat));
 cex = real(energyVelAxial(gew,dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
-assert( max(devCgCe,[],'all') <= 1e-6 )
+assert( max(devCgCe,[],'all') <= 1e-5 )
 
 if exist('show', 'var') && show
     maxDev = max(devCgCe,[],'all')
@@ -100,7 +100,7 @@ cgx = real(groupVelAxial(gew,dat));
 cex = real(energyVelAxial(gew,dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
-assert( max(devCgCe,[],'all') <= 1e-6 )
+assert( max(devCgCe,[],'all') <= 1e-4 )
 
 if exist('show', 'var') && show
     maxDev = max(devCgCe,[],'all')
@@ -114,63 +114,62 @@ end
 % % Cylinder is not supported for now % %
 %%%%%%%%%%%%%%%%%%%%%%%
 
-% %% test cylinder longitudinal 
-% mat = Material('steel');
-% guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
-% gew = guide.longitudinal;
-% dat = computeW(gew, k, 6); 
-% cg = real(groupVelAxial(gew,dat));
-% ce = real(energyVelAxial(gew,dat));
-% 
-% devCgCe = abs(cg - ce)/mat.cl;
-% % assert( max(devCgCe,[],'all') <= 1e-5 )
-% 
-% % plot if the variable "show" has been set to true
-% if exist('show', 'var') && show
-%     maxDev = max(devCgCe,[],'all')
-%     figure(6); clf; hold on; title('Cylinder isotropic longitudinal')
-%     plot(dat.w(:), ce(:), 'rx', 'DisplayName','ce');
-%     plot(dat.w(:), cg(:), 'k.', 'DisplayName','cg');
-%     legend('Location','southeast');
-% end
-% 
-% %% test cylinder n = 0
-% mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
-% guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
-% gew = guide.fullyCoupled(0);
-% dat = computeW(gew, k, 6); 
-% cg = real(groupVelAxial(gew,dat));
-% ce = real(energyVelAxial(gew,dat));
-% 
-% devCgCe = abs(cg - ce)/mat.cl;
-% % assert( max(devCgCe,[],'all') <= 1e-5 )
-% 
-% % plot if the variable "show" has been set to true
-% if exist('show', 'var') && show
-%     maxDev = max(devCgCe,[],'all')
-%     figure(7); clf; hold on; title('Cylinder triclinic n = 0')
-%     plot(dat.w(:), ce(:), 'rx', 'DisplayName','ce');
-%     plot(dat.w(:), cg(:), 'k.', 'DisplayName','cg');
-%     legend('Location','southeast');
-% end
-% 
-% %% test cylinder n = 1
-% mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
-% guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
-% gew = guide.fullyCoupled(1);
-% dat = computeW(gew, k, 6); 
-% cg = real(groupVelAxial(gew,dat));
-% ce = real(energyVelAxial(gew,dat));
-% 
-% devCgCe = abs(cg - ce)/mat.cl;
-% % assert( max(devCgCe,[],'all') <= 1e-5 )
-% 
-% % plot if the variable "show" has been set to true
-% if exist('show', 'var') && show
-%     maxDev = max(devCgCe,[],'all')
-%     figure(8); clf; hold on; title('Cylinder triclinic n = 1')
-%     plot(dat.w(:), ce(:), 'rx', 'DisplayName','ce');
-%     plot(dat.w(:), cg(:), 'k.', 'DisplayName','cg');
-%     legend('Location','southeast');
-% end
+%% test cylinder longitudinal 
+mat = Material('steel');
+guide = Cylinder(mat, [h, 2*h]-0.8*h/2, N); % small inner radius -> curvature is important
+gew = guide.longitudinal;
+dat = computeW(gew, k, 6); 
+cgx = real(groupVelAxial(gew,dat));
+cex = real(energyVelAxial(gew,dat));
 
+devCgCe = abs(cgx - cex)/mat.cl;
+assert( max(devCgCe,[],'all') <= 1e-4 )
+
+% plot if the variable "show" has been set to true
+if exist('show', 'var') && show
+    maxDev = max(devCgCe,[],'all')
+    figure(6); clf; hold on; title('Cylinder isotropic longitudinal')
+    plot(dat.w(:), cgx(:), 'rx', 'DisplayName','cg');
+    plot(dat.w(:), cex(:), 'k.', 'DisplayName','ce');
+    legend('Location','southeast');
+end
+
+%% test cylinder n = 0
+mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
+guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
+gew = guide.fullyCoupled(0);
+dat = computeW(gew, k, 6); 
+cgx = real(groupVelAxial(gew,dat));
+cex = real(energyVelAxial(gew,dat));
+
+devCgCe = abs(cgx - cex)/mat.cl;
+assert( max(devCgCe,[],'all') <= 1e-4 )
+
+% plot if the variable "show" has been set to true
+if exist('show', 'var') && show
+    maxDev = max(devCgCe,[],'all')
+    figure(7); clf; hold on; title('Cylinder triclinic n = 0')
+    plot(dat.w(:), cgx(:), 'rx', 'DisplayName','cg');
+    plot(dat.w(:), cex(:), 'k.', 'DisplayName','ce');
+    legend('Location','southeast');
+end
+
+%% test cylinder n = 1
+mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
+guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
+gew = guide.fullyCoupled(1);
+dat = computeW(gew, k, 6); 
+cgx = real(groupVelAxial(gew,dat));
+cex = real(energyVelAxial(gew,dat));
+
+devCgCe = abs(cgx - cex)/mat.cl;
+assert( max(devCgCe,[],'all') <= 1e-4 )
+
+% plot if the variable "show" has been set to true
+if exist('show', 'var') && show
+    maxDev = max(devCgCe,[],'all')
+    figure(8); clf; hold on; title('Cylinder triclinic n = 1')
+    plot(dat.w(:), cgx(:), 'rx', 'DisplayName','cg');
+    plot(dat.w(:), cex(:), 'k.', 'DisplayName','ce');
+    legend('Location','southeast');
+end

@@ -145,7 +145,7 @@ end
 indRef = real(datRef.k) > 0;
 ind =    real(dat.k) > 0;
 ceRefPos = ceRef(indRef);
-ce = energyVel(gew, dat);
+ce = energyVelAxial(gew, dat);
 cePos = ce(ind);
 err = (abs(cePos - ceRefPos))/mean(abs(ceRefPos)); % absolute normalized error
 assert( all(err < relTol) )
