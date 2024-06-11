@@ -11,10 +11,11 @@ function [px] = poyntingVecAxial(gew, dat)
 
 v = velocity(dat);
 T = stress(gew, dat); % inefficient: we compute components that we don't need
+udof = gew.udof;      % polarization
 
 px = cell(gew.geom.nLay,1);
 for l = 1:gew.geom.nLay
-    px{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,:,1)), 4); % reduce T to components that yield px
+    px{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,udof,1)), 4); % reduce T to components that yield px
 end
 
 end

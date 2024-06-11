@@ -10,11 +10,12 @@ function [p] = poyntingVec(gew, dat)
 
 v = velocity(dat);
 T = stress(gew, dat);
+udof = gew.udof;      % polarization
 
 p = cell(gew.geom.nLay,1);
-for i = 1:gew.geom.nLay
-    p_i = -1/2*sum(real(conj(v{i}).*T{i}), 4);
-    p{i} = permute(p_i, [1 2 3 5 4]);
+for l = 1:gew.geom.nLay
+    pl = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,udof,:)), 4);
+    p{l} = permute(pl, [1 2 3 5 4]);
 end
 
 end
