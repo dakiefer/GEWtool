@@ -216,6 +216,23 @@ methods
         gew.geom.symmetrized = true;
     end
 
+    function F = displGrad(obj, dat)
+        % displGrad - Displacement gradient of the provided field "dat.u".
+        F = cell(obj.geom.nLay, 1); % allocate for each layer
+        for l = 1:obj.geom.nLay
+            sizeF = [size(dat.w), obj.geom.N(l), obj.geom.Nudof(l), obj.geom.Nudof(l)]; % size of F = grad u
+            Fi = zeros(sizeF); % allocate for displacement gradient F = grad u
+            lay = obj.lay(l);
+            Dy = 1/lay.h*lay.D1; % differentiation matrix
+            iku = 1i*dat.k.*dat.u{l}; % ex.F = ik*u
+            uu = permute(dat.u{l}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.
+            dyu = sum(shiftdim(Dy, -2).*uu, 4); % ey.F = ∂u/∂y, dimension 4 is singleton
+            Fi(:,:,:,1,:) = iku;  % assign components ex.F
+            Fi(:,:,:,2,:) = dyu;  % assign components ey.F
+            F{l} = Fi; 
+        end 
+    end
+
 end % methods
 
 end % class

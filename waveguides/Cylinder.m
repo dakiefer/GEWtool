@@ -76,6 +76,35 @@ methods
         gew = obj.fullyCoupled(n);
     end
 
+    function F = displGrad(obj, dat)
+        % displGrad - Displacement gradient of the provided field "dat.u".
+        udof = obj.udof;
+        F = cell(obj.geom.nLay, 1); % allocate for each layer
+        inIpA = 1i*obj.n*eye(3) + [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
+        inIpA = inIpA(:,udof); % reduce according to polarization
+        for l = 1:obj.geom.nLay
+            sizeF = [size(dat.w), obj.geom.N(l), 3, 3]; % size of F = grad u 
+            Fi = zeros(sizeF); % allocate for displacement gradient F = grad u
+            lay = obj.lay(l);
+            Dr = 1/lay.h*lay.D1; % differentiation matrix
+            r = lay.r(:); 
+            if r(1) == 0
+                r(1) = r(1) + max(r)*(100*eps); % lazyly avoid singularity
+            end
+            r = shiftdim(r,-2);           % radial coordinates in SI units
+            iku = 1i*dat.k.*dat.u{l}; % ex.F = ik*u
+            uu = permute(dat.u{l}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.
+            dru = sum(shiftdim(Dr, -2).*uu, 4); % ey.F = ∂u/∂y, dimension 4 is singleton
+            uu = permute(dat.u{l}, [1, 2, 3, 5, 4]); % additional dimension for mult. with (in*I + A)
+            Ad = shiftdim(inIpA, -3);
+            Au = sum(1./r.*Ad.*uu,5);
+            Fi(:,:,:,1,udof) = iku;  % assign components ex.F
+            Fi(:,:,:,2,udof) = dru;  % assign components er.F
+            Fi(:,:,:,3,:) = Au;   % assign components ephi.F
+            F{l} = Fi; 
+        end 
+    end
+
 end % methods
 
 end % class

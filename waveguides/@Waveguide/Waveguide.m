@@ -253,4 +253,8 @@ methods
 	gew = assembleLayers(obj, udof, n)
 end
 
+methods (Abstract)
+    F = displGrad(obj, dat)  % to be implemented by subclasses
+end
+
 end % class
