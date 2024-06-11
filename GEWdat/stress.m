@@ -1,29 +1,25 @@
 function [T] = stress(gew, dat)
-%STRESS compute the stress T given the displacements u and wavenumber k.
-% - u: displacements
-% - k: wavenumbers
-% - wguide: waveguide object
+% stress - Stress tensor T.
 % 
+% Computed by double-contraction of the displacement gradient F with the
+% stiffness tensor c, i.e.,
+% 
+% T = c : F
+% 
+% 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if isa(gew,"Cylinder")
-    warning('Cylinders do not support this function yet. The results will be wrong.');
+if isa(gew, 'Plate')
+    udof = gew.udof; % polarization (which of the ux, uy, uz components are represented)
+else
+    udof = 1:3; % Cylinder always has all stresses
 end
+F = displGrad(gew, dat);
 T = cell(gew.geom.nLay, 1); % allocate for each layer
-for i = 1:gew.geom.nLay
-    lay = gew.lay(i);
-    D1 = 1/lay.h*lay.D1; % differentiation matrix
-    c = lay.mat.c;       % stiffness tensor
-    udof = gew.udof;     % polarization (which of the ux, uy, uz components are represented)
-    
-    uu = permute(dat.u{i}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.
-    ud = sum(shiftdim(D1, -2).*uu, 4);       % du/dy
-    uu = permute(uu, [1,2,4,3,6,5]);         % additional dimension for contraction with c
-    ud = permute(ud, [1,2,3,4,6,5]);         % additional dimension for contraction with c
-    cx = shiftdim(c(udof,udof,udof,1), -3);
-    cy = shiftdim(c(udof,udof,udof,2), -3);
-    T{i} = sum(1i*dat.k.*cx.*uu + cy.*ud, 6);   % contraction 
+for l = 1:gew.geom.nLay
+    c = gew.lay(l).mat.c; % stiffness tensor
+    c = shiftdim(c(udof,udof,udof,udof), -3); % shift to the correct dimension
+    Fl = permute(F{l}, [1 2 3 6 7 4 5]); % additional dimension for contraction with c
+    T{l} = sum(sum(c.*Fl, 6), 7); % double contraction 
 end
-
-% NOTE: the implementation that avoids calling strain() is a bit faster.
 
 end
