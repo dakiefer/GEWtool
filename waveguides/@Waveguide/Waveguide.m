@@ -84,7 +84,8 @@ methods
             obj.geom = geomNew; 
         end
 		obj.assembleLayers(udof, n);
-        obj.udof = udof;
+        obj.udof = udof;  % remember polarization
+        if isa(obj,'Cylinder'), obj.n = n; end  % remember circumferential wavenumber
 	end
 
 	function gew = fullyCoupled(obj, n)

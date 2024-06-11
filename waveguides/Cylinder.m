@@ -12,6 +12,10 @@ classdef Cylinder < Waveguide
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+properties (Access = public)
+    n = NaN      % Circumferential wavenumber (entire number)
+end
+
 methods 
 	function obj = Cylinder(mats, rs, Ns)
         % Cylinder - Create a cylindrical waveguide (axial propagation).

@@ -12,8 +12,8 @@ cex = energyVelAxial(gew, dat);      % ex-direction
 cez = energyVelTransverse(gew, dat); % ez-direction
 ceMag = sqrt(cex.^2 + cez.^2);
 
-% NOTE: ^ You should do the above computation in terms of energy velocity
-% components instead of power flux components. The former are better scaled
-% (closer to unity) than the latter.
+% NOTE: The above computation is done in terms of energy velocity components
+% instead of power flux components on purpose because the former are better
+% scaled (closer to unity) than the latter.
 
 end
