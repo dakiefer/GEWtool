@@ -35,9 +35,8 @@ xlabel('f in MHz'), ylabel('cp in m/s'), drawnow
 ax = gca; ax.ColorOrderIndex = 1; % reset color order 
 legend({'', '', '', '', '', 'Zheng'})
 
-% zeroth order:
-n = 0; % circumferential wavenumber (flexural order)
-gew = cyl.fullyCoupled(n);
+% longitudinal waves:
+gew = cyl.longitudinal;
 dat = computeW(gew, k);
 plot(dat.w(:)/2/pi/1e6, dat.w(:)./dat.k(:), 'r.', 'MarkerSize', 8); 
 legend({'', '', '', '', '', 'Zheng', 'n = 0'})
