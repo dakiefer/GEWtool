@@ -76,6 +76,28 @@ methods
         gew = obj.fullyCoupled(n);
     end
 
+    function decoupl = decouplesLambvsSH(obj,n)
+        % decouplesLambvsSH - Test decoupling of longitudinal and torsional waves.
+        % 
+        % Tests whether the Lamb-like (ux-ur displacement, "longitudinal") and
+        % SH-like (uphi, "torsional") polarized waves decouple.
+        %
+        % Arguments:
+        % - obj:  (Cylinder) guided wave description
+        % - n:    (integer) circumferential wavenumber. If the wave family was
+        %         already chosen, this argument is not nessary and the value saved in
+        %         obj.n will be used. The explicitly provided argument takes
+        %         presedence.
+        % 
+        % See also: longitudinal, torsional, flexural.
+        if nargin < 2 && ~isnan(obj.n)
+            n = obj.n; 
+        elseif nargin < 2 && isnan(obj.n)
+            error('GEWTOOL:Cylinder:decouplesLambvsSH','You must specify the circumferential order n.');
+        end
+        decoupl = decouplesLambvsSH@Waveguide(obj,n);
+    end
+
     function F = displGrad(obj, dat)
         % displGrad - Displacement gradient of the provided field "dat.u".
         udof = obj.udof;
