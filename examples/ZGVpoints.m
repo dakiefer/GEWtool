@@ -20,7 +20,7 @@ k = linspace(1e-2, 40, 150)/h; % wavenumbers for plotting dispersion curves
 plate = Plate(mat, h, N); % create waveguide description 
 gew = plate.LambA; % assembles matrices for the specified waves
 dat = computeW(gew, k); % dispersion curves will be plotted for reference 
-dat.cg = groupVel(gew, dat); % compute group velocity for plotting
+dat.cg = groupVelAxial(gew, dat); % compute group velocity for plotting
 
 % % here are some ZGV points with 2 digits accuracy (serve as initial guess): 
 w0 = [0.29    0.52    0.69    0.72    0.75]*1e8;

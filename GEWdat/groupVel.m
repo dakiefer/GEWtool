@@ -18,7 +18,7 @@ if isa(gew,"CylinderCircumferential")
     warning('Circumferential waves do not support this function yet. The results might be wrong.');
 end
 if gew.decouplesLambvsSH
-    cg = groupVelAxial(gew, dat); 
+    cg = abs(groupVelAxial(gew, dat));
 else
     error('GEWTOOL:groupVel:notimplemented', ...
         'Your waveguide exhibits nonzero transverse group velocity components, which is not implemented yet. You can instead compute energyVelMag() to achieve the exact same result.');

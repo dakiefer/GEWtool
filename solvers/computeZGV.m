@@ -34,7 +34,7 @@ if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % dispersion data provi
     if isfield(dat, 'cg')
         cg = dat.cg;
     else
-        cg = groupVel(gew, dat);
+        cg = groupVelAxial(gew, dat);
     end
     sigChange = diff(sign(real(cg)),1,2); % detect where the sign changes
     w0 = dat.w(find(sigChange));
