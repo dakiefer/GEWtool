@@ -17,9 +17,8 @@ nK = 1;              % we computed only at one k
 w = dat.w(nK,nW);    % angular frequency
 Ni = 10*nW + 10;     % number of interpolation points should increase with mode number
 [ui,ri] = GEWinterpolate(gew, dat.u{1}(nK,nW,:,:), Ni);
-n = 0;               % circumferential order needs to match the wave modeled by ''gew''
 Nphi = 40;           % number of points on circumference
-[ue, phi] = GEWextrapolateCircumference(ui, n, Nphi); % extrapolate along angle phi
+[ue, phi] = GEWextrapolateCircumference(ui, gew.n, Nphi); % extrapolate along angle phi
 
 %% animate modal displacements
 % re-scale displacements:
