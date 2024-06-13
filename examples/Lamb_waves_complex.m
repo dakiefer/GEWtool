@@ -15,9 +15,9 @@ gews = plate.LambSA; tic;         % choose S+A Lamb waves (assembles matrices)
 dat = computeK(gews, w); toc;     % solve 
 
 figure(1); clf; hold on
-hS = plot3(real(dat(1).k(:))/1e3, imag(dat(1).k(:))/1e3, dat(1).w(:)/2/pi/1e6, '.', 'Color', "#3B518B"); 
-hA = plot3(real(dat(2).k(:))/1e3, imag(dat(2).k(:))/1e3, dat(2).w(:)/2/pi/1e6, '.', 'Color', "#5EC962"); 
+plot3(real(dat(1).k(:))/1e3, imag(dat(1).k(:))/1e3, dat(1).w(:)/2/pi/1e6, '.', 'SeriesIndex',1,'DisplayName','S'); 
+plot3(real(dat(2).k(:))/1e3, imag(dat(2).k(:))/1e3, dat(2).w(:)/2/pi/1e6, '.', 'SeriesIndex',2,'DisplayName','A'); 
 xlim([0, 12]), ylim([-10.5, 10.5]), view(22, 18)
 xlabel('Re(k) in rad/mm'), ylabel('Im(k) in rad/mm'), zlabel('f in MHz')
-legend([hS(1), hA(1)], {'symmetric', 'anti-symmetric'}, 'Location', 'southeast')
+legend(legendUnq, 'Location', 'southeast')
 title(sprintf('Lamb waves in %gmm %s', h/1e-3, mat.name))

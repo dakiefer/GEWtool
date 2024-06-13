@@ -33,20 +33,20 @@ datF = computeW(flex, k); toc
 
 % plot frequency-wavenumber dispersion 
 figure(1); clf; hold on
-hT = plot(datT.k/1e3, datT.w/2/pi/1e6, 'Color', "#C75E78"); % plot torsional
-hF = plot(datF.k/1e3, datF.w/2/pi/1e6, 'Color', "#5EC962"); % plot flexural
-hL = plot(datL.k/1e3, datL.w/2/pi/1e6, 'Color', "#3B518B"); % plot longitudinal
+plot(datT.k/1e3, datT.w/2/pi/1e6,'SeriesIndex',3,'DisplayName','torsional');
+plot(datF.k/1e3, datF.w/2/pi/1e6,'SeriesIndex',2,'DisplayName','1st flexural');
+plot(datL.k/1e3, datL.w/2/pi/1e6,'SeriesIndex',1,'DisplayName','longitudinal');
 ylim([0, 5]); % frequency range
 xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
-legend([hL(1), hF(1), hT(1)], {'longitudinal', '1st flexural', 'torsional'}, 'Location','south east')
+legend(legendUnq, 'Location','south east')
 title(sprintf('rod of radius %g mm', r/1e-3))
 
-% plot phase velocity-frequency dispersion 
+% % plot phase velocity-frequency dispersion 
 figure(2); clf; hold on; 
-hT = plot(datT.w/2/pi/1e6, datT.w./datT.k/1e3, 'Color', "#C75E78");
-hF = plot(datF.w/2/pi/1e6, datF.w./datF.k/1e3, 'Color', "#5EC962");
-hL = plot(datL.w/2/pi/1e6, datL.w./datL.k/1e3, 'Color', "#3B518B");
+plot(datT.w/2/pi/1e6, datT.w./datT.k/1e3,'SeriesIndex',3,'DisplayName','torsional');
+plot(datF.w/2/pi/1e6, datF.w./datF.k/1e3,'SeriesIndex',2,'DisplayName','1st flexural');
+plot(datL.w/2/pi/1e6, datL.w./datL.k/1e3,'SeriesIndex',1,'DisplayName','longitudinal');
 xlim([0, 5]); ylim([0, mat.cl*2/1e3]) % axes limits
 ylabel('phase velocity in mm/us'), xlabel('frequency f in MHz')
-legend([hL(1), hF(1), hT(1)], {'longitudinal', '1st flexural', 'torsional'}, 'Location','south east')
+legend(legendUnq, 'Location','south east')
 title(sprintf('rod of radius %g mm', r/1e-3))

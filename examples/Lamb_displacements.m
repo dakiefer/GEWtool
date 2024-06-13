@@ -41,8 +41,8 @@ Tiyx = Ti(:,2,1); Tiyy = Ti(:,2,2);     % interpolated stress components
 figure(2), clf
 
 subplot(2,1,1); hold on, % plot ux
-plot(real(uix), yi/1e-3, 'Color', '#3B518B', 'DisplayName', 'Re $u_x$');
-plot(imag(uix), yi/1e-3, 'Color', '#5EC962', 'DisplayName', 'Im $u_x$');
+plot(real(uix), yi/1e-3, 'DisplayName', 'Re $u_x$');
+plot(imag(uix), yi/1e-3, 'DisplayName', 'Im $u_x$');
 yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, ...
     'LineWidth', 1,'LabelVerticalAlignment', 'middle', 'HandleVisibility','off')
 ylim([gew.geom.yItf(1), gew.geom.yItf(end)]/1e-3)
@@ -50,8 +50,8 @@ xlabel('modal displacement ux'), ylabel('y in mm')
 legend('Location','northeastoutside')
 
 subplot(2,1,2); hold on % plot uy
-plot(real(uiy), yi/1e-3, 'Color', '#3B518B', 'DisplayName', 'Re $u_y$');
-plot(imag(uiy), yi/1e-3, 'Color', '#5EC962', 'DisplayName', 'Im $u_y$');
+plot(real(uiy), yi/1e-3, 'DisplayName', 'Re $u_y$');
+plot(imag(uiy), yi/1e-3, 'DisplayName', 'Im $u_y$');
 yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, ...
     'LineWidth', 1,'LabelVerticalAlignment', 'middle', 'HandleVisibility','off')
 ylim([gew.geom.yItf(1), gew.geom.yItf(end)]/1e-3)
@@ -64,8 +64,8 @@ legend('Location','northeastoutside')
 figure(3), clf,
 
 subplot(2,1,1); hold on, % plot Tyx
-plot(real(Tiyx), yi/1e-3, 'Color', '#3B518B', 'DisplayName', 'Re $T_{yx}$');
-plot(imag(Tiyx), yi/1e-3, 'Color', '#5EC962', 'DisplayName', 'Im $T_{yx}$');
+plot(real(Tiyx), yi/1e-3, 'DisplayName', 'Re $T_{yx}$');
+plot(imag(Tiyx), yi/1e-3, 'DisplayName', 'Im $T_{yx}$');
 yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, ...
     'LineWidth', 1,'LabelVerticalAlignment', 'middle', 'HandleVisibility','off')
 ylim([gew.geom.yItf(1), gew.geom.yItf(end)]/1e-3)
@@ -73,8 +73,8 @@ xlabel('modal stress Tyx'), ylabel('y in mm')
 legend('Location','northeastoutside')
 
 subplot(2,1,2); hold on, % plot Tyy
-plot(real(Tiyy), yi/1e-3, 'Color', '#3B518B', 'DisplayName', 'Re $T_{yy}$');
-plot(imag(Tiyy), yi/1e-3, 'Color', '#5EC962', 'DisplayName', 'Im $T_{yy}$');
+plot(real(Tiyy), yi/1e-3, 'DisplayName', 'Re $T_{yy}$');
+plot(imag(Tiyy), yi/1e-3, 'DisplayName', 'Im $T_{yy}$');
 yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, ...
     'LineWidth', 1,'LabelVerticalAlignment', 'middle', 'HandleVisibility','off')
 ylim([gew.geom.yItf(1), gew.geom.yItf(end)]/1e-3)
