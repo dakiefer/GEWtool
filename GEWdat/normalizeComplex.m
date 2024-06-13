@@ -34,7 +34,7 @@ for m = 1:size(dat.k, 2)
         txn = permute(TLay(:,indn,1,:), [1 2 4 3]); % traction ex.T = T'.ex of size [nF x nK x yi x tx]
         Imn{l} = sum(-conj(vn).*txm - vm.*conj(txn), 3); % power flux density
     end
-    Pmn = 1/4*GEWintegrate(gew, Imn, 2); % size: [nF]
+    Pmn = 1/4*GEWintegrate(gew, Imn, [], 2); % size: [nF]
     % normalize mode ik:
     for l = 1:length(gew.lay) 
         um = dat.u{l}(m,:,:,:);

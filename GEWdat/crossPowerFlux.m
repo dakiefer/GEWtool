@@ -24,6 +24,6 @@ for l = 1:length(gew.lay)
     Imn{l} = sum(-conj(vn).*txm - vm.*conj(txn), 5); % cross power flux density
 end
 
-Pmn = 1/4*GEWintegrate(gew, Imn, 4); % size: [nK, nK, nF]
+Pmn = 1/4*GEWintegrate(gew, Imn, [], 4); % size: [nK, nK, nF]
 
 end
