@@ -2,6 +2,35 @@
 
 Documents the changes to GEWtool.
 
+## 1.4 (2024-06-08)
+
+- FEATURE `GEWdat` functions now fully support postprocessing in cylindrical coordinates.
+- FEATURE `GEWintegrate()`: now allows to specify the layer(s) on which to integrate.
+- FEATURE Consistent behavior of `energyVel`, `energyVelVec`, `energyVelAxial`, `energyVelTransverse`, `groupVel`, `groupVelAxial`.
+- FEATURE Waveguide class: now remembers circumferential order n of chosen waves in a cylinder (`gew.n`).
+- FEATURE `GEWdat`: more efficient power flux and energy computation (exploit equipartition of energy, avoid computing unnecessary components in power flux)
+- Cylinder.decouplesLambvsSH() no longer needs the circumferential wavenumber as argument if the waves have already been selected.
+- GEWintegrateEachLayer() added: compute integral on each layer separately.
+- Plate/displGrad(): compute the displacement gradient in Cartesian coordinates. 
+- Cylinder/displGrad(): compute the displacement gradient in cylindrical coordinates. 
+- GEWdat/energyVelVec() added: energy velocity vector.
+- GEWdat/energyVelMag() added: magnitude of the energy velocity vectors.
+- GEWdat/energyVelAxial() added: energy velocity component aligned with the wave vector.
+- GEWdat/energyVelTransverse() added: energy velocity component orthogonal to the wave vector.
+- GEWdat/energyVel() is now alias to energyVelMag().
+- GEWdat/groupVelAxial() added: group velocity component aligned with the wave vector.
+- GEWdat/groupVel() now returns the group velocity magnitude when Lamb and sh polarizations decouple. 
+- GEWdat/poyntingVecTransverse() added: compute only the ez-component.
+- GEWdat/powerFluxMag() added: computes the magnitude of the power flux.
+- GEWdat/powerFlux() now returns a vector instead of only the axial component.
+- GEWintegrate() now correctly integrates in cylindrical coordinates when an object of class Cylinder is passed.
+- GEWdat/strain() and GEWdat/stress() are now based on the Waveguide.displGrad().
+- MaterialIsotropic class: now tests range of validity before assigning parameter values.
+- eigenVecs() re-assembles the displacement arrays dat.u back into eigenvectors.
+- example scripts now respect the default line color order.
+- BUGFIX in GEWintegrate() that lead to wrong size of array when computing the power flux vectors.
+- BUGFIX in strain() that lead to wrong results for triclinic plates.
+
 ## 1.3 (2024-06-07)
 
 - FEATURE faster computations with computeW() and computeK(): new option "eigenvecs" (whether eigenvectors should be computed) and "standardEVP" (whether to convert the generalized eigenvalue problem into a standard eigenvalue problem described by only one matrix).

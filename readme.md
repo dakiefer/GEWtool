@@ -72,9 +72,8 @@ You can also display help for all functions and classes, e.g., by typing `help P
 
 ## Known limitations 
 
-- Cylinders: at the moment, the postprocessing tools provided in the folder `GEWdat` are mostly designed for plates. *Use them with care*. Dispersion curves of waves in cylinders compute correctly, nonetheless. 
 - Cylinders: only axial waves are supported for now. 
-- Leaky waves: no support for now.
+- Leaky waves: not implemented for now.
 
 Contact me if you have questions:  [daniel.kiefer@espci.fr](mailto:daniel.kiefer@espci.fr)
 
@@ -101,6 +100,10 @@ GEWtool depends on the functions `barylag`, `collocD` , `lglnodes` and `lgwt` cr
 The function `computeZGVDirect` depends on the `MultiParEig toolbox` by Bor Plestenjak and Andrej Muhič: 
 
 > Bor Plestenjak (2022). MultiParEig ([https://www.mathworks.com/matlabcentral/fileexchange/47844-multipareig](https://www.mathworks.com/matlabcentral/fileexchange/47844-multipareig)), MATLAB Central File Exchange.
+
+The function `legendUnq` by Adam Danz is used in the example scripts: 
+
+> Adam Danz (2024). legendUnq ([https://www.mathworks.com/matlabcentral/fileexchange/67646-legendunq](https://www.mathworks.com/matlabcentral/fileexchange/67646-legendunq)), MATLAB Central File Exchange.
 
 ## Citing GEWtool
 
