@@ -2,7 +2,7 @@
 
 Documents the changes to GEWtool.
 
-## 1.4 (2024-06-08)
+## 1.4 (2024-06-14)
 
 - FEATURE `GEWdat` functions now fully support postprocessing in cylindrical coordinates.
 - FEATURE `GEWintegrate()`: now allows to specify the layer(s) on which to integrate.
