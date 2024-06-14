@@ -36,7 +36,8 @@ if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % dispersion data provi
     else
         cg = groupVelAxial(gew, dat);
     end
-    sigChange = diff(sign(real(cg)),1,2); % detect where the sign changes
+    sigChange = diff(sign(real(cg)),1,1); % detect where the sign changes
+    sigChange = [zeros(1,size(sigChange,2)); sigChange]; % correct size to match cg | w | k
     w0 = dat.w(find(sigChange));
     k0 = dat.k(find(sigChange));
     if nargin == 3, opts = varargin{2}; else, opts = []; end
