@@ -25,7 +25,17 @@ function [dat] = computeZGVScan(gew, opts)
 % Design of ZGV_MFRDScan(): B. Plestenjak, University of Ljubljana, Slovenia
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if nargin < 2, opts = []; end
+    if nargin < 2, opts = []; end
+    compute = @(gewObj) computeZGVScanOneGEW(gewObj, opts);
+    dat = arrayfun(compute,gew); % apply to every object in the array "gew"
+
+end
+
+
+
+function [dat] = computeZGVScanOneGEW(gew, opts)
+% computeZGVScanOneGEW - compute for one waveguide object "gew".
+
 L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 
 % % use sparce matrices: faster and more stable because 

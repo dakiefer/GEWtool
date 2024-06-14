@@ -27,7 +27,23 @@ function datZGV = computeZGV(gew, varargin)
 %
 % See also computeZGVScan, computeZGVDirect, ZGVNewtonBeta, Waveguide.
 %
-% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+
+if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % dispersion data provided instead of initial guess
+    compute = @(gewObj,datObj) computeZGVoneGEW(gewObj, datObj, varargin{2:end});
+    dats = varargin{1};
+    datZGV = arrayfun(compute,gew,dats); % apply to every object in the arrays "gew" and "dats"
+else
+    compute = @(gewObj) computeZGVoneGEW(gewObj, varargin{:});
+    datZGV = arrayfun(compute,gew); % apply to every object in the array "gew"
+end
+
+end
+
+
+
+function datZGV = computeZGVoneGEW(gew, varargin)
+% computeZGVoneGEW - compute for one waveguide object "gew".
 
 if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % dispersion data provided instead of initial guess
     dat = varargin{1};
@@ -36,7 +52,8 @@ if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % dispersion data provi
     else
         cg = groupVelAxial(gew, dat);
     end
-    sigChange = diff(sign(real(cg)),1,2); % detect where the sign changes
+    sigChange = diff(sign(real(cg)),1,1); % detect where the sign changes
+    sigChange = [zeros(1,size(sigChange,2)); sigChange]; % correct size to match cg | w | k
     w0 = dat.w(find(sigChange));
     k0 = dat.k(find(sigChange));
     if nargin == 3, opts = varargin{2}; else, opts = []; end
