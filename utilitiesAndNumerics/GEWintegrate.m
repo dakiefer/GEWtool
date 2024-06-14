@@ -58,7 +58,7 @@ function [flNew, ri, wi] = interpolateToGaussLegendre(lay, fl, n)
     wi = shiftdim(wi, -n+1);      % replace by integration weights on integration nodes yi
     % interpolate each component of f onto new coordinates yi:
     fl = shiftdim(fl,(n-1)); % integration on first dimension
-    fNorm = norm(fl,'fro');
+    fNorm = norm(fl(:));
     comps = reshape(fl, lay.N, [])/fNorm; % all components of the data
     for k = 1:size(comps,2)
         data = [lay.eta(:), comps(:,k)];

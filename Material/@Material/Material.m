@@ -166,7 +166,7 @@ methods
             perm = [3,4,1,2];
         end
         cperm = permute(obj.c, perm);
-        sym = all( abs(cperm - obj.c) <= tol*norm(obj.c,'fro'), 'all');
+        sym = all( abs(cperm - obj.c) <= tol*norm(obj.c(:)), 'all');
     end
 
     function obj = rotateEuler(obj, varargin)
@@ -225,7 +225,7 @@ methods
         % Arguments:
         % - obj: Material object.
         % - Q:   Orthogonal matrix discribing the transformation, e.g., a rotation.
-        cn = norm(obj.c, 'fro'); % normalization constant
+        cn = norm(obj.c(:)); % normalization constant
         crot = transformBasis(obj.c/cn, Q);
         crot = round( crot, floor(-log10(eps))-3 )*cn; % 12 digits accuracy + upscaling
         if obj.isSymmetric
