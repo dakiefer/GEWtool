@@ -2,6 +2,12 @@
 
 Documents the changes to GEWtool.
 
+## 1.4.1 (2024-06-14)
+
+- FEATURE `computeZGV()` and `computeZGVScan()` now allow to pass an array of Waveguide objects. 
+- better **backward compatibility** to Matlab releases before R2022a
+- BUGFIX in computeZGV() that lead to wrong determination of initial guess. 
+
 ## 1.4 (2024-06-14)
 
 - FEATURE `GEWdat` functions now fully support postprocessing in cylindrical coordinates.
