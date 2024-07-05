@@ -56,10 +56,20 @@ function [dat] = computeZGVScan(gew, wmax, opts)
 % Design of ZGV_Slyv_MFRDScan() and ZGV_MFRDScan(): B. Plestenjak, University of Ljubljana, Slovenia
 % 2022-2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-arguments 
-    gew     (1,1) Waveguide
-    wmax    (1,1) double = inf;
-    opts    (1,1) struct = struct();
+if nargin < 2, wmax = inf; end
+if nargin < 3, opts = struct(); end
+
+% more precise and more beautiful but only since MATLAB R2019b:
+% arguments
+%     gew           Waveguide
+%     wmax    (1,1) double = inf;
+%     opts    (1,1) struct = struct();
+% end
+
+if ~isscalar(gew)
+    compute = @(gewObj) computeZGVScan(gewObj, wmax, opts);
+    dat = arrayfun(compute,gew); % apply to every object in the array "gew"
+    return; 
 end
 
 if isinf(wmax)                  % determine a default maximum frequency 

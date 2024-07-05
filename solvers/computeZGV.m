@@ -27,10 +27,15 @@ function datZGV = computeZGV(gew, varargin)
 %
 % See also computeZGVScan, computeZGVDirect, ZGVNewtonBeta, Waveguide.
 %
-% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % dispersion data provided instead of initial guess
     dat = varargin{1};
+    if ~isscalar(gew) % compute recursively for every waveguide problem 
+        compute = @(gewObj,datObj) computeZGV(gewObj, datObj, varargin{2:end}); % function to apply
+        datZGV = arrayfun(compute,gew,dat); % apply to every object in the arrays "gew" and "dat"
+        return; 
+    end
     if isfield(dat, 'cg')
         cg = dat.cg;
     else
@@ -42,6 +47,11 @@ if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % dispersion data provi
     k0 = dat.k(find(sigChange));
     if nargin == 3, opts = varargin{2}; else, opts = []; end
 elseif nargin == 3 && ~isstruct(varargin{1}) || nargin == 4 % initial guess (w0, k0) has been provided
+    if ~isscalar(gew) % compute recursively for every waveguide problem 
+        compute = @(gewObj) computeZGV(gewObj, varargin{:}); % function to apply
+        datZGV = arrayfun(compute,gew); % apply to every object in the array "gew"
+        return; 
+    end
     w0 = varargin{1}(:); % column vector
     k0 = varargin{2}(:); % column vector
     if nargin == 4, opts = varargin{3}; else, opts = []; end
@@ -51,7 +61,7 @@ else
 end
 L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 
-% algorith options:
+% algorithm options:
 if ~isfield(opts, 'beta_corr'), opts.beta_corr = true;      end % algorithm options
 if ~isfield(opts, 'show'),      opts.show = false;          end
 if ~isfield(opts, 'maxsteps'),  opts.maxsteps = 10;         end
