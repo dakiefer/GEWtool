@@ -14,12 +14,22 @@ function [cg] = groupVelAxial(gew, dat)
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
+    compute = @(gewObj,datObj) groupVelAxial(gewObj, datObj); % function to apply
+    cg = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    return;
+end
+
 if isa(gew,"CylinderCircumferential")
     warning('Circumferential waves do not support this function yet. The results might be wrong.');
 end
 if gew.isDissipative
     warning('GEWTOOL:groupVel:dissipative', ...
         'The waveguide is dissipative and the group velocity is not meaningful. You should compute the energy velocity instead. I will proceed anyways.');
+end
+if any(~isreal(dat.k))
+    warning('GEWTOOL:groupVel:complex', ...
+        'The group velocity of modes with complex wavenumbers is meaningless, use energyVelAxial() instead. I will proceed anyways and real modes will yield a meaningful group velocity.');
 end
 M = gew.op.M; % mass matrix 
 L2 = gew.op.L2; % stiffness matrix in k^2
