@@ -26,8 +26,8 @@ datMode = extractModes(dat,indk,indw); % returns a data structure consistent to 
 u = datMode.u;                  % nodal displacements
 T = stress(gew, datMode);       % nodal stress
 
-figure(1), 
-ph = plot(dat.k(indk,indw), dat.w(indk,indw)/2/pi, 'rd'); % show in disp. curve
+figure(1), % dispersion curves
+ph = plot(dat.k(indk,indw), dat.w(indk,indw)/2/pi, 'rd'); % show selected in disp. curve
 legend(ph, {'selection'}, 'Location', 'southeast')
 
 % interploate onto finer grid for plotting purposes:
