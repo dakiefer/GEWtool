@@ -31,6 +31,7 @@ if nargin < 3 || isempty(ls)
     ls =  1:gew.geom.nLay;
 end
 s = size(f{1}); s(dim) = []; % remove dimension to be integrated
+if length(s) < 2, s(end+1) = 1; end % matlab needs strange 2d-size for vectors
 I = zeros(s);
 for l = ls  % for every layer specified in ls
     lay = gew.lay(l);
