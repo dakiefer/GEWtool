@@ -12,6 +12,10 @@ function datRed = extractModes(dat, indk, indw)
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+if ~isscalar(dat)
+    error('GEWTOOL:extractModes:nonscalar','The data structure "dat" should be a scalar, i.e., only for one waveguide problem. Select one of its entries.');
+end
+
 nLay = length(dat.u); % number of layers
 uRed = cell(1,nLay); % allocate
 for l = 1:nLay % for every layer

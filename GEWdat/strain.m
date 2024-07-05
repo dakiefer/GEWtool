@@ -20,6 +20,12 @@ function [S] = strain(gew,dat)
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
+    compute = @(gewObj,datObj) strain(gewObj, datObj); % function to apply
+    S = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    return;
+end
+
 S = cell(gew.geom.nLay, 1); % allocate for each layer
 F = displGrad(gew,dat);     % each type of Waveguide "gew" knows how to compute their displacement gradient
 for l = 1:gew.geom.nLay

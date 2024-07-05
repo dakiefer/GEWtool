@@ -1,6 +1,11 @@
 function [v] = velocity(dat)
 %VELOCITY compute the particle velocities
 
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "gew"
+    v = arrayfun(@velocity,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    return;
+end
+
 w = dat.w;
 u = dat.u;
 v = cell(size(u));

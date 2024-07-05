@@ -8,6 +8,12 @@ function [cex] = energyVelAxial(gew, dat)
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
+    compute = @(gewObj,datObj) energyVelAxial(gewObj, datObj); % function to apply
+    cex = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    return;
+end
+
 Px = powerFluxAxial(gew, dat); % component aligned with k-vector
 H = energyTotal(gew, dat);
 cex = Px./H;

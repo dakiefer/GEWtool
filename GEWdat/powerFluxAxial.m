@@ -9,6 +9,12 @@ function [Px] = powerFluxAxial(gew, dat)
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
+    compute = @(gewObj,datObj) powerFluxAxial(gewObj, datObj); % function to apply
+    Px = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    return;
+end
+
 px = poyntingVecAxial(gew,dat);
 Px = GEWintegrate(gew, px);
 

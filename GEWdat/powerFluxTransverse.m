@@ -12,6 +12,12 @@ function [Pz] = powerFluxTransverse(gew, dat)
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
+    compute = @(gewObj,datObj) powerFluxTransverse(gewObj, datObj); % function to apply
+    Pz = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    return;
+end
+
 pz = poyntingVecTransverse(gew, dat);
 Pz = GEWintegrate(gew, pz);
 

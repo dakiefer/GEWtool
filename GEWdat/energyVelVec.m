@@ -7,6 +7,12 @@ function [ce] = energyVelVec(gew, dat)
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
+    compute = @(gewObj,datObj) energyVelVec(gewObj, datObj); % function to apply
+    ce = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    return;
+end
+
 P = powerFlux(gew, dat);   % for a plate: vector in the plane of the plate
 H = energyTotal(gew, dat);
 ce = P./H;

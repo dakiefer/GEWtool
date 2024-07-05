@@ -16,6 +16,12 @@ function psi = eigenVecs(gew, dat)
 % 
 % % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
+    compute = @(gewObj,datObj) eigenVecs(gewObj, datObj); % function to apply
+    psi = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    return;
+end
+
 sizeU = size(dat.u{1});
 psi = zeros([sizeU(1:2), gew.geom.Ndof]); % allocate
 gdofsAccum = [];

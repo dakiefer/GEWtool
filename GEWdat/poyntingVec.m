@@ -8,6 +8,12 @@ function [p] = poyntingVec(gew, dat)
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
+    compute = @(gewObj,datObj) poyntingVec(gewObj, datObj); % function to apply
+    p = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    return;
+end
+
 v = velocity(dat);
 T = stress(gew, dat);
 udof = gew.udof;      % polarization

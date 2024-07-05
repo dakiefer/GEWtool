@@ -8,6 +8,12 @@ function [ceMag] = energyVelMag(gew, dat)
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
+    compute = @(gewObj,datObj) energyVelMag(gewObj, datObj); % function to apply
+    ceMag = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    return;
+end
+
 cex = energyVelAxial(gew, dat);      % ex-direction
 cez = energyVelTransverse(gew, dat); % ez-direction
 ceMag = sqrt(cex.^2 + cez.^2);
