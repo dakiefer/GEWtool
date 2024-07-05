@@ -1,11 +1,17 @@
 function Pmn = crossPowerFlux(gew, dat)
-% crossPowerFlux Calculate the cross-power-flux between all of the modes as defined 
+% crossPowerFlux - Calculate the cross-power-flux between all of the modes as defined 
 % by Auld. 
 % 
 % B. A. Auld, Acoustic Fields and Waves in Solids 2, 2nd ed., vol. 2, 2 vols. 
 % Malabar: Krieger Publishing Company, 1990.
 
-if any(dat.w ~= dat.w(:,1), 'all') % orthogonality for constant frequency! 
+if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
+    compute = @(gewObj,datObj) crossPowerFlux(gewObj, datObj); % function to apply
+    Pmn = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    return;
+end
+
+if any(dat.w ~= dat.w(1,:), 'all') % orthogonality for constant frequency! 
     error('GEWTOOL:crossPowerFlux:nonconstfreq', 'Cross power flux must be computed for wavenumbers at constant frequency.');
 end
 
