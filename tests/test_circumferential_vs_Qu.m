@@ -30,12 +30,12 @@ pic=imread('data/Qu_circumferential.png');   % load reference
 fig = figure(1); clf; hold on
 image([0,10],[10,0],pic); axis xy
 xlabel('$k h$'); ylabel('$\omega h / c_t$')
-title('reference: Qu doi 10.1007/978-1-4613-0383-1_21')
+title('reference: Qu doi 10.1007/978-1-4613-0383-1_21','Interpreter','none')
 
 % plot GEWtool result on top
-phGEW = plot(dat.k*h, dat.w*h/mat.ct, 'r.', 'MarkerSize', 8);
+plot(dat.k*h, dat.w*h/mat.ct, 'r.', 'MarkerSize', 8, 'DisplayName','GEWtool');
 ylim([0, 10]); xlim([0 10]);
-legend([phGEW(1)], {'GEWtool'}, 'Location','south east')
+legend(legendUnq, 'Location','south east')
 
 % request user to evaluate test:
 assert( userTestConfirmation(fig) )
