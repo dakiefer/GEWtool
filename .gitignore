@@ -1,8 +1,5 @@
 # Specify filepatterns you want git to ignore.
 
-adamou.m
 *.asv
 untracked
-tests/data/ThurstonRod.png
-tests/data/disperseRod.csv
 doc
