@@ -86,10 +86,8 @@ Solusions are computed with machine precision provided you have set the discreti
 ![relative error w.r.t. Rayleigh-Lamb root](resourcesAndDeps/img/convergence.png)
 
 For general information on the formulation of the elastic waveguide problem refer to 
-> D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
 
-For the computation of zero-group-velocity (ZGV) points refer to
-> D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_JASA_Computing_ZGV/2023_JASA_Computing_ZGV.pdf).
+> D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
 
 ## Dependencies
 
@@ -110,6 +108,14 @@ The function `legendUnq` by Adam Danz is used in the example scripts:
 If this code is useful to you, please cite it as (always indicating the DOI):
 
 > D. A. Kiefer (2023). GEWtool. [https://doi.org/10.5281/zenodo.10114243](https://doi.org/10.5281/zenodo.10114243) ([https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool))
+
+Please also cite publication(s) as relevant, e.g., 
+
+> [1] D. A. Kiefer, S. Mezil, and C. Prada, “Beating resonance patterns and extreme power flux skewing in anisotropic elastic plates,” Science Advances, vol. 9, no. 51, p. eadk6846, Dec. 2023, doi: [10.1126/sciadv.adk6846](http://doi.org/10.1126/sciadv.adk6846). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_sciadv_beatingresonances/2023_SciAdv_BeatingResonances.pdf).
+
+> [2] H. Gravenkamp, B. Plestenjak, and D. A. Kiefer, “Notes on osculations and mode tracing in semi-analytical waveguide modeling,” Ultrasonics, vol. 135, p. 107112, Jul. 2023, doi: [10.1016/j.ultras.2023.107112](http://doi.org/10.1016/j.ultras.2023.107112). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_gravenkamp_osculations/2023_Gravenkamp_Osculations.pdf).
+
+> [3] D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_JASA_Computing_ZGV/2023_JASA_Computing_ZGV.pdf).
 
 ## Contributors
 

@@ -2,6 +2,13 @@
 
 Documents the changes to GEWtool.
 
+## 1.5 (2024-07-12)
+
+- FEATURE **faster computation of zgv points** with `computeZGVScan()`. It is now based on a Sylvester-Arnoldi method and exploits the structure of the operator determinants of the multi-parameter eigenvalue problem. The k-domain scanning strategy has also been improved.
+- FEATURE `GEWdat` functions now support simultaneous postprocessing of **array of waveguide problems** (as returned by `LambSA()`). 
+- BUGFIX the excitability of modes is proportional to the particle velocity, not the displacement as previously assumed.
+- groupVel(): ignore imaginary part (no meaning). Warn when computing for complex waves.
+
 ## 1.4.1 (2024-06-14)
 
 - FEATURE `computeZGV()` and `computeZGVScan()` now allow to pass an array of Waveguide objects. 
