@@ -55,6 +55,14 @@ if isfield(opts,'DeltaPert'),    DeltaPert = opts.DeltaPert;      else, DeltaPer
 if isfield(opts,'wmax'),         wmax = opts.wmax;                else, wmax = inf;         end % maximum normalized frequency of interest
 if isfield(opts,'MaxIter'),      MaxIter = opts.MaxIter;          else, MaxIter = 100;      end
 if isfield(opts,'show'),         show = opts.show;                else, show = false;       end % display iteration results
+if ~isfield(opts, 'hermitian'), opts.hermitian = [];        end
+if isempty(opts.hermitian)
+    if ishermitian(L2) && ishermitian(1i*L1) && ishermitian(L0) && ishermitian(M)
+        opts.hermitian = true;
+    else 
+        opts.hermitian = false; 
+    end
+end
 
 m = size(L0,1);
 n = m^2;
@@ -80,8 +88,15 @@ while k0<kEnd && iter<MaxIter
         mu = multDelta2(z(:,j))/multDelta0(z(:,j)); % Rayleigh quotient for mu
         if abs(imag(mu))<1e-2*abs(real(mu)) % refine solution using Newton-type method
             w = real(sqrt(mu)); % angular frequency (nondimensional)
-            [kR,wR,~,isConverged] = ZGVNewtonBeta(full(L2), full(L1), full(L0), full(M),...
+            % [kR,wR,~,isConverged] = ZGVNewtonBeta(full(L2), full(L1), full(L0), full(M),...
+            %     real(ks(j)), w, [], optsNewton);
+            if opts.hermitian
+                [kR,wR,~,isConverged] = ZGVNewtonBeta(full(L2), full(L1), full(L0), full(M),...
                 real(ks(j)), w, [], optsNewton);
+            else 
+                [kR,wR,~,~,isConverged] = ZGVNewtonComplex(full(L2), full(L1), full(L0), full(M),...
+                real(ks(j)), w, [], [], optsNewton);
+            end
             % add converged solutions to list of ZGV points:
             if isConverged && kR>kmin && wR<wmax
                 if isempty(kzgv)
@@ -121,8 +136,8 @@ kzgv = kzgv(ind);
 function x = multDelta0(y)
     Y1 = reshape(y(1:n),m,m);
     Y2 = reshape(y(n+1:2*n),m,m);
-    X1 = M*(Y1*transpose(L1) + Y2*transpose(L2)) - ((1+DeltaPert)*L1*Y1 + (1+DeltaPert)^2*L2*Y2)*M;
-    X2 = M*Y1*transpose(L2) - (1+DeltaPert)^2*L2*Y1*M;
+    X1 = M*(Y1*transpose(L1) + Y2*transpose(L2)) - ((1+DeltaPert)*L1*Y1 + (1+DeltaPert)^2*L2*Y2)*transpose(M);
+    X2 = M*Y1*transpose(L2) - (1+DeltaPert)^2*L2*Y1*transpose(M);
     x = y'*[reshape(X1,m^2,1); reshape(X2,m^2,1)];
 end
 

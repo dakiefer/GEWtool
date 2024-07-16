@@ -66,6 +66,14 @@ if ~isfield(opts, 'beta_corr'), opts.beta_corr = true;      end % algorithm opti
 if ~isfield(opts, 'show'),      opts.show = false;          end
 if ~isfield(opts, 'maxsteps'),  opts.maxsteps = 10;         end
 if ~isfield(opts, 'kmin'),      opts.kmin = 1e-6*min(k0)*gew.np.h0;   end % below kmin -> interprete as cutoff
+if ~isfield(opts, 'hermitian'), opts.hermitian = [];        end
+if isempty(opts.hermitian)
+    if ishermitian(L2) && ishermitian(1i*L1) && ishermitian(L0) && ishermitian(M)
+        opts.hermitian = true;
+    else 
+        opts.hermitian = false; 
+    end
+end
 
 % initialize:
 kzgv = nan(length(k0),1);
@@ -81,7 +89,11 @@ for i=1:numel(w0)
     end
     w0i = w0(i)*gew.np.h0/gew.np.fh0;
     k0i = k0(i)*gew.np.h0;
-    [ki,wi,u] = ZGVNewtonBeta(L2, L1, L0, M, k0i, w0i, [], opts); %wi = sqrt(mui);
+    if opts.hermitian
+        [ki,wi,u] = ZGVNewtonBeta(L2, L1, L0, M, k0i, w0i, [], opts);
+    else 
+        [ki,wi,u,~] = ZGVNewtonComplex(L2, L1, L0, M, k0i, w0i, [], [], opts);
+    end
     notInList = isempty(find(abs(kzgv/ki-1) < 1e-10, 1)) && isempty(find(abs(wzgv/wi-1) < 1e-10, 1));
     if notInList % add to list of converged solutions
         kzgv(i) = ki;

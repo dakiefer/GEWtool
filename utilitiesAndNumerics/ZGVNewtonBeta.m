@@ -1,39 +1,45 @@
 function [k,w,u,isConverged,err] = ZGVNewtonBeta(L2, L1, L0, M, k, w, u, opts)
 % ZGVNewtonBeta - Newton-type iteration to locate ZGV points. 
-% Computes a ZGV point given an initial guess (w0, k0) and optionally u0. 
-% A Newton-type method with complex correction is used for this end [1]. If the
-% iteration converges, the solutions (k, w, u) satisfies: 
-%   W*u   = [(1i*k)^2*L2 + 1i*k*L1 + L0 + w^2*M]*u = 0,     (waveguide problem)
-%   u'*iWd*u = u'*[-2*k*L2 + 1i*L1]*u = 0                      (group velocity is zero)
-%   u'*u - 1 = 0                                    (unit eigenvector u)
+% Computes a ZGV point given an initial guess (k0, w0) for the wavenumber and
+% angular frequency and optionally the eigenvector u0. A Newton-type method with
+% complex correction for Hermitian matrices is used for this end [1] and is
+% faster than the ZGVNewtonComplex() for non-Hermitian matrices. If the
+% iteration converges, the solutions (k, w, u) satisfies:
+%   W*u   = [(1i*k)^2*L2 + 1i*k*L1 + L0 + w^2*M]*u = 0,   (waveguide problem)
+%   u'*iWd*u = u'*[-2*k*L2 + 1i*L1]*u = 0                 (group velocity is zero)
+%   u'*u - 1 = 0                                          (unit eigenvector u)
 % The method assumes that (1i*k)^2*L2 + 1i*k*L1 + L0 + w^2*M is Hermitian. This is 
 % the case for a Galerkin discretization (e.g. FE) of a lossless waveguide.
 % 
 % Output: 
-%    - ZGV point (k,w) and corresponding unit vector u
-%    - flag: convergence (true) or not (false)
+%    - ZGV point (k,w) and corresponding unit vector u.
+%    - isConverged: convergence (true) or not (false)
 %    - err: norm of the residual
 %
 % Input: 
-%    - L2, L1, L0, M: square matrices such that L2, 1i*L1 and L1 are Hermitian
-%    - k, w: initial approximation for the ZGV point
-%    - u (optional): initial approximation for the right eigenvector, if
-%      not provided or empty then the singular vectors corresponding to the 
-%      smallest singular value of [(1i*k)^2*L2 + 1i*k*L1 + L0 + w^2*M] are used
+%    - L2, L1, L0, M: waveguide operator matrices where L2, 1i*L1, L0 and M 
+%                     are Hermitian
+%    - k, w:          initial approximation for the ZGV point
+%    - u (optional):  initial approximation for the right eigenvector. 
+%                     If not provided or empty then the singular vectors correspon-
+%                     ding to the smallest singular value of 
+%                     [(1i*k)^2*L2 + 1i*k*L1 + L0 + w^2*M] are used.
 %    - options in structure opts:
 %         - maxsteps:   (10) maximum number of steps 
 %         - tol:        (1e-14) tolerance (relative to the norm of matrices)
 %         - beta_corr:  (true) turn on/off complex correction
 %         - show:       (false) set to 'true' to display values and residuals
 %         - kmin:       (1e-6) below this value, the result is interpreted as a
-%                       cutoff frequency. 
+%                       cutoff frequency.
+%         - hermitian:  whether waveguide problem is Hermitian. If not provided,
+%                       this is determined from the matrices L2, L1, L0, M.
 %
 % Literature:
 % [1] D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing 
 % zero-group-velocity points in anisotropic elastic waveguides: globally and locally 
 % convergent methods.” arXiv, Nov. 03, 2022. doi: 10.48550/arXiv.2211.01995.
 %
-% 2022 Bor Plestenjak, Daniel A. Kiefer
+% 2022-2024 Bor Plestenjak, Daniel A. Kiefer
 
 % % check arguments:
 narginchk(6, 8);
@@ -46,6 +52,9 @@ if isfield(opts,'beta_corr'), beta_corr = opts.beta_corr; else, beta_corr = true
 if isfield(opts, 'kmin'),     kmin = opts.kmin;           else, kmin = 1e-4*k;     end % below kmin -> interprete as cutoff
 if ~isreal(k) || ~isreal(w)
     error('ZGV_NewtonBeta: initial guess (k, w) should be real-valued!');
+end
+if ~ishermitian(L2) || ~ishermitian(1i*L1) || ~ishermitian(L0) || ~ishermitian(M)
+    error('GEWTOOL:ZGVNewtonBeta:nonhermitian', 'The matrices L2, L1, L0, M should all be Hermitean for this method to work.');
 end
 
 % % initialize: 

@@ -12,14 +12,14 @@ end
 
 L = L0 + shift*L1 + shift^2*L2;
 Ldel = L0 + (1+delta)*shift*L1 + (1+delta)^2*shift^2*L2;
-LM = transpose(L)/M;    % = B in A*X + X*B = C
+LM = transpose(L)/transpose(M);    % = B in A*X + X*B = C
 MLdel = M\Ldel;         % = A in A*X + X*B = C
 
 [Q,R] = schur(full(-MLdel),'complex');
 [U,S] = schur(full(LM),'complex');
 
-F1 = transpose(L1+shift*L2)/M;
-F2 = transpose(L2)/M;
+F1 = transpose(L1+shift*L2)/transpose(M);
+F2 = transpose(L2)/transpose(M);
 F3 = M\((1+delta)*L1+shift*(1+delta)^2*L2);
 F4 = (1+delta)^2*(M\L2);
 
