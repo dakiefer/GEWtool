@@ -1,0 +1,18 @@
+{
+"name":"Potassium Niobate",
+"rho":4630,
+"C":[[ 226e9,   96e9,   68e9,      0,     0,     0 ],
+     [  96e9,  270e9,  101e9,      0,     0,     0 ],
+     [  68e9,  101e9,  186e9,      0,     0,     0 ],
+     [     0,      0,      0, 74.3e9,     0,     0 ],
+     [     0,      0,      0,      0,  25e9,     0 ],
+     [     0,      0,      0,      0,     0,  95.5e9]],
+"e":[[    0,     0,    0,     0,  5.16,    0],
+     [    0,     0,    0,  11.7,     0,    0],
+     [ 2.46,  -1.1,  4.4,     0,     0,    0]],
+"epsr":[[  34,     0,     0 ],
+        [   0,   780,     0 ],
+        [   0,     0,    24 ]],
+"symmetry":"orthorhombic",
+"source":"M. Zgonik, R. Schlesser, I. Biaggio, E. Voit, J. Tscherry, and P. Günter, “Materials constants of KNbO3 relevant for electro‐ and acousto‐optics,” Journal of Applied Physics, vol. 74, no. 2, pp. 1287–1297, Jul. 1993, doi: 10.1063/1.354934. [2] F. Zhu, B. Wang, Z. Qian, I. Kuznetsova, and T. Ma, “Influence of Surface Conductivity on Dispersion Curves, Mode Shapes, Stress, and Potential for Lamb Waves Propagating in Piezoelectric Plate,” IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, vol. 67, no. 4, pp. 855–862, Apr. 2020, doi: 10.1109/TUFFC.2019.2954745."
+}

@@ -1,0 +1,21 @@
+{
+"name":"Lithium Niobate",
+"rho":4628,
+"C":[[198.39e9,   54.72e9,   65.13e9,    7.88e9,       0  ,         0 ],
+     [ 54.72e9,  198.39e9,   65.13e9,   -7.88e9,       0  ,         0 ],
+     [ 65.13e9,   65.13e9,  227.90e9,       0  ,       0  ,         0 ],
+     [  7.88e9,   -7.88e9,       0  ,   59.65e9,       0  ,         0 ],
+     [     0  ,        0 ,       0  ,       0  ,   59.65e9,    7.88e9 ],
+     [     0  ,        0 ,       0  ,       0  ,    7.88e9,   71.835e9]],
+"e":[[  0  ,      0 ,     0  ,       0,    3.69,   -2.42],
+     [-2.42,    2.42,     0  ,    3.69,       0,       0],
+     [ 0.30,    0.30,    1.77,       0,       0,       0]],
+"epsr":[[45.6,      0,     0 ],
+        [   0,   45.6,     0 ],
+        [   0,      0,   26.3]],
+"symmetry":"trigonal",
+"pointGroup":"3m",
+"source":"Kovacs, G., Anhorn, M., Engan, H. E., Visintini, G., and Ruppel, C. C. W., 1990, “Improved Material Constants for LiNbO3 and LiTaO3,” IEEE Symposium on Ultrasonics, pp. 435–438.",
+"info":"R. S. Weis and T. K. Gaylord, “Lithium niobate: Summary of physical properties and crystal structure,” Appl. Phys. A, vol. 37, no. 4, pp. 191–203, Aug. 1985, doi: 10.1007/BF00614817.",
+"note":"Note that for the piezoelectric constants the relation e16 = -e22 holds, while d16 = -2*d22."
+}

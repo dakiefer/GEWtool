@@ -1,0 +1,19 @@
+{
+"name":"Lithium Tantalate",
+"rho":7454,
+"C":[[232.8e9,   46.5e9,   83.6e9,   -10.5e9,       0  ,         0 ],
+     [ 46.5e9,  232.8e9,   83.6e9,    10.5e9,       0  ,         0 ],
+     [ 83.6e9,   83.6e9,  275.9e9,       0  ,       0  ,         0 ],
+     [-10.5e9,   10.5e9,      0  ,    94.9e9,       0  ,         0 ],
+     [     0 ,       0 ,      0  ,       0  ,    94.9e9,   -10.5e9 ],
+     [     0 ,       0 ,      0  ,       0  ,   -10.5e9,   93.15e9]],
+"e":[[  0  ,      0 ,     0  ,       0,    2.64,   -1.86],
+     [-1.86,    1.86,     0  ,    2.64,       0,       0],
+     [-0.22,   -0.22,    1.71,       0,       0,       0]],
+"epsr":[[52.5,      0,     0 ],
+        [   0,   52.5,     0 ],
+        [   0,      0,   44.1]],
+"symmetry":"trigonal",
+"pointGroup":"3m",
+"source":"G. Kovacs, M. Anhorn, H. E. Engan, G. Visintini, and C. C. W. Ruppel, “Improved material constants for LiNbO3 and LiTaO3,” in IEEE Symposium on Ultrasonics, Dec. 1990, pp. 435–438 vol.1. doi: 10.1109/ULTSYM.1990.171403."
+}
