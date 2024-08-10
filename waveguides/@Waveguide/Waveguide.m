@@ -157,7 +157,7 @@ methods
         if isempty(obj.op.L1) && ~isempty(obj.op.L2)
             lin = true; return; % already linearized
         end
-        if obj.geom.Nudof < 2, lin = false; return; end % TODO look at SH waves
+        if obj.geom.Nudof ~= 3, lin = false; return; end % TODO look at SH waves
         if obj.geom.nLay > 1, lin = false; warning('Not implemented for multilayers.'); return; end  % TODO implement for multiple layers
         dofx = obj.geom.gdofRedX; dofy = obj.geom.gdofRedY;
         L2test = all(obj.op.L2(dofy,dofx) == 0, 'all');
