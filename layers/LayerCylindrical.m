@@ -40,11 +40,12 @@ classdef LayerCylindrical < Layer
             r = obj.y; % just another name
         end
 
-        function [L0, L1, L2] = stiffnessOp(obj, udof, hl, n)
+        function [L0, L1, L2] = stiffnessOp(obj, udof, np, hl, n)
             % stiffnessOp - stiffness operators L0, L1, L2
             
             % relevant material matrices: 
-            cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
+            cn = obj.mat.c/np.c0; % normalized stiffness tensor
+            hl = hl/np.h0; % normalize thickness
             cxx = squeeze(cn(1,:,:,1));
             cpp = squeeze(cn(3,:,:,3));
             cpr = squeeze(cn(3,:,:,2));
@@ -87,14 +88,16 @@ classdef LayerCylindrical < Layer
             
             % combine to polynomial of (ik):
             L2 = K2xx*hl^2; 
-            L1 = (K1xr + G1xr + K1xp)*hl;   % add in this order to preserve hermiticity!
-            L0 = K0pr + G0pr + K0pp + G0rr; % add in this order to preserve hermiticity!
+            L1 = (K1xr + G1xr + K1xp)*hl;   % add in this order to preserve hermiticity in numerical presicion!
+            L0 = K0pr + G0pr + K0pp + G0rr; % add in this order to preserve hermiticity in numerical presicion!
         end
 
-        function M = massOp(obj, udof, hl)
+        function M = massOp(obj, udof, np, hl)
             % massOp - mass operator M
-            rhon = eye(length(udof)); % normalized mass matrix (for each dof in u) 
-            M = kron(rhon, obj.PPr)*hl^2; % assemble
+            rhon = obj.mat.rho/np.rho0;
+            hl = hl/np.h0; % normalize thickness
+            MM = rhon*eye(length(udof)); % normalized mass matrix (for each dof in u) 
+            M = kron(MM, obj.PPr)*hl^2; % assemble
         end
         
         function decoupl = decouplesLambvsSH(obj,n)

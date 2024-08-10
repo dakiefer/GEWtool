@@ -13,9 +13,10 @@ classdef LayerPlate < Layer
             obj = obj@Layer(mat, ys, N);
         end
         
-        function [L0, L1, L2] = stiffnessOp(obj, udof, hl, ~)
+        function [L0, L1, L2] = stiffnessOp(obj, udof, np, hl, ~)
             % stiffnessOp - stiffness operators L0, L1, L2
-            cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
+            cn = obj.mat.c/np.c0; % normalized stiffness tensor
+            hl = hl/np.h0; % normalize
             % relevant material matrices: 
             cxx = squeeze(cn(1,udof,udof,1));
             cxy = squeeze(cn(1,udof,udof,2)); 
