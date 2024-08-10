@@ -13,9 +13,9 @@ methods
         obj = obj@LayerCylindrical(mat,rs,N);
     end
 
-    function [L0, L1, L2] = stiffnessOp(obj, udof, ~, ~)
+    function [L0, L1, L2] = stiffnessOp(obj, udof, np, ~, ~)
         % stiffnessOp - stiffness operators L0, L1, L2
-        cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
+        cn = obj.mat.c/np.c0; % normalized stiffness tensor
         % relevant material matrices: 
         cpp = squeeze(cn(3,:,:,3));
         cpr = squeeze(cn(3,:,:,2));
@@ -53,17 +53,10 @@ methods
 
         % combine to polynomial of (in):
         L2 = K2pp;
-        L1 = K1pr + G1pr + K1pp;        % add in this order to preserve hermiticity!
-        L0 = K0pr + G0pr + G0rr + K0pp; % add in this order to preserve hermiticity!
+        L1 = K1pr + G1pr + K1pp;        % add in this order to preserve hermiticity in numerical precision!
+        L0 = K0pr + G0pr + G0rr + K0pp; % add in this order to preserve hermiticity in numerical precision!
     end
 
-    function M = massOp(obj, udof, hl)
-        % massOp - mass operator M
-        rhon = eye(length(udof)); % normalized mass matrix (for each dof in u) 
-        M = kron(rhon, obj.PPr); % assemble
-        M = M*hl^2;
-    end
-    
     function decoupl = decouplesLambvsSH(obj, ~)
         % decouplesLambvsSH - Tests whether the r-phi- and x-polarized waves decouple.
 
