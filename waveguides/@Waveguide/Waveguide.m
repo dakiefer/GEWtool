@@ -53,15 +53,31 @@ methods
             end
             mats = matsObj;
         end
+        if ~iscell(mats)
+            mats = num2cell(mats);
+        end
 		obj.mat = mats; % protected property is later used in constructor of subclass
         % choose normalization parameters (physical units for the calculation):
-        c1212 = zeros(1,length(mats));
-        for i = 1:length(mats), c1212(i) = mats(i).c(1,2,1,2); end
-		np.c0 = mean(c1212); % unit stiffness
-		np.rho0 = mean([mats.rho]); % unit mass
-        np.h0 = obj.h/length(mats); % unit distance
-		np.fh0 = sqrt(np.c0/np.rho0); % unit frequency-thickness
-		obj.np = np; % normalization parameters
+        np.h0 =   obj.h/length(mats);       % unit distance
+		np.c0 =   averageProp(mats, 'c');   % unit stiffness
+		np.rho0 = averageProp(mats, 'rho'); % unit mass
+        np.eps0 = averageProp(mats, 'eps'); % unit permittivity
+        np.e0 =   sqrt(np.eps0*np.c0);      % unit piezoelectric constants
+		np.fh0 =   sqrt(np.c0/np.rho0);     % unit frequency-thickness
+		obj.np = np; % save normalization parameters
+        function arg = averageProp(mats, propName)
+            cum = 0; 
+            count = 0;
+            for i = 1:length(mats)
+                mati = mats{i}; 
+                if isprop(mati, propName)
+                    propi = mati.(propName); % tensor quantity
+                    cum = cum + norm(propi(:),inf);
+                    count = count + 1;
+                end
+            end
+            arg = cum/count;
+        end
 	end
 
     function h = get.h(obj)

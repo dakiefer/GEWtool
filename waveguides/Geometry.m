@@ -13,7 +13,7 @@ properties
     nLay         % number of layers
     nItf         % number of interfaces, includes outer ones
     N            % number of nodal points for each layer
-    Nudof        % number of displacement dofs (e.g., ux, uy, uz) for each layer
+    Nudof        % number of degrees of freedom (displacement components, elec. potential, etc...)
     yItf         % position of interfaces in meter [nLay x 2]
     y            % cell array with nodal points for each layer in meter
     hl           % thickness for each layer in meter

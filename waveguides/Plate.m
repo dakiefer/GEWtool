@@ -44,7 +44,7 @@ methods
 		obj = obj@Waveguide(mats, ys, Ns); % converts mats 
         obj.lay = LayerPlate.empty; % initialize with correct class
 		for ii = 1:length(obj.mat)
-			obj.lay(ii) = LayerPlate(obj.mat(ii), obj.geom.yItf(ii,:), obj.geom.N(ii));
+			obj.lay(ii) = LayerPlate(obj.mat{ii}, obj.geom.yItf(ii,:), obj.geom.N(ii));
 		end
     end
 
@@ -168,7 +168,7 @@ methods
         mats = obj.mat; % array of materials for each layer
         decoupl = false; 
         for m = mats
-            if ~m.decouplesSA
+            if ~m{1}.decouplesSA
                 if nargin == 2 && strcmp(verb, 'v')
                     warning('GEWTOOL:decouplesSA:matSym', 'The stiffness tensor is not invariant to reflexion ey -> -ey.');
                 end
