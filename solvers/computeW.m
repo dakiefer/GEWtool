@@ -125,6 +125,12 @@ function [H2, H1, H0, T] = transformToStandardEVP(L2, L1, L0, M)
     % 
     % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
     %        Malte Röntgen, LAUM, Le Mans Université, France
+    if rank(M) ~= size(M,1)
+        error('GEWTOOL:transformToStandardEVP', 'The mass matrix must be regular in order to transform the generalized eigenvalue problem to a standard one. Set "opts.standardEVP = false" and pass "opts" to computeW() in order to deactivate the transformation. See "help computeW" for more information.');
+    end
+    if rcond(M) < 1e-4
+        warning('GEWTOOL:transformToStandardEVP', 'The mass matrix is badly conditioned. Consider setting "opts.standardEVP = false" and pass "opts" to computeW() in order to deactivate the transformation. See "help computeW" for more information.')
+    end
     if isdiag(M)
         if issparse(M)
             T = sparse(diag(1./sqrt(diag(M))));

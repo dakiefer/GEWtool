@@ -32,6 +32,6 @@ if ~isempty(nModes) && ~isinf(nModes) && ( ~isscalar(nModes) || nModes ~= round(
     error('GEWTOOL:wrongArg', 'Argument "nModes" must be a scalar integer.');
 end
 if ~isfield(opts, 'eigenvecs'), opts.eigenvecs = true; end % default: compute eigenvectors
-if ~isfield(opts, 'standardEVP'), opts.standardEVP = isdiag(op.M); end % default value
+if ~isfield(opts, 'standardEVP'), opts.standardEVP = isdiag(op.M) && rcond(op.M) >= 1e-4; end % default value
 
 end
