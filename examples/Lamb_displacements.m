@@ -10,7 +10,7 @@ mat2 = Material('chromium');    % isotropic
 h1 = 0.8e-3; h2 = 0.2e-3;       % thicknesses
 N1 = 8; N2 = 6;                % number of nodes
 k = linspace(1e-2, 10, 100)/(h1+h2);  % wavenumbers to compute dispersion curves
-plate = Plate([mat1, mat2], [h1, h2], [N1, N2]); % plate model
+plate = Plate({mat1, mat2}, [h1, h2], [N1, N2]); % plate model
 gew = plate.Lamb;               % assemble matrices for Lamb-polarized waves
 dat = computeW(gew,k,8);       % compute solutions 
 

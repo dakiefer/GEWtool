@@ -14,7 +14,7 @@ zirc = Material('zircaloy');
 chrom = Material('chromium');
 
 %% with thin layer:
-cyl = Cylinder([zirc, chrom], [ri, ro, ro+h1], N); % create waveguide description 
+cyl = Cylinder({zirc, chrom}, [ri, ro, ro+h1], N); % create waveguide description 
 gew = cyl.fullyCoupled(n); % waves of circumferential order n
 dat = computeW(gew, k); 
 
@@ -24,7 +24,7 @@ ylim([0, 4e3]/gew.np.h0);
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 
 %% with thick layer:
-cyl = Cylinder([zirc, chrom], [ri, ro, ro+h2], N); % create waveguide description 
+cyl = Cylinder({zirc, chrom}, [ri, ro, ro+h2], N); % create waveguide description 
 gew = cyl.fullyCoupled(n); % waves of circumferential order n
 dat = computeW(gew, k); 
 

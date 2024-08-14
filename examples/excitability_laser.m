@@ -10,7 +10,7 @@ h1 = 1e-3; h2=0.2e-3; % thickneses
 N1 = 12; N2 = 8; % number of discretization points
 k = linspace(1, 12e3, 200); % wavenumbers to solve for
 nModes = 8;
-plate = Plate([mat1, mat2], [h1, h2], [N1, N2]); % create waveguide description 
+plate = Plate({mat1, mat2}, [h1, h2], [N1, N2]); % create waveguide description 
 % % compute frequencies and plot:
 gew = plate.Lamb; % assembles matrices for the specified waves
 dat = computeW(gew, k, nModes); 
