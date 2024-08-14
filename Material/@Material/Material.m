@@ -1,4 +1,4 @@
-classdef Material
+classdef (InferiorClasses = {?MaterialIsotropic}) Material
 % Material - Represent mechanical material data (generally anisotropic).
 % Stores and manipulates elasticity moduli, density and derived quantities. The
 % full 4th order stiffness tensor c is stored as a [3x3x3x3] array (helpful for
@@ -14,7 +14,7 @@ classdef Material
 % 
 % See also: Material.Material, MaterialIsotropic.
 %
-% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 properties
     name        % name for the material: string
