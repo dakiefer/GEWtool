@@ -16,7 +16,7 @@ L2 = zeros(geom.Ndof); L1 = zeros(geom.Ndof);
 L0 = zeros(geom.Ndof); M  = zeros(geom.Ndof);
 for l = 1:geom.nLay
     % get operators of the layer l:
-    lay = lays(l); % layer l
+    lay = lays{l}; % layer l
     [L0lay, L1lay, L2lay] = lay.stiffnessOp(udof, np, lay.h, n);
     Mlay = lay.massOp(udof, np, lay.h);
     % assemble into global matrices:

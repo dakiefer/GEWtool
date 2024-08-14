@@ -82,7 +82,7 @@ if isinf(wmax)                  % determine a default maximum frequency
     warning('GEWTOOL:computeZGV:wmax', 'You did not provide the maximum angular frequency "wmax" you are interested in. I chose %g Hz for you.', wmax/2/pi);
 end
 % restrict wavenumber search domain according to wmax:
-lays = [gew.lay]; mats = [lays.mat];
+for l = 1:length(gew.lay), mats(l) = gew.lay{l}.mat; end
 cList = cell2mat(arrayfun(@(x) x.wavespeeds(), mats, 'UniformOutput', false)); % wave speeds in x-direction
 clmin = min(cList(1,:)); % We conjecture that ZGVs cannot exist at phase velocities below the minimum bulk longitudinal wave speed.
 kMax = wmax/clmin;  % maximum relevant wavenumber corresponding to wmax: no point in searching above kMax

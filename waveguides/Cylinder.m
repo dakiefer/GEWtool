@@ -36,9 +36,8 @@ methods
             error('GEWTOOL:Cylinder', 'Second argument should be a 2-vector containing the inner radius and outer radius as well as interfaces between the layers, all in ascending order.');
         end
 		obj = obj@Waveguide(mats, rs, Ns);% converts mats 
-        obj.lay = LayerCylindrical.empty; % initialize with correct class
 		for ii = 1:length(obj.mat)
-			obj.lay(ii) = LayerCylindrical(obj.mat{ii}, rs(ii:ii+1), obj.geom.N(ii));
+			obj.lay{ii} = LayerCylindrical(obj.mat{ii}, rs(ii:ii+1), obj.geom.N(ii));
 		end
     end
 
@@ -107,7 +106,7 @@ methods
         for l = 1:obj.geom.nLay
             sizeF = [size(dat.w), obj.geom.N(l), 3, 3]; % size of F = grad u 
             Fi = zeros(sizeF); % allocate for displacement gradient F = grad u
-            lay = obj.lay(l);
+            lay = obj.lay{l};
             Dr = 1/lay.h*lay.D1; % differentiation matrix
             r = lay.r(:); 
             if r(1) == 0

@@ -42,9 +42,8 @@ methods
             error('GEWTOOL:Plate:wrongArguments','Provide either a thickness for each layer or the coordinates of the interfaces.');
         end
 		obj = obj@Waveguide(mats, ys, Ns); % converts mats 
-        obj.lay = LayerPlate.empty; % initialize with correct class
 		for ii = 1:length(obj.mat)
-			obj.lay(ii) = LayerPlate(obj.mat{ii}, obj.geom.yItf(ii,:), obj.geom.N(ii));
+			obj.lay{ii} = LayerPlate(obj.mat{ii}, obj.geom.yItf(ii,:), obj.geom.N(ii));
 		end
     end
 
@@ -178,7 +177,7 @@ methods
         % verify that the layers are distributed symmetrically:
         lMid = ceil(obj.geom.nLay/2);
         for l = 1:lMid
-            if obj.lay(l) ~= obj.lay(end-(l-1))
+            if obj.lay{l} ~= obj.lay{end-(l-1)}
                 error('GEWTOOL:decouplesSA:laySym', 'The layered structure is not symmetric.');
             end
         end
@@ -212,7 +211,9 @@ methods
             yItfList(1) = yItfList(2) - hmid/2; % half the thickness for middle layer
         end
         yItfList = yItfList - yItfList(1); % zero coordinate at center
-        gew = Plate([lays.mat], yItfList, Ns);
+        mats = cell(1,length(lays)); % allocate
+        for i = 1:length(lays), mats{i} = lays{i}.mat; end % extract materials 
+        gew = Plate(mats, yItfList, Ns);
         gew.geom.symmetrized = true;
     end
 
@@ -222,7 +223,7 @@ methods
         for l = 1:obj.geom.nLay
             sizeF = [size(dat.w), obj.geom.N(l), obj.geom.Nudof(l), obj.geom.Nudof(l)]; % size of F = grad u
             Fi = zeros(sizeF); % allocate for displacement gradient F = grad u
-            lay = obj.lay(l);
+            lay = obj.lay{l};
             Dy = 1/lay.h*lay.D1; % differentiation matrix
             iku = 1i*dat.k.*dat.u{l}; % ex.F = ik*u
             uu = permute(dat.u{l}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.

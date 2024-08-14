@@ -34,7 +34,7 @@ s = size(f{1}); s(dim) = []; % remove dimension to be integrated
 if length(s) < 2, s(end+1) = 1; end % matlab needs strange 2d-size for vectors
 I = zeros(s);
 for l = ls  % for every layer specified in ls
-    lay = gew.lay(l);
+    lay = gew.lay{l};
     hi = gew.geom.hl(l); % thickness of layer i
     w = shiftdim(lay.w(:), -dim+1);       % integration weights moved to dim n
     if isa(gew,"Cylinder") && lay.r(1) ~= 0

@@ -22,7 +22,7 @@ end
 F = displGrad(gew, dat);
 T = cell(gew.geom.nLay, 1); % allocate for each layer
 for l = 1:gew.geom.nLay
-    c = gew.lay(l).mat.c; % stiffness tensor
+    c = gew.lay{l}.mat.c; % stiffness tensor
     c = shiftdim(c(udof,udof,udof,udof), -3); % shift to the correct dimension
     Fl = permute(F{l}, [1 2 3 6 7 4 5]); % additional dimension for contraction with c
     T{l} = sum(sum(c.*Fl, 6), 7); % double contraction 

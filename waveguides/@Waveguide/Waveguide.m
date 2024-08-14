@@ -10,14 +10,14 @@ classdef Waveguide < matlab.mixin.Copyable
 
 properties (Access = public)
 	geom        % geometry object describing the discretized, multilayered structure
-	lay Layer = LayerPlate.empty   % layers [1 x Nlay]
+	lay         % layers as {1 x Nlay} cell array
 	op = [] 	% operators describing the wave propagation
     udof = []   % polarization: displacement components accounted for
 	np  		% normalization parameters (material parameters, geometry)
 end % properties
 
 properties (Access = protected)
-    mat         % materials [1 x Nlay] (user interface should rather use obj.lay.mat)
+    mat         % materials {1 x Nlay} (user interface should rather use obj.lay{i}.mat)
 end
 
 properties (Dependent)
@@ -29,8 +29,8 @@ methods
 	function obj = Waveguide(mats, rs, Ns, Nudof)
         % Waveguide - Create a waveguide object.
         % Arguments: 
-        % - mats:  materials [1 x Nlay], either of class "Material" or a struct
-        %          needs to support mats.rho (scalar) and mats.c (3x3x3x3).
+        % - mats:  materials {1 x Nlay}, either of class "Material" or a struct
+        %          needs to support mats.rho (scalar) and mats.c (3x3x3x3) at least.
         % - rs:    coordinates of interfaces in meter [1 x Nlay+1]
         % - Ns:    discretization order [1 x Nlay], each entry corresponds to one layer
         % - Nudof: displacement digrees of freedom [1 x Nlay], each entry corresponds to one layer
@@ -141,7 +141,7 @@ methods
         % - false: otherwise
         dis = true; 
         for l = obj.lay
-            if ~isDissipative(l.mat)
+            if ~isDissipative(l{1}.mat)
                 dis = false; 
                 return;
             end
@@ -201,9 +201,8 @@ methods
         % - n : circumferential wavenumber (only necessary for cylinders)
         % 
         % See also: Lamb, sh, fullyCoupled.
-        lays = obj.lay;
-        for l = lays % test each of the layers
-            if ~l.decouplesLambvsSH(n)
+        for l = obj.lay % test each of the layers
+            if ~l{1}.decouplesLambvsSH(n)
                 decoupl = false; return;
             end
         end
