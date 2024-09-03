@@ -1,6 +1,6 @@
 function [cex] = energyVelAxial(gew, dat)
 % ENERGYVELAXIAL - Energy velocity component ce_x along the wave vector k.
-% The energy velocity vector ce is the radio of the total power flux vector P to the 
+% The energy velocity vector ce is the ratio of the total power flux vector P to the 
 % total stored energy H: ce = P/H . 
 % The axial component is the x-component, i.e., ce_x = P_x/H. 
 % 

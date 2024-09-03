@@ -1,6 +1,6 @@
 function [cez] = energyVelTransverse(gew, dat)
 % ENERGYVELTRANSVERSE - Compute the energy velocity transverse to the waveguide.
-% The transverse energy velocity is the radio of total transverse power flux 
+% The transverse energy velocity is the ratio of total transverse power flux 
 % to the total stored energy. The transverse energy velocity will usually be 
 % nonzero for propagation in nonprincipal directions of an anisotropic material.
 % 

@@ -10,13 +10,23 @@ h = 1e-3;                        % thickness in m
 N = 12;                          % number of nodes (dictates accuracy)
 k = linspace(1e-2, 12, 100)/h;   % wavenumbers to solve for
 plate = Plate(mat, h, N);        % create waveguide description 
-gews = plate.LambSA; tic;        % choose S+A Lamb waves (assembles matrices)
-dat = computeW(gews, k, 4); toc; % solve and save 4 modes (argument optional)
+gew = plate.LambSA; tic;        % choose S+A Lamb waves (assembles matrices)
+dat = computeW(gew, k, 4); toc; % solve and save 4 modes (argument optional)
 
 figure(1); clf; hold on
 plot(dat(1).k/1e3, dat(1).w/2/pi/1e6,'SeriesIndex',1,'DisplayName','symmetric');
 plot(dat(2).k/1e3, dat(2).w/2/pi/1e6,'SeriesIndex',2,'DisplayName','anti-symm.');
 ylim([0, dat(1).w(end,1)/2/pi/1e6*1.1]); 
 xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
+legend(legendUnq, 'Location', 'southeast')
+title(sprintf('Lamb waves in %gmm %s', h/1e-3, mat.name))
+
+% % Energy velocity (identical to the group velocity)
+ce = energyVelAxial(gew,dat); % The "axial" component is the one along the wave vector k.
+figure(2); clf; hold on; 
+plot(dat(1).w/2/pi/1e6, ce{1}/1e3, 'SeriesIndex',1,'DisplayName','symmetric');
+plot(dat(2).w/2/pi/1e6, ce{2}/1e3, 'SeriesIndex',2,'DisplayName','anti-symm.');
+xlim([0, 6]); 
+xlabel('frequency f in MHz'), ylabel('energy velocity ce in mm/us')
 legend(legendUnq, 'Location', 'southeast')
 title(sprintf('Lamb waves in %gmm %s', h/1e-3, mat.name))
