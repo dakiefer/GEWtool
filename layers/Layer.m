@@ -131,6 +131,10 @@ classdef Layer
             basis.P = Pi;   basis.D = Pdi;    basis.w = wi;    basis.z = zi;
         end
 
+        function N = Nunknowns(udof)
+            N = length(udof); 
+        end
+
         %% overload operators: 
         function ret = eq(a, b)
             % eq - Test if the layers a and b are physically the same.

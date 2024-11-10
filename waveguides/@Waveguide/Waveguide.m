@@ -102,9 +102,12 @@ methods
             for astr = polarizationNames(2:end), printNames = strcat(printNames, ", ", astr); end
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! The [%s]-displacements do not decouple from the remaining ones. I will proceed anyways.', printNames);
         end
-        Nudof = length(udof);
-        if any(obj.geom.Nudof ~= Nudof) % update geometry if necessary
-            geomNew = Geometry(obj.geom.zItf, obj.geom.N, Nudof*ones(obj.geom.nLay,1)); 
+        Nunknowns = nan(size(obj.lay)); 
+        for i = 1:length(Nunknowns)
+            Nunknowns(i) = obj.lay{i}.Nunknowns(udof); % number of unknowns depends on the physics 
+        end
+        if any(obj.geom.Nudof ~= Nunknowns) % update geometry if necessary
+            geomNew = Geometry(obj.geom.zItf, obj.geom.N, Nunknowns); 
             geomNew.symmetrized = obj.geom.symmetrized;
             obj.geom = geomNew; 
         end

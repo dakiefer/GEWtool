@@ -43,7 +43,11 @@ methods
         end
 		obj = obj@Waveguide(mats, zs, Ns); % converts mats 
 		for ii = 1:length(obj.mat)
-			obj.lay{ii} = LayerPlate(obj.mat{ii}, obj.geom.zItf(ii,:), obj.geom.N(ii));
+            if isa(obj.mat{ii}, 'MaterialPiezoelectric') % subclass first! 
+                obj.lay{ii} = LayerPlatePiezo(obj.mat{ii}, obj.geom.zItf(ii,:), obj.geom.N(ii));
+            elseif isa(obj.mat{ii}, 'Material') % subclasses are also Material objects
+			    obj.lay{ii} = LayerPlate(obj.mat{ii}, obj.geom.zItf(ii,:), obj.geom.N(ii));
+            end
 		end
     end
 

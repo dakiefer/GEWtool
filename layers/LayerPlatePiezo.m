@@ -88,4 +88,10 @@ classdef LayerPlatePiezo < LayerPlate
         end
         
     end % methods
+
+    methods (Static) 
+        function N = Nunknowns(udof)
+            N = length(udof) + 1; 
+        end
+    end
 end % class
