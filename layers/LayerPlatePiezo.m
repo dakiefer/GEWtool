@@ -61,12 +61,6 @@ classdef LayerPlatePiezo < LayerPlate
             G0 = kron(C, -obj.PdPd.'); % boundary flux
             % combine to polynomial of (ik):
             L0 = G0/hl;  L1 = K1 + G1;  L2 = K2*hl;
-
-            % inhomogeneous Neumann BCs for electrical field (the V-term in the paper):
-            if ~isdiag(obj.PP), error('TODO: only implemented for GLL Lagrange elements.'); end
-            nTop = size(L1,1); nBot = size(A,1); 
-            L1(nTop,nTop) = -1i*obj.mat.eps0/np.eps0;
-            L1(nBot,nBot) = +1i*obj.mat.eps0/np.eps0;
         end
         
         function decoupl = decouplesLambvsSH(obj,~)

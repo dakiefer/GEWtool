@@ -30,6 +30,21 @@ end
 % reset boundary conditions, if any have been set: 
 obj.geom.gdofDBC = [];
 
+% use electrically open BCs per default (the V-term in the paper):
+if isa(lays{1}, 'LayerPlatePiezo') % at the bottom
+    if ~isdiag(lays{1}.PP), error('TODO: only implemented for GLL Lagrange elements.'); end
+    dof = obj.geom.gdofBC{1}; % boundary dofs of the first layer
+    nBotPhi = dof(length(udof)+1, 1); % dof of electric potential at bottom of this layer
+    L1(nBotPhi,nBotPhi) = L1(nBotPhi,nBotPhi) - 1i*lays{1}.mat.eps0/np.eps0;
+end
+if isa(lays{end}, 'LayerPlatePiezo') % at the top
+    if ~isdiag(lays{l}.PP), error('TODO: only implemented for GLL Lagrange elements.'); end
+    l = length(lays);
+    dof = obj.geom.gdofBC{l}; % boundary dofs of the last layer
+    nTopPhi = dof(length(udof)+1, 2); % dof of electric potential at top of this layer
+    L1(nTopPhi,nTopPhi) = L1(nTopPhi,nTopPhi) - 1i*lays{l}.mat.eps0/np.eps0;
+end
+
 % assign result:
 op.M = M; op.L0 = L0; op.L1 = L1; op.L2 = L2;
 obj.op = op;
