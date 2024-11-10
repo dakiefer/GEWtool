@@ -63,7 +63,7 @@ methods
         np.h0 =   (rs(end)-rs(1))/length(mats);       % unit distance
 		np.c0 =   averageProp(mats, 'c');   % unit stiffness
 		np.rho0 = averageProp(mats, 'rho'); % unit mass
-        np.eps0 = averageProp(mats, 'eps'); % unit permittivity
+        np.eps0 = averageProp(mats, 'epsilon'); % unit permittivity
         np.e0 =   sqrt(np.eps0*np.c0);      % unit piezoelectric constants
 		np.fh0 =   sqrt(np.c0/np.rho0);     % unit frequency-thickness
 		obj.np = np; % save normalization parameters
