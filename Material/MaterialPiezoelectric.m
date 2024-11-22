@@ -43,6 +43,16 @@ methods
         obj.epsilon = data.epsr*obj.eps0;
     end
 
+    function matStruct = struct(obj) 
+        % struct - convert Material object to a struct.
+        matStruct.name = obj.name;
+        matStruct.rho = obj.rho;
+        matStruct.C = obj.C;
+        matStruct.e = obj.eVoigt; 
+        matStruct.epsr = obj.epsilon/obj.eps0; 
+        matStruct.symmetry = obj.symmetry;
+    end
+
     function e = get.e(obj)
         e = voigt2tensor(obj.eVoigt);
     end
@@ -188,7 +198,7 @@ methods
         ret = ~any(a.c ~= b.c, 'all') && ...
                a.rho == b.rho &&...
               ~any(a.e ~= b.e, 'all') && ...
-              ~any(a.epsilon ~= b.eps, 'all');
+              ~any(a.epsilon ~= b.epsilon, 'all');
     end
 
 
