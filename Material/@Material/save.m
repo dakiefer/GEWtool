@@ -12,11 +12,10 @@ function S = save(obj,file)
     % (re-select to overwrite). The saved properties are "name", "rho" and
     % either "C" (anisotropic) or "lambda" and "mu" (isotropic).
     % 
-    % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+    % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
     % determine where to save:
     if nargin < 2
-%         path = fileparts(which('aluminum.json'));
         path = '.';
         file = fullfile(path, [obj.name '.json']);
     end
@@ -25,17 +24,7 @@ function S = save(obj,file)
         if file==0, warning('Cancelled save operation.'); return; end
         file = fullfile(path, file);
     end
-    % extract relevant data:
-    mat.name = obj.name;
-    mat.rho = obj.rho;
-    if strcmp(obj.symmetry, 'isotropic') 
-        mat.lambda = obj.lambda;
-        mat.mu = obj.mu;
-    else
-        mat.C = obj.C;
-    end
-    mat.symmetry = obj.symmetry;
-    S = jsonencode(mat, "PrettyPrint", true);
+    S = jsonencode(struct(obj), "PrettyPrint", true);
     try
         fid = fopen(file, 'w'); fprintf(fid, S); fclose(fid); 
     catch e

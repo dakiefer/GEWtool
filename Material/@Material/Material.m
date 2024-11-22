@@ -105,6 +105,19 @@ methods
         end
     end
 
+    function matStruct = struct(obj) 
+        % struct - convert Material object to a struct.
+        matStruct.name = obj.name;
+        matStruct.rho = obj.rho;
+        if strcmp(obj.symmetry, 'isotropic') 
+            matStruct.lambda = obj.lambda;
+            matStruct.mu = obj.mu;
+        else
+            matStruct.C = obj.C;
+        end
+        matStruct.symmetry = obj.symmetry;
+    end
+
     function C = get.C(obj)
         C = tensor2voigt(obj.c);
     end

@@ -1,13 +1,14 @@
 {
-	"name": "steel",
-	"symmetry": "anisotropic",
-    "rho": 	7900,
-	"C": 	[[2.8172e+11,   1.1312e+11, 1.3112e+11, 0,              0,              0],
-             [1.1312e+11,   2.8172e+11, 1.3112e+11, 0,              0,              0],
-             [1.3112e+11,   1.3112e+11, 2.8172e+11, 0,              0,              0], 
-             [0,            0,          0,          8.4298e+10,     0,              0],
-             [0,            0,          0,          0,          8.4298e+10,         0],
-             [0,            0,          0,          0,          0,          8.4298e+10]
-            ],
-    "source": "M. Zheng, C. He, Y. Lyu, and B. Wu, “Guided waves propagation in anisotropic hollow cylinders by Legendre polynomial solution based on state-vector formalism,” Composite Structures, vol. 207, pp. 645–657, Jan. 2019, doi: 10.1016/j.compstruct.2018.09.042."
+"name": "steel",
+"rho": 	7900,
+"C": 	[[2.8172e+11,   1.1312e+11, 1.3112e+11, 0,              0,              0],
+         [1.1312e+11,   2.8172e+11, 1.3112e+11, 0,              0,              0],
+         [1.3112e+11,   1.3112e+11, 2.8172e+11, 0,              0,              0], 
+         [0,            0,          0,          8.4298e+10,     0,              0],
+         [0,            0,          0,          0,          8.4298e+10,         0],
+         [0,            0,          0,          0,          0,          8.4298e+10]
+        ],
+"symmetry": "cubic",
+"comment_symmetry": "It is almost isotropic: (C11 - C22)/2 = 8.4300e10.", 
+"source": "M. Zheng, C. He, Y. Lyu, and B. Wu, “Guided waves propagation in anisotropic hollow cylinders by Legendre polynomial solution based on state-vector formalism,” Composite Structures, vol. 207, pp. 645–657, Jan. 2019, doi: 10.1016/j.compstruct.2018.09.042."
 }
