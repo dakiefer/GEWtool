@@ -19,6 +19,7 @@ N = 20; % number of collocation points
 % fh = linspace(1e-2, 6, 300).'*1e3;
 k = linspace(1e-1, 15, 100)/h;
 mat = Material('steel_zheng');
+mat = mat.rotateEuler(-90/180*pi,'x');
 cyl = Cylinder(mat, [a, b], N);
 
 %% plot 

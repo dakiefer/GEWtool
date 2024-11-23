@@ -7,7 +7,7 @@
 % 2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 mat = Material('steel_austenitic'); % orthotropic 
-mat = mat.rotateEuler(90/180*pi, 90/180*pi, 0); % this direction is fun
+mat = mat.rotateEuler(180/180*pi, 90/180*pi, 0); % this direction is fun
 h = 1e-3; % thickness 
 N = 18; % number of discretization points
 wmax = 2*pi*15e6; % maximum frequency for plotting and ZGV-search

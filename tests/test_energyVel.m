@@ -72,7 +72,7 @@ if exist('show', 'var') && show
 end
 
 %% test anisotropic
-mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
+mat = Material('triclinic'); mat = mat.rotateEuler(pi/7, 'z');
 guide = Plate(mat, h, N);
 gew = guide.fullyCoupled;
 dat = computeW(gew, k, 6); 
@@ -135,7 +135,7 @@ if exist('show', 'var') && show
 end
 
 %% test cylinder n = 0
-mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
+mat = Material('triclinic'); mat = mat.rotateEuler(pi/7, 'z');
 guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.fullyCoupled(0);
 dat = computeW(gew, k, 6); 
@@ -155,7 +155,7 @@ if exist('show', 'var') && show
 end
 
 %% test cylinder n = 1
-mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
+mat = Material('triclinic'); mat = mat.rotateEuler(pi/7, 'z');
 guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.fullyCoupled(1);
 dat = computeW(gew, k, 6); 

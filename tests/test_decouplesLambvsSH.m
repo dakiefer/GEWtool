@@ -11,7 +11,7 @@ r = [10-3.56, 10]*1e-3;
 h = r(end) - r(1);
 N = 5;
 mat = Material('silicon');
-matRot = mat.rotateEuler(0,22.5/180*pi,0);
+matRot = mat.rotateEuler(22.5/180*pi,'z');
 
 %% test plate 
 plate = Plate(mat,h,N);

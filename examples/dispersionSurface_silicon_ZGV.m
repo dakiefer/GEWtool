@@ -10,8 +10,8 @@
 % 2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 mat0  = Material('silicon'); % load from database
-mat0  = mat0.rotateEuler(0, 45/180*pi, 0);   % x-axis aligned with [110] crystal axis
-mat45 = mat0.rotateEuler(0, -45/180*pi, 0);  % x-axis aligned with [010] crystal axis
+mat0  = mat0.rotateEuler( 45/180*pi, 'z');  % x-axis aligned with [110] crystal axis
+mat45 = mat0.rotateEuler(-45/180*pi, 'z');  % x-axis aligned with [010] crystal axis
 h = 524.6e-6;   % plate thickness 
 N = 16;         % number of nodes (discretization)
 nMode = 3;      % index of mode to plot
@@ -40,7 +40,7 @@ kY_ZGV = [k0*sin(thetaZGV0), k45*sin(thetaZGV45)];
 %% compute TGV waves in all directions:
 thetas = 2*pi*linspace(0, 1, 180); tic; % compute at these angles
 for i = 2:length(thetas) % omit first
-    mat = mat0.rotateEuler(0, -thetas(i), 0);
+    mat = mat0.rotateEuler(-thetas(i), 'z');
     plate = Plate(mat, h, N);
     gew = plate.fullyCoupledS; % symmetric waves only (Lamb and SH coupled)
     tgv(i) = computeZGV(gew,tgv(i-1).w,tgv(i-1).k); % compute TGV, initial guess is last solution
@@ -56,7 +56,7 @@ kY_TGV = [tgv.k].*sin(thetas); % convert to Cartesian coordinates
 k = linspace(kTGVmin*0.1, kTGVmax*1.5, 80); % wavenumber list to solve for
 clear dat; tic; % clear pre-existing data structures, if any
 for i = 1:length(thetas) % at same angles as before
-    mat = mat0.rotateEuler(0, -thetas(i), 0);
+    mat = mat0.rotateEuler(-thetas(i), 'z');
     plate = Plate(mat, h, N);
     gew = plate.fullyCoupledS; % symmetric waves only (Lamb and SH coupled)
     dat(i) = computeW(gew, k, 3); % compute the first 3 modes
