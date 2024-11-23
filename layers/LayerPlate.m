@@ -5,12 +5,12 @@ classdef LayerPlate < Layer
 %
 % See also Plate, Waveguide.
 % 
-% 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
     
     methods
-        function obj = LayerPlate(mat, ys, N)
+        function obj = LayerPlate(mat, zs, N)
             % LayerPlate - Create a LayerPlate object.
-            obj = obj@Layer(mat, ys, N);
+            obj = obj@Layer(mat, zs, N);
         end
         
         function [L0, L1, L2] = stiffnessOp(obj, udof, np, hl, ~)
@@ -19,24 +19,24 @@ classdef LayerPlate < Layer
             hl = hl/np.h0; % normalize
             % relevant material matrices: 
             cxx = squeeze(cn(1,udof,udof,1));
-            cxy = squeeze(cn(1,udof,udof,2)); 
-            cyx = squeeze(cn(2,udof,udof,1)); % boundary flux
-            cyy = squeeze(cn(2,udof,udof,2)); % boundary flux
+            cxz = squeeze(cn(1,udof,udof,3)); 
+            czx = squeeze(cn(3,udof,udof,1)); % boundary flux
+            czz = squeeze(cn(3,udof,udof,3)); % boundary flux
             % assemble element stiffness terms:
             K2 = kron(cxx, obj.PP); 
-            K1 = kron(cxy, obj.PPd); % stiffness
-            G1 = kron(cyx, -obj.PPd.');  % boundary flux
-            G0 = kron(cyy, -obj.PdPd.'); % boundary flux
+            K1 = kron(cxz, obj.PPd); % stiffness
+            G1 = kron(czx, -obj.PPd.');  % boundary flux
+            G0 = kron(czz, -obj.PdPd.'); % boundary flux
             % combine to polynomial of (ik):
             L0 = G0/hl;  L1 = K1 + G1;  L2 = K2*hl;
         end
         
         function decoupl = decouplesLambvsSH(obj,~)
             % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves decouple. Argument n is optional and does nothing.
-            xy = [1 2]; % Lamb polarization
-            z =  3; % SH polarization 
-            c1test = obj.mat.c(xy,xy,z,xy); 
-            c2test = obj.mat.c(xy,z,xy,xy);
+            lb = Waveguide.udofLamb;
+            sh =  Waveguide.udofSH;
+            c1test = obj.mat.c(lb,lb,sh,lb); 
+            c2test = obj.mat.c(lb,sh,lb,lb);
             decoupl = all(c1test(:) == 0) & all(c2test(:) == 0);
         end
 

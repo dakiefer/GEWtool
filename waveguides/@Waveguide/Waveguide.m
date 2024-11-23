@@ -111,8 +111,7 @@ methods
         % fullyCoupled - Assemble wave operators describing the coupled set of Lamb- and SH-polarized waves.
         % 
         % See also: Lamb, sh, decouplesLambvsSH.
-		udof = 1:3;
-        gew = obj.polarization(udof, n);
+        gew = obj.polarization(1:3, n);
 	end
 
 	function gew = Lamb(obj, n)
@@ -122,8 +121,7 @@ methods
         if ~obj.decouplesLambvsSH(n)
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
-		udof = 1:2;
-        gew = obj.polarization(udof, n);
+        gew = obj.polarization(Waveguide.udofLamb, n);
     end
 
 	function gew = sh(obj, n)
@@ -133,8 +131,7 @@ methods
         if ~obj.decouplesLambvsSH(n)
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
-		udof = 3;
-		gew = obj.polarization(udof, n);
+		gew = obj.polarization(Waveguide.udofSH, n);
     end
 
     function dis = isDissipative(obj)
@@ -153,6 +150,7 @@ methods
     
     function lin = isLinearizableInK(obj)
         % isLinearizableInK - Test if the problem can be linearized in k without increasing the problem size.
+        warning('not implemented for new coordiante system')
         if isempty(obj.op)
             warning('GEWTOOL:isLinearizableInK', 'Setup problem first. Ignoring your request.'); 
             lin = false; return; 
@@ -182,6 +180,7 @@ methods
         % interacting with notches, adhesive joints, delaminations and inclined
         % edges in plate structures,” Ultrasonics, vol. 82, pp. 101–113, Jan.
         % 2018, doi: 10.1016/j.ultras.2017.07.019.
+        warning('not implemented for new coordinate system.')
         for obj = gews % note: the objects are "by reference", i.e., the original ones are changed
             if ~obj.isLinearizableInK
                 warning('GEWTOOL:Waveguide:nonlinearizable', 'This problem is not linearizable as intended.');
@@ -269,6 +268,27 @@ methods
 
     % declare functions implemented in external files:
 	gew = assembleLayers(obj, udof, n)
+end
+
+methods (Static)
+    function udof = udofLamb()
+        % udofLamb - return the displacement degrees of freedom of Lamb polarization 
+        udof = [1 3]; 
+    end
+    function udof = udofSH()
+        % udofSH - return the displacement degrees of freedom of SH polarization 
+        udof = 2; 
+    end
+    function dof = udofInplane(polarization)
+        % udofInplane - return the in-plane displacement degrees of freedom 
+        udof = [1 2]; 
+        dof = find(ismember(polarization,udof)); % local dof of in-plane displacements
+    end
+    function dof = udofOutofplane(polarization)
+        % udofOutofplane - return the out-of-plane displacement degrees of freedom 
+        udof = 3;
+        dof = find(ismember(polarization,udof)); % local dof of out-of-plane displacements
+    end
 end
 
 methods (Abstract)

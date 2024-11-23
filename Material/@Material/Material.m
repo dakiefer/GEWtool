@@ -47,7 +47,7 @@ methods
             if isa(varargin{1}, 'Material') || isa(varargin{1}, 'struct') % convert from subclasses to superclass
                 data = varargin{1};
             elseif ischar(varargin{1}) || isstring(varargin{1})  % load by name
-                matname = varargin{1};
+                matname = char(varargin{1});
                 filename = [matname '.json'];
                 data = jsondecode(fileread(filename));
             else
@@ -273,17 +273,17 @@ methods
 
     function decoupl = decouplesXYvsZ(obj)
         % decouplesXYvsZ - Test if displacements in the xy-plane decouple from z-displ.
-        xy = [1 2]; % Lamb polarization
-        z =  3; % SH polarization 
-        c1test = obj.c(xy,xy,z,xy); 
-        c2test = obj.c(xy,z,xy,xy);
+        xz = Waveguide.udofLamb;
+        y  = Waveguide.udofSH; 
+        c1test = obj.c(xz,xz,y,xz); 
+        c2test = obj.c(xz,y,xz,xz);
         decoupl = all(c1test(:) == 0) & all(c2test(:) == 0);
     end
 
     function decoupl = decouplesSA(obj)
         % DECOUPLESSA - test if invariant to reflection along y-axis.
         % Basically an alias to isInvariantOnReflection().
-        decoupl = obj.isInvariantOnReflection(2);
+        decoupl = obj.isInvariantOnReflection(Waveguide.udofOutofplane(1:3)); % full polarization
     end
 
     function dis = isDissipative(obj)

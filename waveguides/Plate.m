@@ -60,9 +60,9 @@ methods
         
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = 1:3;
+        udofFix = Waveguide.udofInplane(udof); 
         gew = obj.polarization(udof,0); % n = 0 (circumferential order)
-        gdofs = [gew.geom.gdofBC{1}(1,1), gew.geom.gdofBC{1}(3,1)];
-        gew = gew.fixGdof(gdofs); % fix ux- and uz-displacements at bottom (y=0)
+        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix ux- and uz-displacements at bottom (y=0)
     end
 
     function gew = fullyCoupledS(obj)
@@ -73,8 +73,9 @@ methods
         
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = 1:3;
+        udofFix = Waveguide.udofOutofplane(udof);
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
-        gew = gew.fixGdof(gew.geom.gdofBC{1}(2,1)); % fix uy-displacement at bottom (y=0)
+        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix uy-displacement at bottom (y=0)
     end
 
     function gews = fullyCoupledSA(obj)
@@ -107,9 +108,10 @@ methods
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
-        udof = 1:2;
+        udof = Waveguide.udofLamb;
+        udofFix = Waveguide.udofOutofplane(udof);
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
-        gew = gew.fixGdof(gew.geom.gdofBC{1}(2,1)); % fix uy-displacement at bottom (y=0)
+        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix uy-displacement at bottom (y=0)
     end
     
     function gew = LambA(obj)
@@ -122,9 +124,10 @@ methods
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
-        udof = 1:2;
+        udof = Waveguide.udofLamb;
+        udofFix = Waveguide.udofInplane(udof);
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
-        gew = gew.fixGdof(gew.geom.gdofBC{1}(1,1)); % fix ux-displacement at bottom (y=0)
+        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix ux-displacement at bottom (y=0)
     end
     
     function gews = LambSA(obj)
@@ -224,12 +227,12 @@ methods
             sizeF = [size(dat.w), obj.geom.N(l), obj.geom.Nudof(l), obj.geom.Nudof(l)]; % size of F = grad u
             Fi = zeros(sizeF); % allocate for displacement gradient F = grad u
             lay = obj.lay{l};
-            Dy = 1/lay.h*lay.D1; % differentiation matrix
+            Dz = 1/lay.h*lay.D1; % differentiation matrix
             iku = 1i*dat.k.*dat.u{l}; % ex.F = ik*u
             uu = permute(dat.u{l}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.
-            dyu = sum(shiftdim(Dy, -2).*uu, 4); % ey.F = ∂u/∂y, dimension 4 is singleton
+            dzu = sum(shiftdim(Dz, -2).*uu, 4); % ez.F = ∂u/∂z, dimension 4 is singleton
             Fi(:,:,:,1,:) = iku;  % assign components ex.F
-            Fi(:,:,:,2,:) = dyu;  % assign components ey.F
+            Fi(:,:,:,obj.geom.Nudof(l),:) = dzu;  % assign components ez.F
             F{l} = Fi; 
         end 
     end

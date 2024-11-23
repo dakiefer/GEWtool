@@ -101,7 +101,7 @@ methods
         % displGrad - Displacement gradient of the provided field "dat.u".
         udof = obj.udof;
         F = cell(obj.geom.nLay, 1); % allocate for each layer
-        inIpA = 1i*obj.n*eye(3) + [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
+        inIpA = 1i*obj.n*eye(3) + [0, 0, 0; 0, 0, 1; 0, -1, 0]; % differetiation in curvilinear coordinate system
         inIpA = inIpA(:,udof); % reduce according to polarization
         for l = 1:obj.geom.nLay
             sizeF = [size(dat.w), obj.geom.N(l), 3, 3]; % size of F = grad u 
@@ -120,8 +120,8 @@ methods
             Ad = shiftdim(inIpA, -3);
             Au = sum(1./r.*Ad.*uu,5);
             Fi(:,:,:,1,udof) = iku;  % assign components ex.F
-            Fi(:,:,:,2,udof) = dru;  % assign components er.F
-            Fi(:,:,:,3,:) = Au;   % assign components ephi.F
+            Fi(:,:,:,2,:) = Au;   % assign components ephi.F
+            Fi(:,:,:,3,udof) = dru;  % assign components er.F
             F{l} = Fi; 
         end 
     end

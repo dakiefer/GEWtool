@@ -47,17 +47,17 @@ classdef LayerCylindrical < Layer
             cn = obj.mat.c/np.c0; % normalized stiffness tensor
             hl = hl/np.h0; % normalize thickness
             cxx = squeeze(cn(1,:,:,1));
-            cpp = squeeze(cn(3,:,:,3));
-            cpr = squeeze(cn(3,:,:,2));
-            cxp = squeeze(cn(1,:,:,3));
-            cpx = squeeze(cn(3,:,:,1));
-            cxr = squeeze(cn(1,:,:,2));
-            crx = squeeze(cn(2,:,:,1)); % boundary flux
-            crr = squeeze(cn(2,:,:,2)); % boundary flux
-            crp = squeeze(cn(2,:,:,3)); % boundary flux
+            cpp = squeeze(cn(2,:,:,2));
+            cpr = squeeze(cn(2,:,:,3));
+            cxp = squeeze(cn(1,:,:,2));
+            cpx = squeeze(cn(2,:,:,1));
+            cxr = squeeze(cn(1,:,:,3));
+            crx = squeeze(cn(3,:,:,1)); % boundary flux
+            crr = squeeze(cn(3,:,:,3)); % boundary flux
+            crp = squeeze(cn(3,:,:,2)); % boundary flux
 
             % include terms due to curvature (to be done before reducing to udof!)
-            A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
+            A = [0, 0, 0; 0, 0, 1; 0, -1, 0]; % differetiation in curvilinear coordinate system
             I = eye(size(A));
             cxpA = cxp*(A + 1i*n*I);
             Acpx = (A + 1i*n*I)*cpx;
@@ -106,17 +106,17 @@ classdef LayerCylindrical < Layer
             % relevant material matrices: 
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
             cxx = squeeze(cn(1,:,:,1));
-            crr = squeeze(cn(2,:,:,2));
-            cpp = squeeze(cn(3,:,:,3));
-            cxr = squeeze(cn(1,:,:,2));
-            crx = squeeze(cn(2,:,:,1));
-            cxp = squeeze(cn(1,:,:,3));
-            cpx = squeeze(cn(3,:,:,1));
-            crp = squeeze(cn(2,:,:,3));
-            cpr = squeeze(cn(3,:,:,2));
+            crr = squeeze(cn(3,:,:,3));
+            cpp = squeeze(cn(2,:,:,2));
+            cxr = squeeze(cn(1,:,:,3));
+            crx = squeeze(cn(3,:,:,1));
+            cxp = squeeze(cn(1,:,:,2));
+            cpx = squeeze(cn(2,:,:,1));
+            crp = squeeze(cn(3,:,:,2));
+            cpr = squeeze(cn(2,:,:,3));
 
             % include terms due to curvature (to be done before reducing to udof!)
-            A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
+            A = [0, 0, 0; 0, 0, 1; 0, -1, 0]; % differetiation in curvilinear coordinate system
             I = eye(size(A));
             cxpA = cxp*(A + 1i*n*I);
             Acpx = (A + 1i*n*I)*cpx; 
@@ -125,9 +125,9 @@ classdef LayerCylindrical < Layer
             crpA = crp*(A + 1i*n*I);
 
             % define dofs and continuous operator coefficients:
-            xr = [1 2];    % Lamb polarization (axial): flexural and longitudinal
-            p =  3;        % SH polarization (axial): torsional
-            iszero = @(cc) all( cc(xr,p) == 0 ) && all( cc(p,xr) == 0);
+            lb = Waveguide.udofLamb; % Lamb polarization (axial): flexural and longitudinal
+            sh =  Waveguide.udofSH;   % SH polarization (axial): torsional
+            iszero = @(cc) all( cc(lb,sh) == 0 ) && all( cc(sh,lb) == 0);
 
             decoupl = iszero(cxx) && iszero(cxr) && iszero(cxpA + Acpx) && iszero(Acpr) ...
                 && iszero(AcppA) && iszero(crx) && iszero(crr) && iszero(crpA);
