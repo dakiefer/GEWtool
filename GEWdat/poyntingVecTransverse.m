@@ -18,12 +18,12 @@ end
 
 v = velocity(dat);
 T = stress(gew, dat); % inefficient: we compute components that we don't need
-udof = gew.udof;      % polarization
+dof = 1:length(gew.udof);      % polarization
 
 pz = cell(gew.geom.nLay,1);
 for l = 1:gew.geom.nLay
     if gew.geom.Nudof(l) == 3
-        pz{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,udof,3)), 4); % reduce T to components that yield pz
+        pz{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,dof,3)), 4); % reduce T to components that yield pz
     else
         pz{l} = zeros([size(dat.w), gew.geom.N(l)]);
     end

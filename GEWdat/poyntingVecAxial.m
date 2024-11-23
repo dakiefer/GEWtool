@@ -17,11 +17,15 @@ end
 
 v = velocity(dat);
 T = stress(gew, dat); % inefficient: we compute components that we don't need
-udof = gew.udof;      % polarization
+if isa(gew,"Plate") % might be in plain strain [ux, uz] or [uy]
+    dof = 1:length(gew.udof); 
+else % never in plain strain
+    dof = gew.udof; 
+end
 
 px = cell(gew.geom.nLay,1);
 for l = 1:gew.geom.nLay
-    px{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,udof,1)), 4); % reduce T to components that yield px
+    px{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,dof,1)), 4); % reduce T to components that yield px
 end
 
 end

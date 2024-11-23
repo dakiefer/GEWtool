@@ -16,11 +16,11 @@ end
 
 v = velocity(dat);
 T = stress(gew, dat);
-udof = gew.udof;      % polarization
+dof = 1:length(gew.udof);      % polarization
 
 p = cell(gew.geom.nLay,1);
 for l = 1:gew.geom.nLay
-    pl = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,udof,:)), 4);
+    pl = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,dof,:)), 4);
     p{l} = permute(pl, [1 2 3 5 4]);
 end
 
