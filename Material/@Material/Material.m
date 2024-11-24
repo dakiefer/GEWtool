@@ -271,15 +271,6 @@ methods
         sym = all((matOrig.c - matR.c)/matOrig.c(1,1,1,1) <= tol, 'all'); % all zero -> true
     end
 
-    function decoupl = decouplesXYvsZ(obj)
-        % decouplesXYvsZ - Test if displacements in the xy-plane decouple from z-displ.
-        xz = Waveguide.udofLamb;
-        y  = Waveguide.udofSH; 
-        c1test = obj.c(xz,xz,y,xz); 
-        c2test = obj.c(xz,y,xz,xz);
-        decoupl = all(c1test(:) == 0) & all(c2test(:) == 0);
-    end
-
     function decoupl = decouplesSA(obj)
         % DECOUPLESSA - test if invariant to reflection along y-axis.
         % Basically an alias to isInvariantOnReflection().
