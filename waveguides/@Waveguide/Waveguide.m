@@ -150,7 +150,6 @@ methods
     
     function lin = isLinearizableInK(obj)
         % isLinearizableInK - Test if the problem can be linearized in k without increasing the problem size.
-        warning('not implemented for new coordiante system')
         if isempty(obj.op)
             warning('GEWTOOL:isLinearizableInK', 'Setup problem first. Ignoring your request.'); 
             lin = false; return; 
@@ -158,12 +157,12 @@ methods
         if isempty(obj.op.L1) && ~isempty(obj.op.L2)
             lin = true; return; % already linearized
         end
-        if obj.geom.Nudof ~= 3, lin = false; return; end % TODO look at SH waves
+        if obj.geom.Nudof ~= 2, lin = false; return; end % TODO Only Lamb waves for now
         if obj.geom.nLay > 1, lin = false; warning('Not implemented for multilayers.'); return; end  % TODO implement for multiple layers
-        dofx = obj.geom.gdofRedX; dofy = obj.geom.gdofRedY;
-        L2test = all(obj.op.L2(dofy,dofx) == 0, 'all');
-        L1test = all(obj.op.L1(dofx,dofx) == 0, 'all') & all(obj.op.L1(dofy,dofy) == 0, 'all');
-        L0test = all(obj.op.L0(dofx,dofy) == 0, 'all');
+        dofx = obj.geom.gdofRedX; dofz = obj.geom.gdofRedZ;
+        L2test = all(obj.op.L2(dofz,dofx) == 0, 'all');
+        L1test = all(obj.op.L1(dofx,dofx) == 0, 'all') & all(obj.op.L1(dofz,dofz) == 0, 'all');
+        L0test = all(obj.op.L0(dofx,dofz) == 0, 'all');
         lin = L2test & L1test & L0test;
     end
     
@@ -180,16 +179,15 @@ methods
         % interacting with notches, adhesive joints, delaminations and inclined
         % edges in plate structures,” Ultrasonics, vol. 82, pp. 101–113, Jan.
         % 2018, doi: 10.1016/j.ultras.2017.07.019.
-        warning('not implemented for new coordinate system.')
         for obj = gews % note: the objects are "by reference", i.e., the original ones are changed
             if ~obj.isLinearizableInK
                 warning('GEWTOOL:Waveguide:nonlinearizable', 'This problem is not linearizable as intended.');
             end
             if ~isempty(obj.op.L1) % ignore if already linearized
                 L2 = obj.op.L2; L1 = obj.op.L1; L0 = obj.op.L0;
-                dofx = obj.geom.gdofRedX; dofy = obj.geom.gdofRedY;
-                L2(dofy,dofx) = L1(dofy,dofx); 
-                L0(dofx,dofy) = L1(dofx,dofy);
+                dofx = obj.geom.gdofRedX; dofz = obj.geom.gdofRedZ;
+                L2(dofz,dofx) = L1(dofz,dofx); 
+                L0(dofx,dofz) = L1(dofx,dofz);
                 obj.op.L2 = L2; obj.op.L1 = []; obj.op.L0 = L0;
             end
         end

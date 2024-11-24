@@ -29,7 +29,7 @@ properties (Dependent)
     gdofBC      % a link to all gdofOfLay(ldofBC) assembled into one array: size [ui, 2 (bottom/top)]
     gdofFree    % degrees of freedom where no Dirichlet-BCs are imposed
     gdofRedX    % degrees of freedom for the x-displacements in the reduced matrices (due to Dirichlet BC)
-    gdofRedY    % degrees of freedom for the y-displacements in the reduced matrices (due to Dirichlet BC)
+    gdofRedZ    % degrees of freedom for the z-displacements in the reduced matrices (due to Dirichlet BC)
 end
 
 methods
@@ -101,15 +101,27 @@ methods
     end
 
     function dofx = get.gdofRedX(obj)
+        if obj.nLay ~= 1; error('GEWTOOL:Geometry','Not implemented for Multilayers.'); end
+        if obj.Nudof == 1 % SH waves are modeled
+            error('GEWTOOL:Geometry','There are no ux-displacements to extract.');
+        end
         dofAll = 1:length(obj.gdofFree);
         indx = obj.gdofFree <= obj.N;
         dofx = dofAll(indx);
     end
 
-    function dofy = get.gdofRedY(obj)
+    function dofz = get.gdofRedZ(obj)
+        if obj.nLay ~= 1; error('GEWTOOL:Geometry','Not implemented for Multilayers.'); end
+        if obj.Nudof == 2 % Lamb waves 
+            dofMin = obj.N+1; dofMax = 2*obj.N; 
+        elseif obj.Nudof >= 3 % fully-coupled waves or piezoelectric waves
+            dofMin = 2*obj.N+1; dofMax = 3*obj.N; 
+        else
+            error('GEWTOOL:Geometry','There are no uz-displacements to extract.');
+        end
         dofAll = 1:length(obj.gdofFree);
-        indy = obj.gdofFree >= (obj.N+1) & obj.gdofFree <= 2*obj.N;
-        dofy = dofAll(indy);
+        indz = obj.gdofFree >= dofMin & obj.gdofFree <= dofMax;
+        dofz = dofAll(indz);
     end
 
 end % methods

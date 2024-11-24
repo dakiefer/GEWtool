@@ -133,8 +133,8 @@ function [khn, un] = retrieveKu(lbd, eVec, nModes, opti, geom)
             khn = -1i*lbd;
         case 'k2'
             khn = sqrt(lbd);
-            dofy = geom.gdofRedY;
-            eVec(dofy,:) = -1i*eVec(dofy,:)./khn.'; % eig.vec. was [ux, 1i*k*uy]
+            dofz = geom.gdofRedZ;
+            eVec(dofz,:) = -1i*eVec(dofz,:)./khn.'; % eig.vec. was [ux, 1i*k*uy]
     end
     khnRounded = round(khn*sortAccuracy)/sortAccuracy; % sort on digits with sufficient presition only
     [~, ind] = sort(khnRounded,'ComparisonMethod','abs'); % sort by real part, 
