@@ -21,7 +21,7 @@ T = stress(gew, datMode);
 
 % % %%%% Retrieve modal field:  %%%%%%
 % nodal points:
-y1 = gew.geom.y{1}; y2 = gew.geom.y{2};  % nodal points of the layers
+y1 = gew.geom.z{1}; y2 = gew.geom.z{2};  % nodal points of the layers
 y = [y1; y2]; 
 
 % retrieve displacements: 
@@ -94,9 +94,9 @@ if exist('show', 'var') && show
     plot(imag(uix), yi/1e-3, 'r-');
     plot(real(ux),  y/1e-3, 'k*');
     plot(imag(ux),  y/1e-3, 'r*');
-    yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
+    yline(gew.geom.zItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
         'LabelVerticalAlignment', 'middle')
-    ylim([gew.geom.yItf(1), gew.geom.yItf(end)]/1e-3)
+    ylim([gew.geom.zItf(1), gew.geom.zItf(end)]/1e-3)
     xlabel('modal displacement ux'), ylabel('y in mm')
     legend({'real ux', 'imag ux'}, 'Location','best')
     
@@ -105,9 +105,9 @@ if exist('show', 'var') && show
     plot(imag(uiy), yi/1e-3, 'r-');
     plot(real(uy),  y/1e-3, 'k*');
     plot(imag(uy),  y/1e-3, 'r*');
-    yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
+    yline(gew.geom.zItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
         'LabelVerticalAlignment', 'middle')
-    ylim([gew.geom.yItf(1), gew.geom.yItf(end)]/1e-3)
+    ylim([gew.geom.zItf(1), gew.geom.zItf(end)]/1e-3)
     xlabel('modal displacement uy'), ylabel('y in mm')
     legend({'real uy', 'imag uy'}, 'Location','best')
     
@@ -120,9 +120,9 @@ if exist('show', 'var') && show
     plot(imag(Tiyx), yi/1e-3, 'r-');
     plot(real(Tyx), y/1e-3, 'k*');
     plot(imag(Tyx), y/1e-3, 'r*');
-    yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
+    yline(gew.geom.zItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
         'LabelVerticalAlignment', 'middle')
-    ylim([gew.geom.yItf(1), gew.geom.yItf(end)]/1e-3)
+    ylim([gew.geom.zItf(1), gew.geom.zItf(end)]/1e-3)
     xlabel('modal stress Tyx'), ylabel('y in mm')
     legend({'real Tyx', 'imag Tyx'}, 'Location','best')
     
@@ -131,9 +131,9 @@ if exist('show', 'var') && show
     plot(imag(Tiyy), yi/1e-3, 'r-');
     plot(real(Tyy), y/1e-3, 'k*');
     plot(imag(Tyy), y/1e-3, 'r*');
-    yline(gew.geom.yItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
+    yline(gew.geom.zItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
         'LabelVerticalAlignment', 'middle')
-    ylim([gew.geom.yItf(1), gew.geom.yItf(end)]/1e-3)
+    ylim([gew.geom.zItf(1), gew.geom.zItf(end)]/1e-3)
     xlabel('modal stress Tyy'), ylabel('y in mm')
     legend({'real Tyy', 'imag Tyy'}, 'Location','best')
 end

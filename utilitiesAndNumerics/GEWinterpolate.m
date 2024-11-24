@@ -8,7 +8,7 @@ function [ui, yi] = GEWinterpolate(gew, u, yi)
 %             by computeW() or computeK(). Use extractModes() to extract the data of 
 %             one mode of a mulit-layer waveguide.
 % - Ni | yi:  - Ni (scalar): numer of coordinates that will be generated on an
-%               equidistant grid on [gew.geom.yItf(1), gew.geom.yItf(end)].
+%               equidistant grid on [gew.geom.zItf(1), gew.geom.zItf(end)].
 %             - yi (vector): the coordinates on which to interpolate (should be 
 %               in the domain of the provided data (i.e. the waveguide cross-section).
 % 
@@ -20,7 +20,7 @@ function [ui, yi] = GEWinterpolate(gew, u, yi)
 % will retrieve field data for yi < 0 by symmetrical extension. You just need to
 % provide the negative coordinates. When providing the number of interpolation
 % points instead of coordinates, GEWinterpolate will automatically interpolate
-% on the symmetric domain [-gew.geom.yItf(end), gew.geom.yItf(end)].
+% on the symmetric domain [-gew.geom.zItf(end), gew.geom.zItf(end)].
 % 
 % Example: 
 % >> dat = computeW(gew,k);         % compute solutions for vector of wavenumber 'k'
@@ -44,9 +44,9 @@ end
 if isscalar(yi) && isreal(yi) && mod(yi,1) == 0 % test if integer real scalar
     Ni = yi; % the number of nodes was provided rather than the interpolation grid.
     if gew.geom.symmetrized 
-        yi = linspace(-gew.geom.yItf(end), gew.geom.yItf(end), Ni).';
+        yi = linspace(-gew.geom.zItf(end), gew.geom.zItf(end), Ni).';
     else
-        yi = linspace(gew.geom.yItf(1), gew.geom.yItf(end), Ni).';
+        yi = linspace(gew.geom.zItf(1), gew.geom.zItf(end), Ni).';
     end
 end
 
@@ -65,7 +65,7 @@ s = size(u{1}); s(1) = length(yi); % size of data structure after interpolation
 ui = zeros(s); % allocate
 for l = 1:gew.geom.nLay 
     for n = 1:prod(s(2:end)) % loop over all component of the data 
-        yl = gew.geom.y{l};  % nodal points
+        yl = gew.geom.z{l};  % nodal points
         datal = [yl, u{l}(:,n)];               % initial data
         indl = yi >= yl(1) & yi <= yl(end);    % indices of interpolated data for this layer
         ui(indl,n) = barylag(datal, yi(indl)); % interpolate onto corresponding yi

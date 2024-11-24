@@ -14,8 +14,8 @@ properties
     nItf         % number of interfaces, includes outer ones
     N            % number of nodal points for each layer
     Nudof        % number of degrees of freedom (displacement components, elec. potential, etc...)
-    yItf         % position of interfaces in meter [nLay x 2]
-    y            % cell array with nodal points for each layer in meter
+    zItf         % position of interfaces in meter [nLay x 2]
+    z            % cell array with nodal points for each layer in meter
     hl           % thickness for each layer in meter
     % nodesOfElem  % connectivity map: row e contains left and right node num of elem e -> TODO not being used
     ldofBC       % cell array of local dofs at boundaries: e.g. [1, N; N+1, 2*N] -> [upper, lower]
@@ -34,10 +34,10 @@ end
 
 methods
 
-    function obj = Geometry(yItf, N, Nudof)
+    function obj = Geometry(zItf, N, Nudof)
         % Geometry - Create a Geometry object for a 1D layered structure (mesh).
         % Arguments:
-        % - yItf:  coordinates of interface in meter
+        % - zItf:  coordinates of interface in meter
         %          Can be a vector or of size [Nlay x 2] (lower/upper limit for 
         %          every layer).
         % - N:     discretization order for each layer [1 x Nlay]
@@ -46,18 +46,18 @@ methods
 
         % mesh parameters:
         if nargin < 3, Nudof = 3*ones(size(N)); end
-        if ~isvector(yItf) % nLay x 2 given
-            if size(yItf, 2)~=2
+        if ~isvector(zItf) % nLay x 2 given
+            if size(zItf, 2)~=2
                 error('Incorrect size of interface coordinates. Expected a vector or nx2 array.');
             end
-            yItf = [yItf(:,1).', yItf(end,2)]; % reduce to vector nLay+1 x 1
+            zItf = [zItf(:,1).', zItf(end,2)]; % reduce to vector nLay+1 x 1
         end
-        obj.nLay = length(yItf) - 1;
+        obj.nLay = length(zItf) - 1;
         obj.N = N(:); % discretization order: number of collocation points
         obj.Nudof = Nudof(:); % how many of the ux, uy, uz degrees of freedom
-        obj.nItf = length(yItf);
-        obj.yItf = [yItf(1:end-1).', yItf(2:end).'];
-        obj.hl = diff(obj.yItf, 1, 2); % first order along 2nd dim
+        obj.nItf = length(zItf);
+        obj.zItf = [zItf(1:end-1).', zItf(2:end).'];
+        obj.hl = diff(obj.zItf, 1, 2); % first order along 2nd dim
         % mesh connectivity:
         % obj.nodesOfElem = zeros(obj.nLay, 2); % connectivity map
         % obj.nodesOfElem(:,1) = 1:obj.nItf-1;
@@ -66,7 +66,7 @@ methods
         for e=1:length(N) % length(N) == number of layers
             obj.ldofBC{e} = (0:Nudof(e)-1).'*N(e) + [1, N(e)];
             etad = Layer.nodes(N(e)); 
-            obj.y{e} = etad*obj.hl(e) + obj.yItf(e, 1);
+            obj.z{e} = etad*obj.hl(e) + obj.zItf(e, 1);
             if e == 1
                 gdofE = 1:Nudof(e)*N(e);
             else

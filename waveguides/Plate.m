@@ -1,6 +1,6 @@
 classdef Plate < Waveguide
 % Plate - Represents guided waves in Plates.
-% Displacement ansatz: u(x,y,z,t) = u(y)*exp(i k x - i w t)
+% Displacement ansatz: u(x,y,z,t) = u(z)*exp(i k x - i w t)
 % 
 % Example:
 % mat = Material('steel'); % load material data
@@ -13,13 +13,13 @@ classdef Plate < Waveguide
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 methods 
-	function obj = Plate(mats, ys, Ns)
+	function obj = Plate(mats, zs, Ns)
         % Plate - Create a plate waveguide (propagation in x-direction)
         % Arguments: 
         % - mats:  materials [1 x Nlay], either of class "Material" or a struct
         %          needs to support mats.rho (scalar) and mats.c (3x3x3x3).
-        % - ys:    coordinates of interfaces in meter [1 x Nlay+1]
-        %          instead, if ys is of size [1 x Nlay]: ys are interpreted as the 
+        % - zs:    coordinates of interfaces in meter [1 x Nlay+1]
+        %          instead, if zs is of size [1 x Nlay]: zs are interpreted as the 
         %          thickness of each layer.
         % - Ns:    discretization order for each layer [1 x Nlay]
         % 
@@ -29,21 +29,21 @@ methods
         % N = 20; % discretization (number of nodal points)
         % plate = Plate(mat, h, N); % create waveguide description
         % 
-        if isscalar(ys) && length(mats) > 1 % use same thickness for all layers
-            ys = ys*ones(size(mats)); % expand into a vector of thicknesses
+        if isscalar(zs) && length(mats) > 1 % use same thickness for all layers
+            zs = zs*ones(size(mats)); % expand into a vector of thicknesses
         end
-        if length(mats) == length(ys) % thicknesses have been provided
-            if isscalar(ys)
-                ys = ys*[-1/2, 1/2]; % single layer has centered coordinate 
+        if length(mats) == length(zs) % thicknesses have been provided
+            if isscalar(zs)
+                zs = zs*[-1/2, 1/2]; % single layer has centered coordinate 
             else
-                ys = [0, cumsum(ys)]; % coordinates of interfaces starting from 0
+                zs = [0, cumsum(zs)]; % coordinates of interfaces starting from 0
             end
-        elseif length(ys) ~= length(mats)+1
+        elseif length(zs) ~= length(mats)+1
             error('GEWTOOL:Plate:wrongArguments','Provide either a thickness for each layer or the coordinates of the interfaces.');
         end
-		obj = obj@Waveguide(mats, ys, Ns); % converts mats 
+		obj = obj@Waveguide(mats, zs, Ns); % converts mats 
 		for ii = 1:length(obj.mat)
-			obj.lay{ii} = LayerPlate(obj.mat{ii}, obj.geom.yItf(ii,:), obj.geom.N(ii));
+			obj.lay{ii} = LayerPlate(obj.mat{ii}, obj.geom.zItf(ii,:), obj.geom.N(ii));
 		end
     end
 
@@ -62,7 +62,7 @@ methods
         udof = 1:3;
         udofFix = Waveguide.udofInplane(udof); 
         gew = obj.polarization(udof,0); % n = 0 (circumferential order)
-        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix ux- and uz-displacements at bottom (y=0)
+        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix ux- and uy-displacements at bottom (z=0)
     end
 
     function gew = fullyCoupledS(obj)
@@ -75,7 +75,7 @@ methods
         udof = 1:3;
         udofFix = Waveguide.udofOutofplane(udof);
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
-        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix uy-displacement at bottom (y=0)
+        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix uz-displacement at bottom (z=0)
     end
 
     function gews = fullyCoupledSA(obj)
@@ -111,7 +111,7 @@ methods
         udof = Waveguide.udofLamb;
         udofFix = Waveguide.udofOutofplane(udof);
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
-        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix uy-displacement at bottom (y=0)
+        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix uz-displacement at bottom (z=0)
     end
     
     function gew = LambA(obj)
@@ -127,7 +127,7 @@ methods
         udof = Waveguide.udofLamb;
         udofFix = Waveguide.udofInplane(udof);
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
-        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix ux-displacement at bottom (y=0)
+        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix ux-displacement at bottom (z=0)
     end
     
     function gews = LambSA(obj)
@@ -172,7 +172,7 @@ methods
         for m = mats
             if ~m{1}.decouplesSA
                 if nargin == 2 && strcmp(verb, 'v')
-                    warning('GEWTOOL:decouplesSA:matSym', 'The stiffness tensor is not invariant to reflexion ey -> -ey.');
+                    warning('GEWTOOL:decouplesSA:matSym', 'The stiffness tensor is not invariant to reflexion ez -> -ez.');
                 end
                 return;
             end
@@ -208,15 +208,15 @@ methods
         Ns = obj.geom.N(lMid:end);
         Ns = ceil(Ns/2); % use smaller matrices
         while any(Ns<2), Ns = Ns +1; end % ensure to have at least two nodes
-        yItfList = [obj.geom.yItf(lMid:end,1).' obj.geom.yItf(end,end)];
+        zItfList = [obj.geom.zItf(lMid:end,1).' obj.geom.zItf(end,end)];
         if mod(obj.geom.nLay,2) == 1 % odd number of layers
-            hmid = yItfList(2) - yItfList(1);
-            yItfList(1) = yItfList(2) - hmid/2; % half the thickness for middle layer
+            hmid = zItfList(2) - zItfList(1);
+            zItfList(1) = zItfList(2) - hmid/2; % half the thickness for middle layer
         end
-        yItfList = yItfList - yItfList(1); % zero coordinate at center
+        zItfList = zItfList - zItfList(1); % zero coordinate at center
         mats = cell(1,length(lays)); % allocate
         for i = 1:length(lays), mats{i} = lays{i}.mat; end % extract materials 
-        gew = Plate(mats, yItfList, Ns);
+        gew = Plate(mats, zItfList, Ns);
         gew.geom.symmetrized = true;
     end
 

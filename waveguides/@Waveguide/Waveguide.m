@@ -82,7 +82,7 @@ methods
 	end
 
     function h = get.h(obj)
-        h = obj.geom.yItf(end)-obj.geom.yItf(1);
+        h = obj.geom.zItf(end)-obj.geom.zItf(1);
     end
 
     function obj = polarization(obj, udof, n)
@@ -96,7 +96,7 @@ methods
         % See also: Lamb, sh, decouplesLambvsSH.
         Nudof = length(udof);
         if any(obj.geom.Nudof ~= Nudof) % update geometry if necessary
-            geomNew = Geometry(obj.geom.yItf, obj.geom.N, Nudof*ones(obj.geom.nLay,1)); 
+            geomNew = Geometry(obj.geom.zItf, obj.geom.N, Nudof*ones(obj.geom.nLay,1)); 
             geomNew.symmetrized = obj.geom.symmetrized;
             obj.geom = geomNew; 
         end

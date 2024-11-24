@@ -1,6 +1,6 @@
 classdef Cylinder < Waveguide
 % Cylinder - Represents axially guided waves in cylinders.
-% Displacement ansatz: u(x,r,phi,t) = u(r)*exp(i k x + i n phi - i w t)
+% Displacement ansatz: u(x,phi,r,t) = u(r)*exp(i k x + i n phi - i w t)
 % 
 % Example:
 % mat = Material('steel'); % load material data
@@ -115,7 +115,7 @@ methods
             r = shiftdim(r,-2);           % radial coordinates in SI units
             iku = 1i*dat.k.*dat.u{l}; % ex.F = ik*u
             uu = permute(dat.u{l}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.
-            dru = sum(shiftdim(Dr, -2).*uu, 4); % ey.F = ∂u/∂y, dimension 4 is singleton
+            dru = sum(shiftdim(Dr, -2).*uu, 4); % er.F = ∂u/∂r, dimension 4 is singleton
             uu = permute(dat.u{l}, [1, 2, 3, 5, 4]); % additional dimension for mult. with (in*I + A)
             Ad = shiftdim(inIpA, -3);
             Au = sum(1./r.*Ad.*uu,5);

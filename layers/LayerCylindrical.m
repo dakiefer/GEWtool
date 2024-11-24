@@ -14,22 +14,22 @@ classdef LayerCylindrical < Layer
         PPInvr  % integral of weighted product matrix of ansatz functions ∫P*P 1/r dr 
     end
     properties (Dependent)
-        r % alias to the nodal coordinates obj.y
+        r % alias to the nodal coordinates obj.z
     end
 
     methods
         function obj = LayerCylindrical(mat, rs, N)
             % LayerCylindrical - Create a LayerCylindrical object.
-            [yn, ~] = Layer.nodes(N);  % nodal coordinates and integration weights
+            [rn, ~] = Layer.nodes(N);  % nodal coordinates and integration weights
             h = rs(end)-rs(1); % layer thickness
             if rs(1)/h < 1e-2  % if inner radius is close to zero
-                basis = Layer.basisGaussLegendre(yn); % avoid singularity at r = 0
+                basis = Layer.basisGaussLegendre(rn); % avoid singularity at r = 0
             else
-                basis = Layer.basisGaussLobattoLumped(yn); % faster integration, diagonal mass
+                basis = Layer.basisGaussLobattoLumped(rn); % faster integration, diagonal mass
             end
             obj = obj@Layer(mat, rs, N, basis);
             % % element matrices specific to cylindrical coordinates:
-            basis.r = basis.y(:) + rs(1)/h; % map nodes on [0, 1] -> [r1,r2]/(r2-r1)
+            basis.r = basis.z(:) + rs(1)/h; % map nodes on [0, 1] -> [r1,r2]/(r2-r1)
             obj.PPr = LayerCylindrical.elemPPr(basis.P, basis.w, basis.r);             % ∫P*P r dr
             obj.PPdr = LayerCylindrical.elemPPdr(basis.P, basis.Pd, basis.w, basis.r); % ∫P*P' r dr 
             obj.PdPdr = LayerCylindrical.elemPdPdr(basis.Pd, basis.w, basis.r);        % ∫P'*P' r dr 
@@ -37,7 +37,7 @@ classdef LayerCylindrical < Layer
         end
 
         function r = get.r(obj)
-            r = obj.y; % just another name
+            r = obj.z; % just another name
         end
 
         function [L0, L1, L2] = stiffnessOp(obj, udof, np, hl, n)
