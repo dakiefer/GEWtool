@@ -34,7 +34,7 @@ classdef LayerPlate < Layer
         function decoupl = decouplesLambvsSH(obj,~)
             % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves decouple. Argument n is optional and does nothing.
             lb = Waveguide.udofLamb;
-            sh =  Waveguide.udofSH;
+            sh = Waveguide.udofSH;
             c1test = obj.mat.c(lb,lb,sh,lb); 
             c2test = obj.mat.c(lb,sh,lb,lb);
             decoupl = all(c1test(:) == 0) & all(c2test(:) == 0);

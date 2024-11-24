@@ -57,7 +57,7 @@ classdef LayerCylindrical < Layer
             crp = squeeze(cn(3,:,:,2)); % boundary flux
 
             % include terms due to curvature (to be done before reducing to udof!)
-            A = [0, 0, 0; 0, 0, 1; 0, -1, 0]; % differetiation in curvilinear coordinate system
+            A = Cylinder.AphiDerivative; % differetiation in curvilinear coordinate system
             I = eye(size(A));
             cxpA = cxp*(A + 1i*n*I);
             Acpx = (A + 1i*n*I)*cpx;
@@ -116,7 +116,7 @@ classdef LayerCylindrical < Layer
             cpr = squeeze(cn(2,:,:,3));
 
             % include terms due to curvature (to be done before reducing to udof!)
-            A = [0, 0, 0; 0, 0, 1; 0, -1, 0]; % differetiation in curvilinear coordinate system
+            A = Cylinder.AphiDerivative; % differetiation in curvilinear coordinate coordinate system
             I = eye(size(A));
             cxpA = cxp*(A + 1i*n*I);
             Acpx = (A + 1i*n*I)*cpx; 
@@ -126,7 +126,7 @@ classdef LayerCylindrical < Layer
 
             % define dofs and continuous operator coefficients:
             lb = Waveguide.udofLamb; % Lamb polarization (axial): flexural and longitudinal
-            sh =  Waveguide.udofSH;   % SH polarization (axial): torsional
+            sh = Waveguide.udofSH;   % SH polarization (axial): torsional
             iszero = @(cc) all( cc(lb,sh) == 0 ) && all( cc(sh,lb) == 0);
 
             decoupl = iszero(cxx) && iszero(cxr) && iszero(cxpA + Acpx) && iszero(Acpr) ...

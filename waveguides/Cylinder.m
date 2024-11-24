@@ -101,7 +101,8 @@ methods
         % displGrad - Displacement gradient of the provided field "dat.u".
         udof = obj.udof;
         F = cell(obj.geom.nLay, 1); % allocate for each layer
-        inIpA = 1i*obj.n*eye(3) + [0, 0, 0; 0, 0, 1; 0, -1, 0]; % differetiation in curvilinear coordinate system
+        A = Cylinder.AphiDerivative; % differetiation in curvilinear coordinate 
+        inIpA = 1i*obj.n*eye(3) + A;
         inIpA = inIpA(:,udof); % reduce according to polarization
         for l = 1:obj.geom.nLay
             sizeF = [size(dat.w), obj.geom.N(l), 3, 3]; % size of F = grad u 
@@ -132,6 +133,13 @@ methods (Static)
     function uNames = displacementNames()
         uNames = ["ux", "ur", "uphi"];
     end
-end
+
+    function A = AphiDerivative()
+        % AphiDerivative - Additinal part of the ∂/∂phi-operator needed for curvilinear coordinates.
+        % Defined as: A = ephi er - er ephi
+        % Arises from ∂/∂phi(ui*ei) = ∂/∂phi(ui)*ei + ui*∂/∂phi(ei) =: ∂/∂phi(ui)*ei + A*(ui*ei)
+        A = [0, 0, 0; 0, 0, 1; 0, -1, 0]; % differetiation in curvilinear coordinate system
+    end
+end % methods
 
 end % class
