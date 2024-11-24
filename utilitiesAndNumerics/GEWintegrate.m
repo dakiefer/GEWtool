@@ -54,17 +54,17 @@ end
 
 function [flNew, ri, wi] = interpolateToGaussLegendre(lay, fl, n)
     dimsFl = ndims(fl);
-    [yi, wi] = lgwt(lay.N,0,1); % Gauss-Legendre points and weights
-    yi = flip(yi); % upside-down
-    wi = shiftdim(wi, -n+1);      % replace by integration weights on integration nodes yi
-    % interpolate each component of f onto new coordinates yi:
+    [zi, wi] = lgwt(lay.N,0,1); % Gauss-Legendre points and weights
+    zi = flip(zi); % upside-down
+    wi = shiftdim(wi, -n+1);      % replace by integration weights on integration nodes zi
+    % interpolate each component of f onto new coordinates zi:
     fl = shiftdim(fl,(n-1)); % integration on first dimension
     fNorm = norm(fl(:));
     comps = reshape(fl, lay.N, [])/fNorm; % all components of the data
     for k = 1:size(comps,2)
         data = [lay.eta(:), comps(:,k)];
-        comps(:,k) = barylag(data,yi); % replace with interpolated data
+        comps(:,k) = barylag(data,zi); % replace with interpolated data
     end
     flNew = shiftdim(reshape(comps, size(fl)), dimsFl-n+1)*fNorm; % positive shift is performed circularly while negative ones add singleton dimensions
-    ri = shiftdim(yi*lay.h, -n+1);    % scale to SI units, inner radius is zero
+    ri = shiftdim(zi*lay.h, -n+1);    % scale to SI units, inner radius is zero
 end

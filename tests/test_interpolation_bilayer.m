@@ -21,45 +21,45 @@ T = stress(gew, datMode);
 
 % % %%%% Retrieve modal field:  %%%%%%
 % nodal points:
-y1 = gew.geom.z{1}; y2 = gew.geom.z{2};  % nodal points of the layers
-y = [y1; y2]; 
+z1 = gew.geom.z{1}; z2 = gew.geom.z{2};  % nodal points of the layers
+z = [z1; z2]; 
 
 % retrieve displacements: 
 u1 = squeeze(u{1}(1,1,:,:)); % displacements of layer 1
 u2 = squeeze(u{2}(1,1,:,:)); % displacements of layer 2
 ux = [u1(:,1); u2(:,1)];
-uy = [u1(:,2); u2(:,2)];
+uz = [u1(:,2); u2(:,2)];
 
 % retrieve the y-traction is ey*T = [Tyx, Tyy]. This is continuous across the
 % layer interface and is zero at the boundaries. 
 T1 = squeeze(T{1}(1,1,:,2,:));
 T2 = squeeze(T{2}(1,1,:,2,:));
-Tyx = [T1(:,1); T2(:,1)];
-Tyy = [T1(:,2); T2(:,2)];
+Tzx = [T1(:,1); T2(:,1)];
+Tzz = [T1(:,2); T2(:,2)];
 
 % interpolated displacements u and stress components:
-[ui, yi] = GEWinterpolate(gew, u, 1000); 
-uix = ui(:,1); uiy = ui(:,2);
-Ti = GEWinterpolate(gew, T, yi);
-Tiyx = Ti(:,2,1); Tiyy = Ti(:,2,2);
+[ui, zi] = GEWinterpolate(gew, u, 1000); 
+uix = ui(:,1); uiz = ui(:,2);
+Ti = GEWinterpolate(gew, T, zi);
+Tizx = Ti(:,2,1); Tizz = Ti(:,2,2);
 
 %% test matching of interpolated and nodal values
 tol = 1e-2; % tolerance for testing
-ydiffs = yi - y.'; % each column is difference to nodal coordinates ''y''
-[ydiffmin, indyi] = min(abs(ydiffs));
+zdiffs = zi - z.'; % each column is difference to nodal coordinates ''y''
+[zdiffmin, indzi] = min(abs(zdiffs));
 % test matching close to nodal points:
-diff = ( abs(ux - uix(indyi)) )/norm(ux);
+diff = ( abs(ux - uix(indzi)) )/norm(ux);
 assert( all(diff < tol) )
 if exist('show', 'var') && show, fprintf("ux max-difference to interpolation: %g %%\n", max(diff)*1e2); end
-diff = ( abs(uy - uiy(indyi)) )/norm(uy);
+diff = ( abs(uz - uiz(indzi)) )/norm(uz);
 assert( all(diff < tol) )
-if exist('show', 'var') && show, fprintf("uy max-difference to interpolation: %g %%\n", max(diff)*1e2); end
-diff = ( abs(Tyx - Tiyx(indyi)) )/norm(Tyx);
+if exist('show', 'var') && show, fprintf("uz max-difference to interpolation: %g %%\n", max(diff)*1e2); end
+diff = ( abs(Tzx - Tizx(indzi)) )/norm(Tzx);
 assert( all(diff < tol) )
-if exist('show', 'var') && show, fprintf("Tyx max-difference to interpolation: %g %%\n", max(diff)*1e2); end
-diff = ( abs(Tyy - Tiyy(indyi)) )/norm(Tyy);
+if exist('show', 'var') && show, fprintf("Tzx max-difference to interpolation: %g %%\n", max(diff)*1e2); end
+diff = ( abs(Tzz - Tizz(indzi)) )/norm(Tzz);
 assert( all(diff < tol) )
-if exist('show', 'var') && show, fprintf("Tyy max-difference to interpolation: %g %%\n", max(diff)*1e2); end
+if exist('show', 'var') && show, fprintf("Tzz max-difference to interpolation: %g %%\n", max(diff)*1e2); end
 
 %% test boundary conditions
 tol = 1e-3; % tolerance for testing
@@ -90,50 +90,50 @@ if exist('show', 'var') && show
     % All displacement components need to be continuous across the layer interfaces.
     figure(5), clf
     subplot(2,1,1); hold on, % plot ux
-    plot(real(uix), yi/1e-3, 'k-');
-    plot(imag(uix), yi/1e-3, 'r-');
-    plot(real(ux),  y/1e-3, 'k*');
-    plot(imag(ux),  y/1e-3, 'r*');
+    plot(real(uix), zi/1e-3, 'k-');
+    plot(imag(uix), zi/1e-3, 'r-');
+    plot(real(ux),  z/1e-3, 'k*');
+    plot(imag(ux),  z/1e-3, 'r*');
     yline(gew.geom.zItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
         'LabelVerticalAlignment', 'middle')
     ylim([gew.geom.zItf(1), gew.geom.zItf(end)]/1e-3)
-    xlabel('modal displacement ux'), ylabel('y in mm')
+    xlabel('modal displacement ux'), ylabel('z in mm')
     legend({'real ux', 'imag ux'}, 'Location','best')
     
     subplot(2,1,2); hold on % plot uy
-    plot(real(uiy), yi/1e-3, 'k-');
-    plot(imag(uiy), yi/1e-3, 'r-');
-    plot(real(uy),  y/1e-3, 'k*');
-    plot(imag(uy),  y/1e-3, 'r*');
+    plot(real(uiz), zi/1e-3, 'k-');
+    plot(imag(uiz), zi/1e-3, 'r-');
+    plot(real(uz),  z/1e-3, 'k*');
+    plot(imag(uz),  z/1e-3, 'r*');
     yline(gew.geom.zItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
         'LabelVerticalAlignment', 'middle')
     ylim([gew.geom.zItf(1), gew.geom.zItf(end)]/1e-3)
-    xlabel('modal displacement uy'), ylabel('y in mm')
-    legend({'real uy', 'imag uy'}, 'Location','best')
+    xlabel('modal displacement uz'), ylabel('z in mm')
+    legend({'real uz', 'imag uz'}, 'Location','best')
     
     % plot also the modal stresses
     % The stress components Tyx and Tyy need to be continuous across the layers. Moreover, 
     % they vanish at the boundaries. 
     figure(6), clf,
     subplot(2,1,1); hold on, % plot Tyx
-    plot(real(Tiyx), yi/1e-3, 'k-');
-    plot(imag(Tiyx), yi/1e-3, 'r-');
-    plot(real(Tyx), y/1e-3, 'k*');
-    plot(imag(Tyx), y/1e-3, 'r*');
+    plot(real(Tizx), zi/1e-3, 'k-');
+    plot(imag(Tizx), zi/1e-3, 'r-');
+    plot(real(Tzx), z/1e-3, 'k*');
+    plot(imag(Tzx), z/1e-3, 'r*');
     yline(gew.geom.zItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
         'LabelVerticalAlignment', 'middle')
     ylim([gew.geom.zItf(1), gew.geom.zItf(end)]/1e-3)
-    xlabel('modal stress Tyx'), ylabel('y in mm')
-    legend({'real Tyx', 'imag Tyx'}, 'Location','best')
+    xlabel('modal stress Tyx'), ylabel('z in mm')
+    legend({'real Tzx', 'imag Tzx'}, 'Location','best')
     
     subplot(2,1,2); hold on, % plot Tyy
-    plot(real(Tiyy), yi/1e-3, 'k-');
-    plot(imag(Tiyy), yi/1e-3, 'r-');
-    plot(real(Tyy), y/1e-3, 'k*');
-    plot(imag(Tyy), y/1e-3, 'r*');
+    plot(real(Tizz), zi/1e-3, 'k-');
+    plot(imag(Tizz), zi/1e-3, 'r-');
+    plot(real(Tzz), z/1e-3, 'k*');
+    plot(imag(Tzz), z/1e-3, 'r*');
     yline(gew.geom.zItf(2)/1e-3, '-', {mat2.name, mat1.name}, 'LineWidth', 1,...
         'LabelVerticalAlignment', 'middle')
     ylim([gew.geom.zItf(1), gew.geom.zItf(end)]/1e-3)
-    xlabel('modal stress Tyy'), ylabel('y in mm')
-    legend({'real Tyy', 'imag Tyy'}, 'Location','best')
+    xlabel('modal stress Tzz'), ylabel('z in mm')
+    legend({'real Tzz', 'imag Tzz'}, 'Location','best')
 end

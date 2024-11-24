@@ -32,7 +32,7 @@ CVoigt = mat.C  % save the Voigt stiffness matrix into "CVoigt"
 mat31 = mat.permute();
 
 % The material reference system can be rotated (see 'help Material.rotateEuler'): 
-mat15 = mat.rotateEuler(0,15/180*pi,0); % rotates around ey (the plate normal)
+mat15 = mat.rotateEuler(15/180*pi, 'z'); % rotates around ez (the plate normal)
 
 %% The wave speeds (cl, ct, ct2) are calculated for the general anisotropic case
 % by solving the Kelvin-Christoffel equation [1] for phase propagation in direction 

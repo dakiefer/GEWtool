@@ -1,4 +1,4 @@
-function [ui, yi] = GEWinterpolate(gew, u, yi)
+function [ui, zi] = GEWinterpolate(gew, u, zi)
 % GEWinterpolate - Interpolate the data over all layers of the waveguide.
 % 
 % Arguments: 
@@ -7,17 +7,17 @@ function [ui, yi] = GEWinterpolate(gew, u, yi)
 %             selected mode to be interpolated, e.g., ''dat.u{1}(1,1,:,:)'' returned 
 %             by computeW() or computeK(). Use extractModes() to extract the data of 
 %             one mode of a mulit-layer waveguide.
-% - Ni | yi:  - Ni (scalar): numer of coordinates that will be generated on an
+% - Ni | zi:  - Ni (scalar): numer of coordinates that will be generated on an
 %               equidistant grid on [gew.geom.zItf(1), gew.geom.zItf(end)].
-%             - yi (vector): the coordinates on which to interpolate (should be 
+%             - zi (vector): the coordinates on which to interpolate (should be 
 %               in the domain of the provided data (i.e. the waveguide cross-section).
 % 
 % Return values: 
-% - ui:    (array) data interpolated to coordinates yi
-% - yi:    (vector) coordinates yi
+% - ui:    (array) data interpolated to coordinates zi
+% - zi:    (vector) coordinates zi
 % 
-% When ''gew'' is a symmetrized geometry, i.e., y in [0, ymax], GEWinterpolate
-% will retrieve field data for yi < 0 by symmetrical extension. You just need to
+% When ''gew'' is a symmetrized geometry, i.e., z in [0, zmax], GEWinterpolate
+% will retrieve field data for zi < 0 by symmetrical extension. You just need to
 % provide the negative coordinates. When providing the number of interpolation
 % points instead of coordinates, GEWinterpolate will automatically interpolate
 % on the symmetric domain [-gew.geom.zItf(end), gew.geom.zItf(end)].
@@ -27,7 +27,7 @@ function [ui, yi] = GEWinterpolate(gew, u, yi)
 % >> indk = 5;                      % fifth wavenumber
 % >> indw = 6;                      % sixth frequency
 % >> datMode = extractModes(dat,indk,indw); % data of only mode (indk, indw)
-% >> [ui, yi] = GEWinterpolate(gew, datMode.u, 200); % interpolate onto 200 equi-distant coordinates yi
+% >> [ui, zi] = GEWinterpolate(gew, datMode.u, 200); % interpolate onto 200 equi-distant coordinates zi
 %
 % Relies on the barycentric Lagrange interpolation implemented by Greg von
 % Winckel in ''barylag''.
@@ -41,12 +41,12 @@ if ~iscell(u) && gew.geom.nLay ~= 1  % for multilayered waveguide we need a cell
 elseif ~iscell(u) && gew.geom.nLay == 1
     uu{1} = u; u = uu; % wrap into cell for consistency
 end
-if isscalar(yi) && isreal(yi) && mod(yi,1) == 0 % test if integer real scalar
-    Ni = yi; % the number of nodes was provided rather than the interpolation grid.
+if isscalar(zi) && isreal(zi) && mod(zi,1) == 0 % test if integer real scalar
+    Ni = zi; % the number of nodes was provided rather than the interpolation grid.
     if gew.geom.symmetrized 
-        yi = linspace(-gew.geom.zItf(end), gew.geom.zItf(end), Ni).';
+        zi = linspace(-gew.geom.zItf(end), gew.geom.zItf(end), Ni).';
     else
-        yi = linspace(gew.geom.zItf(1), gew.geom.zItf(end), Ni).';
+        zi = linspace(gew.geom.zItf(1), gew.geom.zItf(end), Ni).';
     end
 end
 
@@ -60,18 +60,18 @@ for l = 1:gew.geom.nLay
     end
 end
 
-yi = yi(:); % barylag needs a column vector
-s = size(u{1}); s(1) = length(yi); % size of data structure after interpolation
+zi = zi(:); % barylag needs a column vector
+s = size(u{1}); s(1) = length(zi); % size of data structure after interpolation
 ui = zeros(s); % allocate
 for l = 1:gew.geom.nLay 
     for n = 1:prod(s(2:end)) % loop over all component of the data 
-        yl = gew.geom.z{l};  % nodal points
-        datal = [yl, u{l}(:,n)];               % initial data
-        indl = yi >= yl(1) & yi <= yl(end);    % indices of interpolated data for this layer
-        ui(indl,n) = barylag(datal, yi(indl)); % interpolate onto corresponding yi
-        if gew.geom.symmetrized && any(yi < 0) % extend symmetrically to negative coordinates
-            indb = yi >= -yl(end) & yi <= -yl(1);
-            if all(yi(indb) == yi(indl)) % we can use the last interpolation
+        zl = gew.geom.z{l};  % nodal points
+        datal = [zl, u{l}(:,n)];               % initial data
+        indl = zi >= zl(1) & zi <= zl(end);    % indices of interpolated data for this layer
+        ui(indl,n) = barylag(datal, zi(indl)); % interpolate onto corresponding zi
+        if gew.geom.symmetrized && any(zi < 0) % extend symmetrically to negative coordinates
+            indb = zi >= -zl(end) & zi <= -zl(1);
+            if all(zi(indb) == zi(indl)) % we can use the last interpolation
                 indRev = flip(find(indl));
                 if gew.geom.gdofDBC == gew.geom.N+1 % symmetric waves
                     ui(indb,n) = -conj(ui(indRev,n));
@@ -79,7 +79,7 @@ for l = 1:gew.geom.nLay
                     ui(indb,n) = conj(ui(indRev,n));
                 end
             else % we need to interpolate the negative section separately
-                uTmp = barylag(datal, -flip(yi(indb))); % interpolate onto corresponding yi
+                uTmp = barylag(datal, -flip(zi(indb))); % interpolate onto corresponding zi
                 if gew.geom.gdofDBC == gew.geom.N+1 % symmetric waves
                     ui(indb,n) = -conj(flip(uTmp));
                 else % anti-symmetric waves

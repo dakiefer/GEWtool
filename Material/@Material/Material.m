@@ -264,7 +264,7 @@ methods
             tol = 1e4*eps;
         end
         if nargin < 2
-            ax = 2; % default is y-axis
+            ax = 3; % default is z-axis
         end
         matR = obj.reflect(ax);
         matOrig = obj.transformBasis(eye(3)); % same rounding as in matR

@@ -3,7 +3,7 @@ function [ue, phi] = GEWextrapolateCircumference(u, n, Ntheta)
 % 
 % The modal field of waves in a cylinder are 
 %
-%    u(x,r,φ) = u(r)*exp(i*k*x)*exp(i*n*φ) 
+%    u(x,φ,r) = u(r)*exp(i*k*x)*exp(i*n*φ) 
 % 
 % for all (displacement or other) components of the vector/tensor u. Note that
 % the tensor u(r) implicitly depends on φ through the cylindrical basis vectors

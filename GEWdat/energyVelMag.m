@@ -15,8 +15,8 @@ if ~isscalar(gew) % compute recursively for every waveguide problem in the vecto
 end
 
 cex = energyVelAxial(gew, dat);      % ex-direction
-cez = energyVelTransverse(gew, dat); % ez-direction
-ceMag = sqrt(cex.^2 + cez.^2);
+cey = energyVelTransverse(gew, dat); % ey-direction
+ceMag = sqrt(cex.^2 + cey.^2);
 
 % NOTE: The above computation is done in terms of energy velocity components
 % instead of power flux components on purpose because the former are better

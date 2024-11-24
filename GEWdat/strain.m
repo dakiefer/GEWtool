@@ -7,11 +7,11 @@ function [S] = strain(gew,dat)
 % 
 % In a plate (Cartesian coordinates) the displacement gradient can be computed as
 % 
-% F = ex ik u +  ey ∂u∂y .
+% F = ex ik u +  ez ∂u∂z .
 % 
 % In a cylinder (Cylindrical coordinates) it is given by
 % 
-% F = ex ik u +  er ∂u∂r ephi 1/r (i*n*I + A)*u , 
+% F = ex ik u +  er ∂u∂r + ephi 1/r (i*n*I + A)*u , 
 % where I is the 3x3 identity matrix and A = ephi er - er ephi . This means that
 % the displacement gradient has an angular component even if the displacement u
 % does not.

@@ -52,9 +52,9 @@ end
 
 dat = normalizeReal(gew, dat);
 v = velocity(dat);
-vx = v{l}(:,:,n,1);
-uy = dat.u{l}(:,:,n,2);
-exc = abs(vx).*abs(uy); % excitability ~vx, detectability ~ uy
+vx = v{l}(:,:,n,gew.udof == 1);
+uz = dat.u{l}(:,:,n,gew.udof == 3);
+exc = abs(vx).*abs(uz); % excitability ~vx, detectability ~ uy
 excUnit = median(exc(isfinite(exc)))*1e2;
 exc = exc./excUnit; % normalized excitability (don't use max as there might be singularities where cg->0)
 end

@@ -43,13 +43,13 @@ output:
 
 ![Lamb waves in steel](resourcesAndDeps/img/dispersion_lamb_steel.jpg)
 
-Proceed by inspecting the laser-ultrasonic excitability of the waves computed above (product of tangential and normal displacements ux·uy):
+Proceed by inspecting the laser-ultrasonic excitability of the waves computed above (product of tangential and normal displacements ux·uz):
 
 ```matlab
 k = linspace(1e-2, 12, 200)/h;          % use more wavenumbers
 gew = plate.Lamb;                       % choose all Lamb waves
 dat = computeW(gew, k, 7);              % compute
-exc = excitabilityLUS(gew, dat, 'top'); % ux*uy at top surface (value of 1 at 100x median)
+exc = excitabilityLUS(gew, dat, 'top'); % ux*uz at top surface (value of 1 at 100x median)
 exc = 20*log10(exc);                    % in decibel
 scatter(dat.k(:)/1e3, dat.w(:)/2/pi/1e6, 15, exc(:), 'filled'), ylim([0, 6]);
 colormap(flipud(colormap)); cb = colorbar; caxis([-50, 0]);
