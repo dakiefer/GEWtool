@@ -10,6 +10,7 @@
 % 2022-2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 installdir = pwd;
+addpath('.');
 addpath(fullfile(installdir, 'GEWdat'));
 addpath(fullfile(installdir, 'layers'));
 addpath(fullfile(installdir, 'material'));
