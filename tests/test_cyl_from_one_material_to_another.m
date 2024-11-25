@@ -13,13 +13,13 @@ N = [12, 12];
 Nudof = [3, 3];
 zirc = Material('zircaloy'); 
 steel = Material('steel');
-mats = [zirc, steel];
+mats = {zirc, steel};
 n = 0;
 k = linspace(1e-2, 5, 50)/(r(end)-r(1)); % wavenumber-thickness (solve for frequency)
 
 %% material transition
 % % only first material
-cyl = Cylinder(mats(1), [r(1), r(3)], N(1));
+cyl = Cylinder(mats{1}, [r(1), r(3)], N(1));
 gew = cyl.fullyCoupled(n);
 dat = computeW(gew, k); 
 fig = figure; 
@@ -28,7 +28,7 @@ xlim([0, 5e3]), ylim([0, 2e6])
 xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 
 % % only second material
-cyl = Cylinder(mats(2), [r(1), r(3)], N(2));
+cyl = Cylinder(mats{2}, [r(1), r(3)], N(2));
 gew = cyl.fullyCoupled(n);
 dat = computeW(gew, k); 
 hold on, ph2 = plot(dat.k(:), dat.w(:)/2/pi, 'x', 'MarkerEdgeColor', [.5, .5, .5], 'MarkerFaceColor', [.5, .5, .5]); drawnow;
