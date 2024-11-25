@@ -128,4 +128,10 @@ methods
 
 end % methods
 
+methods (Static)
+    function uNames = displacementNames()
+        uNames = ["ux", "ur", "uphi"];
+    end
+end
+
 end % class

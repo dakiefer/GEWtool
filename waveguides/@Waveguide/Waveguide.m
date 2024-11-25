@@ -13,6 +13,7 @@ properties (Access = public)
 	lay         % layers as {1 x Nlay} cell array
 	op = [] 	% operators describing the wave propagation
     udof = []   % polarization: displacement components accounted for
+    unknowns = []  % names of independent variables 
 	np  		% normalization parameters (material parameters, geometry)
 end % properties
 
@@ -101,6 +102,8 @@ methods
         end
 		obj.assembleLayers(udof, n);
         obj.udof = udof;  % remember polarization
+        uNames = obj.displacementNames;
+        obj.unknowns = uNames(obj.udof);
         if isa(obj,'Cylinder'), obj.n = n; end  % remember circumferential wavenumber
 	end
 
@@ -270,6 +273,10 @@ end
 
 methods (Abstract)
     F = displGrad(obj, dat)  % to be implemented by subclasses
+end
+
+methods (Static,Abstract)
+    uNames = displacementNames() % returns the names of displacment components, e.g., "ux", "uy"...
 end
 
 end % class
