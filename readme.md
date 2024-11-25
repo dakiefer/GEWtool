@@ -15,6 +15,14 @@
 
 [![GitHub](resourcesAndDeps/img/logo_github.svg)](https://github.com/dakiefer/GEWtool) Code repository: [https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool)
 
+> [!NOTE]
+> **Coming soon**:
+>
+> - Piezoelectricity 
+> - Leaky waves
+> 
+> Contact me if you have questions:  [daniel.kiefer@espci.fr](mailto:daniel.kiefer@espci.fr)
+
 ## Example: Lamb waves
 
 ```matlab
@@ -67,27 +75,22 @@ To get started, explore the `examples` directory.
 You can also display help for all functions and classes, e.g., by typing `help Plate`. The most important ones are
 
 - Material representation: `Material`, `MaterialIsotropic`
-- Waveguides:  `Plate`, `Cylinder`
+- Waveguides:  `Plate`, `Cylinder`, `CylinderCircumferential`
 - Solvers: `computeW`, `computeK`, `computeZGV`
 
 ## Known limitations 
 
-- Cylinders: only axial waves are supported for now. 
-- Leaky waves: not implemented for now.
-
-Contact me if you have questions:  [daniel.kiefer@espci.fr](mailto:daniel.kiefer@espci.fr)
+- Circumferential waves: post-processing is not fully supported. While group velocity is working, energy velocity cannot be computed at the moment. 
 
 ## Mathematical and physical background
 
 GEWtool implements the *Spectral Element Method (SEM)* (higher-order Finite Elements) to solve the *waveguide problem*, i.e., the boundary value problem that describes wave propagation in the structure. Such an approach is commonly qualified as 'semi-analytical'. Contrary to classical root-finding of the characteristic equation, this method does not miss solutions. Moreover, unlike Finite Elements, the Spectral Elements lead to small but dense matrices. 
 
-Solusions are computed with machine precision provided you have set the discretization order `N` sufficiently high. The higher you go in frequency-thickness, the higher `N`  should be. As a rule of thumb: half of the obtained modes will be accurate. The figure below shows the convergence with respect to the Rayleigh-Lamb root of the S1 mode at 5.6 rad/mm in an aluminum plate (solution close to 5 MHz mm). A [Spectral Collocation](https://github.com/dakiefer/GEW_dispersion_script) implementation is shown in comparison. 15 digits accuracy is attained with N = 16 in this case.
+Solusions are computed with machine precision provided you have set the discretization order `N` sufficiently high. The higher you go in frequency-thickness, the higher `N`  should be. As a rule of thumb: half of the obtained modes will be accurate. The figure below shows the convergence with respect to the Rayleigh-Lamb root of the S1 mode at 5.6 rad/mm in an aluminum plate (solution close to 5 MHz mm). A [Spectral Collocation](https://github.com/dakiefer/GEW_dispersion_script) implementation is shown in comparison. GEWtool attains 13 digits accuracy with N = 16 in this case.
 
 ![relative error w.r.t. Rayleigh-Lamb root](resourcesAndDeps/img/convergence.png)
 
-For general information on the formulation of the elastic waveguide problem refer to 
-
-> D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
+For more  information on the waveguide problem and the numerical methods, refer to the literature cited in the sections below.
 
 ## Dependencies
 
@@ -111,11 +114,22 @@ If this code is useful to you, please cite it as (always indicating the DOI):
 
 Please also cite publication(s) as relevant, e.g., 
 
-> [1] D. A. Kiefer, S. Mezil, and C. Prada, “Beating resonance patterns and extreme power flux skewing in anisotropic elastic plates,” Science Advances, vol. 9, no. 51, p. eadk6846, Dec. 2023, doi: [10.1126/sciadv.adk6846](http://doi.org/10.1126/sciadv.adk6846). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_sciadv_beatingresonances/2023_SciAdv_BeatingResonances.pdf).
-
-> [2] H. Gravenkamp, B. Plestenjak, and D. A. Kiefer, “Notes on osculations and mode tracing in semi-analytical waveguide modeling,” Ultrasonics, vol. 135, p. 107112, Jul. 2023, doi: [10.1016/j.ultras.2023.107112](http://doi.org/10.1016/j.ultras.2023.107112). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_gravenkamp_osculations/2023_Gravenkamp_Osculations.pdf).
-
+> [1] D. A. Kiefer, S. Mezil, and C. Prada, “Beating resonance patterns and extreme power flux skewing in anisotropic elastic plates,” Science Advances, vol. 9, no. 51, p. eadk6846, Dec. 2023, doi: [10.1126/sciadv.adk6846](http://doi.org/10.1126/sciadv.adk6846). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_sciadv_beatingresonances/2023_SciAdv_BeatingResonances.pdf).  
+> [2] H. Gravenkamp, B. Plestenjak, and D. A. Kiefer, “Notes on osculations and mode tracing in semi-analytical waveguide modeling,” Ultrasonics, vol. 135, p. 107112, Jul. 2023, doi: [10.1016/j.ultras.2023.107112](http://doi.org/10.1016/j.ultras.2023.107112). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_gravenkamp_osculations/2023_Gravenkamp_Osculations.pdf).  
 > [3] D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_JASA_Computing_ZGV/2023_JASA_Computing_ZGV.pdf).
+
+## Further literature 
+
+> [1] T. J. R. Hughes, _The Finite Element Method: Linear Static and Dynamic Finite Element Analysis_. Mineola, New York: Dover Publications, 2012.  
+> [2] G. Waas, _Linear two dimensional analysis of soil dynamics problems in semi-infinite layered media_, Ph. D. thesis, University of California, Berkley, 1972.  
+> [3] E. Kausel and J. M. Roësset, “Semianalytic Hyperelement for Layered Strata,” Journal of the Engineering Mechanics Division, vol. 103, no. 4, Aug. 1977, doi: [10.1061/JMCEA3.0002251](https://doi.org/10.1061/JMCEA3.0002251).  
+> [4] L. Gavrić, “Finite Element Computation of Dispersion Properties of Thin-Walled Waveguides,” Journal of Sound and Vibration, vol. 173, no. 1, May 1994, doi: [10.1006/jsvi.1994.1221](https://doi.org/10.1006/jsvi.1994.1221).  
+> [5] A. T. I. Adamou and R. V. Craster, “Spectral methods for modelling guided waves in elastic media,” The Journal of the Acoustical Society of America, vol. 116, no. 3, Sep. 2004, doi: [10.1121/1.1777871](https://doi.org/10.1121/1.1777871).  
+> [6] S. Finnveden, “Evaluation of modal density and group velocity by a finite element method,” Journal of Sound and Vibration, vol. 273, no. 1, May 2004, doi: [10.1016/j.jsv.2003.04.004](https://doi.org/10.1016/j.jsv.2003.04.004).  
+> [7] A. Marzani, E. Viola, I. Bartoli, F. Lanza di Scalea, and P. Rizzo, “A semi-analytical finite element formulation for modeling stress wave propagation in axisymmetric damped waveguides,” Journal of Sound and Vibration, vol. 318, no. 3, Dec. 2008, doi: [10.1016/j.jsv.2008.04.028](https://doi.org/10.1016/j.jsv.2008.04.028).  
+> [8] H. Gravenkamp, C. Song, and J. Prager, “A numerical approach for the computation of dispersion relations for plate structures using the Scaled Boundary Finite Element Method,” Journal of Sound and Vibration, vol. 331, no. 11, May 2012, doi: [10.1016/j.jsv.2012.01.029](https://doi.org/10.1016/j.jsv.2012.01.029).  
+> [9] H. Gravenkamp, A. A. Saputra, and S. Duczek, “High-Order Shape Functions in the Scaled Boundary Finite Element Method Revisited,” Arch. Comput. Method Eng., vol. 28, no. 2, Mar. 2021, doi: [10.1007/s11831-019-09385-1](https://doi.org/10.1007/s11831-019-09385-1).  
+> [10] D. A. Kiefer, _Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering_, ser. FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, vol. 42. Erlangen: FAU University Press, 2022, doi: [10.25593/978-3-96147-550-6](http://doi.org/10.25593/978-3-96147-550-6). [![PDF](resourcesAndDeps/img/icon_file-pdf.svg)](https://dakiefer.net/publication/2022_dissertation_elastodynamic-quasi-guided-waves/2022_dissertation_Elastodynamic%20quasi-guided%20waves.pdf)
 
 ## Contributors
 

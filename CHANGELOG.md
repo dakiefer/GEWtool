@@ -2,6 +2,20 @@
 
 Documents the changes to GEWtool.
 
+## 1.6 (2024-11-25)
+
+- FEATURE **circumferential waves** in hollow cylinders. Rods (full cylinders do not support this at the moment). 
+- FEATURE `computeZGV` now supports non-Hermitian matrices
+- `Waveguide`: material list (mat) and layers list (lay) are now a cell arrays instead of vectors
+- `Waveguide`: reports the modeled displacement components in "unknowns"
+- BUGFIX Convert to standard EVP only when mass matrix is well conditioned
+- BUGFIX `computeK`: wrong iteration length
+- ZGV methods: BUGFIX and *speed improvements* 
+- `Material`: isotropic materials are now converted to anisotropic when concatenating
+- `Material`: method to convert to struct (use by save)
+- `Material`: support 3rd-order tensors (for piezoelectricity)
+- readme.md: added literature. general update.
+
 ## 1.5 (2024-07-12)
 
 - FEATURE **faster computation of zgv points** with `computeZGVScan()`. It is now based on a Sylvester-Arnoldi method and exploits the structure of the operator determinants of the multi-parameter eigenvalue problem. The k-domain scanning strategy has also been improved.
