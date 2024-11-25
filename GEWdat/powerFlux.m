@@ -15,6 +15,9 @@ if ~isscalar(gew) % compute recursively for every waveguide problem in the vecto
     return;
 end
 
+if isa(gew,"CylinderCircumferential")
+    warning('Circumferential waves do not support this function yet. The results will be wrong.');
+end
 p = poyntingVec(gew, dat);
 P = GEWintegrate(gew, p);
 

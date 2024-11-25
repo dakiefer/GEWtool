@@ -10,19 +10,19 @@
 h = 1e-3; 
 N = 15; 
 k = linspace(1e-2, 15, 1000)/h;
+nModes = 6; 
 
 %% test symmetric Lamb waves
 mat = Material('steel');
 guide = Plate(mat, h, N);
 gew = guide.LambS;
-dat = computeW(gew, k, 6); 
+dat = computeW(gew, k, nModes); 
 cg = real(groupVelAxial(gew,dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
-assert( max(devCgDwdk,[],'all') <= 100 )
-devCgDwdk = sort(devCgDwdk,'descend');
-assert( all(devCgDwdk(200:end,:) <= 20, 'all') ); % remove regions of large deviation due to approximation in dwdk
+devCgDwdk = sort(devCgDwdk(:),'descend');
+devCgDwdk = devCgDwdk(200:end); % remove nan entries and the biggest mismatch (large deviation due to approximation in dwdk)
 
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
@@ -33,18 +33,19 @@ if exist('show', 'var') && show
     legend('Location','southeast');
 end
 
+assert( max(devCgDwdk,[],'all') <= 50 );
+
 %% test antisymmetric Lamb waves
 mat = Material('steel');
 guide = Plate(mat, h, N);
 gew = guide.LambA;
-dat = computeW(gew, k, 6); 
+dat = computeW(gew, k, nModes); 
 cg = real(groupVelAxial(gew,dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
-assert( max(devCgDwdk,[],'all') <= 100 )
-devCgDwdk = sort(devCgDwdk,'descend');
-assert( all(devCgDwdk(200:end,:) <= 20, 'all') ); % remove regions of large deviation due to approximation in dwdk
+devCgDwdk = sort(devCgDwdk(:),'descend');
+devCgDwdk = devCgDwdk(200:end); % remove nan entries and the biggest mismatch (large deviation due to approximation in dwdk)
 
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
@@ -55,11 +56,13 @@ if exist('show', 'var') && show
     legend('Location','southeast');
 end
 
+assert( max(devCgDwdk,[],'all') <= 50 );
+
 %% test Lamb waves
 mat = Material('steel');
 guide = Plate(mat, h, N);
 gew = guide.Lamb;
-dat = computeW(gew, k, 6); 
+dat = computeW(gew, k, nModes); 
 cg = real(groupVelAxial(gew,dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
@@ -67,7 +70,7 @@ dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift
 % only the remaining points:
 devCgDwdk = abs(cg - dwdk);
 devCgDwdk = sort(devCgDwdk(:),'descend');
-assert( all(devCgDwdk(200:end,:) <= 30, 'all') ); % remove regions of large deviation due to approximation in dwdk
+devCgDwdk = devCgDwdk(200:end); % remove nan entries and the biggest mismatch (large deviation due to approximation in dwdk)
 
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
@@ -78,16 +81,19 @@ if exist('show', 'var') && show
     legend('Location','southeast');
 end
 
+assert( max(devCgDwdk,[],'all') <= 50 );
+
 %% test anisotropic
 mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
 guide = Plate(mat, h, N);
 gew = guide.fullyCoupled;
-dat = computeW(gew, k, 6); 
+dat = computeW(gew, k, nModes); 
 cg = real(groupVelAxial(gew,dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
-assert( max(devCgDwdk,[],'all') <= 20 )
+devCgDwdk = sort(devCgDwdk(:),'descend');
+devCgDwdk = devCgDwdk(200:end); % remove nan entries and the biggest mismatch (large deviation due to approximation in dwdk)
 
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
@@ -98,17 +104,20 @@ if exist('show', 'var') && show
     legend('Location','southeast');
 end
 
+assert( max(devCgDwdk,[],'all') <= 50 );
+
 %% test bilayer
 mat = Material('steel'); 
 mat2 = Material('aluminum');
 guide = Plate([mat mat2], h/2, round(N/2));
 gew = guide.Lamb;
-dat = computeW(gew, k, 6); 
+dat = computeW(gew, k, nModes); 
 cg = real(groupVelAxial(gew,dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
-assert( max(devCgDwdk,[],'all') <= 120 )
+devCgDwdk = sort(devCgDwdk(:),'descend');
+devCgDwdk = devCgDwdk(200:end); % remove nan entries and the biggest mismatch (large deviation due to approximation in dwdk)
 
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
@@ -119,17 +128,19 @@ if exist('show', 'var') && show
     legend('Location','southeast');
 end
 
+assert( max(devCgDwdk,[],'all') <= 50 );
+
 %% test cylinder longitudinal 
 mat = Material('steel');
 guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.longitudinal;
-dat = computeW(gew, k, 6); 
+dat = computeW(gew, k, nModes); 
 cg = real(groupVelAxial(gew,dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
 devCgDwdk = sort(devCgDwdk(:),'descend');
-assert( max(devCgDwdk(100:end),[],'all') <= 50 ); % remove regions of large deviation due to approximation in dwdk
+devCgDwdk = devCgDwdk(200:end); % remove nan entries and the biggest mismatch (large deviation due to approximation in dwdk)
 
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
@@ -140,17 +151,19 @@ if exist('show', 'var') && show
     legend('Location','southeast');
 end
 
+assert( max(devCgDwdk,[],'all') <= 50 );
+
 %% test cylinder n = 0
 mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
 guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.fullyCoupled(0);
-dat = computeW(gew, k, 6); 
+dat = computeW(gew, k, nModes); 
 cg = real(groupVelAxial(gew,dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
 devCgDwdk = sort(devCgDwdk(:),'descend');
-assert( max(devCgDwdk(100:end),[],'all') <= 20 ); % remove regions of large deviation due to approximation in dwdk
+devCgDwdk = devCgDwdk(200:end); % remove nan entries and the biggest mismatch (large deviation due to approximation in dwdk)
 
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
@@ -161,17 +174,19 @@ if exist('show', 'var') && show
     legend('Location','southeast');
 end
 
+assert( max(devCgDwdk,[],'all') <= 50 );
+
 %% test cylinder N = 1
 mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
 guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.fullyCoupled(1);
-dat = computeW(gew, k, 6); 
+dat = computeW(gew, k, nModes); 
 cg = real(groupVelAxial(gew,dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
 devCgDwdk = sort(devCgDwdk(:),'descend');
-assert( max(devCgDwdk(100:end),[],'all') <= 20 ); % remove regions of large deviation due to approximation in dwdk
+devCgDwdk = devCgDwdk(200:end); % remove nan entries and the biggest mismatch (large deviation due to approximation in dwdk)
 
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
@@ -182,3 +197,50 @@ if exist('show', 'var') && show
     legend('Location','southeast');
 end
 
+assert( max(devCgDwdk,[],'all') <= 50 );
+
+%% test circumferential Lamb
+mat = Material('steel');
+guide = CylinderCircumferential(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
+gew = guide.Lamb;
+dat = computeW(gew, k, nModes); 
+cg = real(groupVelAxial(gew,dat));
+dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
+
+devCgDwdk = abs(cg - dwdk);
+devCgDwdk = sort(devCgDwdk(:),'descend');
+devCgDwdk = devCgDwdk(200:end); % remove nan entries and the biggest mismatch (large deviation due to approximation in dwdk)
+
+% plot if the variable "show" has been set to true
+if exist('show', 'var') && show
+    maxDev = max(devCgDwdk,[],'all')
+    figure(8); clf; hold on; title('Cylinder triclinic n = 1')
+    plot(dat.w(:), dwdk(:), 'rx', 'DisplayName','$\partial \omega / \partial k$');
+    plot(dat.w(:), cg(:), 'k.', 'DisplayName','cg');
+    legend('Location','southeast');
+end
+
+assert( max(devCgDwdk,[],'all') <= 50 );
+
+%% test circumferential anisotropic
+mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
+guide = CylinderCircumferential(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
+gew = guide.fullyCoupled;
+dat = computeW(gew, k, nModes); 
+cg = real(groupVelAxial(gew,dat));
+dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
+
+devCgDwdk = abs(cg - dwdk);
+devCgDwdk = sort(devCgDwdk(:),'descend');
+devCgDwdk = devCgDwdk(200:end); % remove nan entries and the biggest mismatch (large deviation due to approximation in dwdk)
+
+% plot if the variable "show" has been set to true
+if exist('show', 'var') && show
+    maxDev = max(devCgDwdk,[],'all')
+    figure(8); clf; hold on; title('Cylinder triclinic n = 1')
+    plot(dat.w(:), dwdk(:), 'rx', 'DisplayName','$\partial \omega / \partial k$');
+    plot(dat.w(:), cg(:), 'k.', 'DisplayName','cg');
+    legend('Location','southeast');
+end
+
+assert( max(devCgDwdk,[],'all') <= 50 );

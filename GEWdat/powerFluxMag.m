@@ -14,6 +14,9 @@ if ~isscalar(gew) % compute recursively for every waveguide problem in the vecto
     return;
 end
 
+if isa(gew,"CylinderCircumferential")
+    warning('Circumferential waves do not support this function yet. The results will be wrong.');
+end
 normP = gew.np.c0 * gew.np.fh0 * gew.np.h0;
 Px = powerFluxAxial(gew, dat)/normP;
 Pz = powerFluxTransverse(gew, dat)/normP; 

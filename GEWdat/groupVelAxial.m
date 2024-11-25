@@ -20,9 +20,6 @@ if ~isscalar(gew) % compute recursively for every waveguide problem in the vecto
     return;
 end
 
-if isa(gew,"CylinderCircumferential")
-    warning('Circumferential waves do not support this function yet. The results might be wrong.');
-end
 if gew.isDissipative
     warning('GEWTOOL:groupVel:dissipative', ...
         'The waveguide is dissipative and the group velocity is not meaningful. You should compute the energy velocity instead. I will proceed anyways.');
