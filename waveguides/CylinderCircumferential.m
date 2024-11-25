@@ -32,9 +32,8 @@ methods
         %
         % See also: Cylinder, Plate.
 		obj = obj@Cylinder(mats, rs, Ns); % converts mats 
-        obj.lay = LayerCylCircumferential.empty; % initialize with correct class
         for ii = 1:length(obj.mat)
-			obj.lay(ii) = LayerCylCircumferential(obj.mat(ii), rs(ii:ii+1), obj.geom.N(ii));
+			obj.lay{ii} = LayerCylCircumferential(obj.mat{ii}, rs(ii:ii+1), obj.geom.N(ii));
         end
     end
 
