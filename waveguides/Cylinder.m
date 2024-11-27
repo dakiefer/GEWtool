@@ -131,7 +131,7 @@ end % methods
 
 methods (Static)
     function uNames = displacementNames()
-        uNames = ["ux", "ur", "uphi"];
+        uNames = ["ux", "uphi", "ur"];
     end
 
     function A = AphiDerivative()

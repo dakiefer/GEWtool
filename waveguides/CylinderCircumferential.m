@@ -1,6 +1,6 @@
 classdef CylinderCircumferential < Cylinder
 % CylinderCircumferential - Represents circumferential guided waves in cylinders.
-% Displacement ansatz: u(x,r,phi,t) = u(r)*exp(i k phi b - i w t), where: 
+% Displacement ansatz: u(x,phi,r,t) = u(r)*exp(i k phi b - i w t), where: 
 % - b: outer radius 
 % - phi: angular coordinate 
 % - k wavenumber at the outer cylinder's surface
@@ -38,18 +38,16 @@ methods
     end
 
     function gew = Lamb(obj)
-        % LAMB - Assemble operators for ur-uphi-polarized waves.
-        % The modes are
-        % ur-uphi-polarized and are akin to Lamb waves in a plate. The modes exist
-        % only when the material has
-        % appropriate symmetries. Otherwise they are coupled with the sh-type
-        % waves that are polarized in ux-direction. 
+        % LAMB - Assemble operators for uphi-ur-polarized waves.
+        % The modes are akin to Lamb waves in a plate. The modes exist only when
+        % the material has appropriate symmetries. Otherwise they are coupled
+        % with the sh-type waves that are polarized in ux-direction.
         % 
         % See also: sh, fullyCoupled.
-        udof = [2 3]; % ur and uphi components
+        udof = obj.udofLamb();
         gew = obj.polarization(udof, 0); % vanishing axial wavenumber 
         % renormalization: instead of n, use k = n/b at outer radius b:
-        b = gew.geom.yItf(end,end)/gew.np.h0; % normalized outer radius 
+        b = gew.geom.zItf(end,end)/gew.np.h0; % normalized outer radius 
         gew.op.L2 = gew.op.L2*b^2;
         gew.op.L1 = gew.op.L1*b;
     end
@@ -61,10 +59,10 @@ methods
         % Otherwise they are coupled with the Lamb-polarized waves.
         % 
         % See also: fullyCoupled, Lamb.
-        udof = 1; % ux component
+        udof = obj.udofSH(); % ux component
         gew = obj.polarization(udof, 0); % vanishing axial wavenumber 
         % renormalization: instead of n, use k = n/b at outer radius b:
-        b = gew.geom.yItf(end,end)/gew.np.h0; % normalized outer radius 
+        b = gew.geom.zItf(end,end)/gew.np.h0; % normalized outer radius 
         gew.op.L2 = gew.op.L2*b^2;
         gew.op.L1 = gew.op.L1*b;
     end
@@ -75,10 +73,10 @@ methods
         % fully coupled waves in a plate. 
         % 
         % See also: Lamb, sh.
-        udof = [1 2 3]; % ux, ur and uphi components
+        udof = [1 2 3]; % ux, uphi and ur components
         gew = obj.polarization(udof, 0); % vanishing axial wavenumber 
         % renormalization: instead of n, use k = n/b at outer radius b:
-        b = gew.geom.yItf(end,end)/gew.np.h0; % normalized outer radius 
+        b = gew.geom.zItf(end,end)/gew.np.h0; % normalized outer radius 
         gew.op.L2 = gew.op.L2*b^2;
         gew.op.L1 = gew.op.L1*b;
     end
@@ -89,5 +87,16 @@ methods
     end
 
 end % methods
+
+methods (Static)
+    function udof = udofLamb()
+        % udofLamb - return the displacement degrees of freedom of Lamb polarization 
+        udof = [2 3]; 
+    end
+    function udof = udofSH()
+        % udofSH - return the displacement degrees of freedom of SH polarization 
+        udof = 1; 
+    end
+end
 
 end % class
