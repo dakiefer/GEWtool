@@ -100,8 +100,9 @@ classdef LayerCylindrical < Layer
             M = kron(MM, obj.PPr)*hl^2; % assemble
         end
         
-        function decoupl = decouplesLambvsSH(obj,n)
-            % decouplesLambvsSH - Tests whether the x-r- and phi-polarized waves decouple.
+        function decoupl = decouplesPolarization(obj,dof,n)
+            % decouplesPolarization - Tests whether 'dof' decouples from the remaining 
+            % degrees of freedom. 
 
             % relevant material matrices: 
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
@@ -125,10 +126,8 @@ classdef LayerCylindrical < Layer
             crpA = crp*(A + 1i*n*I);
 
             % define dofs and continuous operator coefficients:
-            lb = Waveguide.udofLamb; % Lamb polarization (axial): flexural and longitudinal
-            sh = Waveguide.udofSH;   % SH polarization (axial): torsional
-            iszero = @(cc) all( cc(lb,sh) == 0 ) && all( cc(sh,lb) == 0);
-
+            rem = setdiff(1:3, dof); % remaining degrees of freedom 
+            iszero = @(cc) all( cc(dof,rem) == 0 ) && all( cc(rem,dof) == 0);
             decoupl = iszero(cxx) && iszero(cxr) && iszero(cxpA + Acpx) && iszero(Acpr) ...
                 && iszero(AcppA) && iszero(crx) && iszero(crr) && iszero(crpA);
         end

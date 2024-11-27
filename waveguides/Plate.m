@@ -60,7 +60,7 @@ methods
         
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = 1:3;
-        udofFix = Waveguide.udofInplane(udof); 
+        udofFix = obj.dofInplane(udof); 
         gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix ux- and uy-displacements at bottom (z=0)
     end
@@ -73,7 +73,7 @@ methods
         
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = 1:3;
-        udofFix = Waveguide.udofOutofplane(udof);
+        udofFix = obj.dofOutofplane(udof); % 3 if [ux, uy, uz], 2 if [ux, uz]
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix uz-displacement at bottom (z=0)
     end
@@ -108,8 +108,8 @@ methods
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
-        udof = Waveguide.udofLamb;
-        udofFix = Waveguide.udofOutofplane(udof);
+        udof = obj.udofLamb;
+        udofFix = obj.dofOutofplane(udof); % 3 if [ux, uy, uz], 2 if [ux, uz]
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix uz-displacement at bottom (z=0)
     end
@@ -124,8 +124,8 @@ methods
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
-        udof = Waveguide.udofLamb;
-        udofFix = Waveguide.udofInplane(udof);
+        udof = obj.udofLamb;
+        udofFix = obj.dofInplane(udof);
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix ux-displacement at bottom (z=0)
     end
@@ -148,14 +148,6 @@ methods
     function gew = sh(obj)
         n = 0;
         gew = sh@Waveguide(obj, n);
-    end
-
-    function decoupl = decouplesLambvsSH(obj,~)
-        % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves
-        % decouple.
-        % 
-        % See also: Lamb, sh, fullyCoupled.
-        decoupl = decouplesLambvsSH@Waveguide(obj,0);
     end
 
     function decoupl = decouplesSA(obj, verb)

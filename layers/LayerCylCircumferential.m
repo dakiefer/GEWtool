@@ -57,8 +57,9 @@ methods
         L0 = K0pr + G0pr + G0rr + K0pp; % add in this order to preserve hermiticity in numerical precision!
     end
 
-    function decoupl = decouplesLambvsSH(obj, ~)
-        % decouplesLambvsSH - Tests whether the r-phi- and x-polarized waves decouple.
+    function decoupl = decouplesPolarization(obj, dof, ~)
+        % decouplesPolarization - Tests whether 'dof' decouples from the remaining 
+        % degrees of freedom. 
 
         % relevant material matrices: 
         cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
@@ -76,9 +77,8 @@ methods
         crpA = crp*A;
 
         % define dofs and continuous operator coefficients:
-        rp = [2 3];   % circumferential Lamb-like polarization
-        x =  1;       % circumferential SH-like polarization
-        iszero = @(c) all( c(rp,x) == 0 ) && all( c(x,rp) == 0 );
+        rem = setdiff(1:3, dof); % remaining degrees of freedom 
+        iszero = @(c) all( c(dof,rem) == 0 ) && all( c(rem,dof) == 0 );
 
         decoupl = iszero(cpp) && iszero(cpr) && iszero(crp) && iszero(crr)...
             && iszero(cppA + Acpp) && iszero(Acpr) && iszero(AcppA) && iszero(crpA);

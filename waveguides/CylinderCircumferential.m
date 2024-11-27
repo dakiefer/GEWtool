@@ -35,6 +35,7 @@ methods
         for ii = 1:length(obj.mat)
 			obj.lay{ii} = LayerCylCircumferential(obj.mat{ii}, rs(ii:ii+1), obj.geom.N(ii));
         end
+        obj.n = 0;  % The wavenumber along the axis of the cylinder is always zero.
     end
 
     function gew = Lamb(obj)
@@ -81,22 +82,19 @@ methods
         gew.op.L1 = gew.op.L1*b;
     end
 
-    function decoupl = decouplesLambvsSH(obj, ~)
-        n = 1; % value is irrelevant for circumferential waves
-        decoupl = decouplesLambvsSH@Waveguide(obj, n);
-    end
-
 end % methods
 
 methods (Static)
     function udof = udofLamb()
-        % udofLamb - return the displacement degrees of freedom of Lamb polarization 
+        % udofLamb - return the displacement degrees of freedom of Lamb-like 
+        % polarization, i.e., [uphi, ur] displacements.
         udof = [2 3]; 
     end
     function udof = udofSH()
-        % udofSH - return the displacement degrees of freedom of SH polarization 
+        % udofSH - return the displacement degrees of freedom of SH-like 
+        % polarization, i.e., ux displacements
         udof = 1; 
     end
-end
+end % methods
 
 end % class

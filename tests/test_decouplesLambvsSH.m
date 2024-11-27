@@ -13,29 +13,127 @@ N = 5;
 mat = Material('silicon');
 matRot = mat.rotateEuler(22.5/180*pi,'z');
 
-%% test plate 
+%% plate on symmetry axis
+% test return value of decouplesLambvsSH()
 plate = Plate(mat,h,N);
 decoupl = plate.decouplesLambvsSH;
 assert(decoupl == true)
+
+% check wheter a warning about decoupling is thrown 
+lastwarn('', ''); % reset warnings
+gew = plate.Lamb; 
+[warnMsg, warnId] = lastwarn(); 
+assert(isempty(warnId) && isempty(warnMsg))
+
+%% plate off-symmetry axis
+% test return value of decouplesLambvsSH()
 plate = Plate(matRot,h,N);
 decoupl = plate.decouplesLambvsSH;
 assert(decoupl == false);
 
-%% test cylinder 
-% zeroth-order circumferential waves
+% check wheter a warning about decoupling is thrown 
+lastwarn('', ''); % reset warnings
+gew = plate.Lamb; 
+[warnMsg, warnId] = lastwarn(); 
+assert(strcmp(warnId, 'GEWTOOL:Waveguide:donotdecouple'))
+disp('Warning issued on purpose. Testing.')
+
+%% cylinder longitudinal waves on-symmetry
 n = 0;
+
+% test return value of decouplesLambvsSH()
 cyl = Cylinder(mat,r,N);
 decoupl = cyl.decouplesLambvsSH(n);
 assert(decoupl == true);
+
+% check wheter a warning about decoupling is thrown 
+lastwarn('', ''); % reset warnings
+gew = cyl.longitudinal; 
+[warnMsg, warnId] = lastwarn(); 
+assert(isempty(warnId) && isempty(warnMsg))
+
+%% cylinder longitudinal waves off-symmetry
+n = 0;
+
+% test return value of decouplesLambvsSH()
 cyl = Cylinder(matRot,r,N);
 decoupl = cyl.decouplesLambvsSH(n);
 assert(decoupl == false);
 
-% first-order circumferential waves
+% check wheter a warning about decoupling is thrown 
+lastwarn('', ''); % reset warnings
+gew = cyl.longitudinal; 
+[warnMsg, warnId] = lastwarn(); 
+assert(strcmp(warnId, 'GEWTOOL:Waveguide:donotdecouple'))
+disp('Warning issued on purpose. Testing.')
+
+%% cylinder flexural waves on-symmetry
 n = 1;
+
+% test return value of decouplesLambvsSH()
 cyl = Cylinder(mat,r,N);
 decoupl = cyl.decouplesLambvsSH(n);
 assert(decoupl == false);
+
+% check wheter a warning about decoupling is thrown 
+lastwarn('', ''); % reset warnings
+gew = cyl.Lamb(n); % longitudinal() automatically sets n = 0
+[warnMsg, warnId] = lastwarn(); 
+assert(strcmp(warnId, 'GEWTOOL:Waveguide:donotdecouple'))
+disp('Warning issued on purpose. Testing.')
+
+%% cylinder flexural waves off-symmetry
+n = 1; 
+
+% test return value of decouplesLambvsSH()
 cyl = Cylinder(matRot,r,N);
 decoupl = cyl.decouplesLambvsSH(n);
 assert(decoupl == false);
+
+% check wheter a warning about decoupling is thrown 
+lastwarn('', ''); % reset warnings
+gew = cyl.Lamb(n); % longitudinal() automatically sets n = 0
+[warnMsg, warnId] = lastwarn(); 
+assert(strcmp(warnId, 'GEWTOOL:Waveguide:donotdecouple'))
+disp('Warning issued on purpose. Testing.')
+
+%% cylinder circumferential waves on-symmetry
+
+% test return value of decouplesLambvsSH()
+cyl = CylinderCircumferential(mat,r,N);
+decoupl = cyl.decouplesLambvsSH;
+assert(decoupl == true);
+
+% check wheter a warning about decoupling is thrown 
+lastwarn('', ''); % reset warnings
+gew = cyl.Lamb; 
+[warnMsg, warnId] = lastwarn(); 
+assert(isempty(warnId) && isempty(warnMsg))
+
+%% cylinder circumferential waves off-symmetry
+
+% test return value of decouplesLambvsSH()
+cyl = CylinderCircumferential(matRot,r,N);
+decoupl = cyl.decouplesLambvsSH;
+assert(decoupl == false);
+
+% check wheter a warning about decoupling is thrown 
+lastwarn('', ''); % reset warnings
+gew = cyl.Lamb; 
+[warnMsg, warnId] = lastwarn(); 
+assert(strcmp(warnId, 'GEWTOOL:Waveguide:donotdecouple'))
+disp('Warning issued on purpose. Testing.')
+
+%% call polarization() directly 
+udof = [1 2];
+plate = Plate(mat,h,N);
+lastwarn('', ''); % reset warnings
+gew = plate.polarization(udof,0); 
+[warnMsg, warnId] = lastwarn(); 
+assert(isempty(warnId) && isempty(warnMsg))
+plate = Plate(matRot,h,N);
+lastwarn('', ''); % reset warnings
+gew = plate.polarization(udof,0); 
+[warnMsg, warnId] = lastwarn(); 
+assert(strcmp(warnId, 'GEWTOOL:Waveguide:donotdecouple'))
+disp('Warning issued on purpose. Testing.')

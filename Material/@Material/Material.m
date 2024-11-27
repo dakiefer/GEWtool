@@ -274,7 +274,7 @@ methods
     function decoupl = decouplesSA(obj)
         % DECOUPLESSA - test if invariant to reflection along y-axis.
         % Basically an alias to isInvariantOnReflection().
-        decoupl = obj.isInvariantOnReflection(Waveguide.udofOutofplane(1:3)); % full polarization
+        decoupl = obj.isInvariantOnReflection(3); % full polarization
     end
 
     function dis = isDissipative(obj)

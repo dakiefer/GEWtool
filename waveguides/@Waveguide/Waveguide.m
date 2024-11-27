@@ -121,7 +121,7 @@ methods
         if ~obj.decouplesLambvsSH(n)
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
-        gew = obj.polarization(Waveguide.udofLamb, n);
+        gew = obj.polarization(obj.udofLamb, n);
     end
 
 	function gew = sh(obj, n)
@@ -131,7 +131,7 @@ methods
         if ~obj.decouplesLambvsSH(n)
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
         end
-		gew = obj.polarization(Waveguide.udofSH, n);
+		gew = obj.polarization(obj.udofSH, n);
     end
 
     function dis = isDissipative(obj)
@@ -195,14 +195,40 @@ methods
     
     function decoupl = decouplesLambvsSH(obj,n)
         % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves
-        % decouple. For cylinders this corresponds to decoupling of flexural and
-        % longitudinal waves from torsional waves. 
+        % decouple. For axial waves in cylinders this corresponds to decoupling of 
+        % longitudinal from torsional waves. 
+        % This function calls decouplesPolarization(obj,dof,n) with
+        % dof = obj.udofLamb().
+        %
         % Arguments: 
-        % - n : circumferential wavenumber (only necessary for cylinders)
+        % - n : circumferential wavenumber (only necessary for cylinders, if 
+        %       previously specified, it is retrieved from obj.n)
         % 
-        % See also: Lamb, sh, fullyCoupled.
+        % See also: decouplesPolarization, Lamb, sh, fullyCoupled.
+        dof = obj.udofLamb();
+        if nargin < 2
+            decoupl = obj.decouplesPolarization(dof);
+        else
+            decoupl = obj.decouplesPolarization(dof,n);
+        end
+    end
+
+    function decoupl = decouplesPolarization(obj,dof,n)
+        % decouplesPolarization - Tests whether 'dof' decouples from the remaining 
+        % degrees of freedom.
+        %
+        % Arguments: 
+        % - dof : vector of degrees of freedom, e.g., [1 3] for Lamb waves.
+        % - n   : circumferential wavenumber (only necessary for axial waves in cyl.)
+        % 
+        % See also: decouplesLambvsSH
+        if nargin < 3 && ~isprop(obj,'n')
+            n = 0; % for Plates we simply set n = 0. It is not used further.
+        elseif nargin < 3 && isprop(obj,'n') && ~isnan(obj.n)
+            n = obj.n; 
+        end
         for l = obj.lay % test each of the layers
-            if ~l{1}.decouplesLambvsSH(n)
+            if ~l{1}.decouplesPolarization(dof,n)
                 decoupl = false; return;
             end
         end
@@ -277,13 +303,15 @@ methods (Static)
         % udofSH - return the displacement degrees of freedom of SH polarization 
         udof = 2; 
     end
-    function dof = udofInplane(polarization)
-        % udofInplane - return the in-plane displacement degrees of freedom 
+    function dof = dofInplane(polarization)
+        % dofInplane - return the in-plane displacement degrees of freedom 
+        % It is [1 2] if [ux, uy, uz]-pol, 1 if [ux, uz]-pol, etc.
         udof = [1 2]; 
         dof = find(ismember(polarization,udof)); % local dof of in-plane displacements
     end
-    function dof = udofOutofplane(polarization)
-        % udofOutofplane - return the out-of-plane displacement degrees of freedom 
+    function dof = dofOutofplane(polarization)
+        % dofOutofplane - return the out-of-plane displacement degrees of freedom 
+        % It is 3 if [ux, uy, uz]-pol, 2 if [ux, uz]-pol, etc.
         udof = 3;
         dof = find(ismember(polarization,udof)); % local dof of out-of-plane displacements
     end

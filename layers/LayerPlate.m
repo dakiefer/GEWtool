@@ -30,13 +30,19 @@ classdef LayerPlate < Layer
             % combine to polynomial of (ik):
             L0 = G0/hl;  L1 = K1 + G1;  L2 = K2*hl;
         end
-        
-        function decoupl = decouplesLambvsSH(obj,~)
-            % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves decouple. Argument n is optional and does nothing.
-            lb = Waveguide.udofLamb;
-            sh = Waveguide.udofSH;
-            c1test = obj.mat.c(lb,lb,sh,lb); 
-            c2test = obj.mat.c(lb,sh,lb,lb);
+
+        function decoupl = decouplesPolarization(obj,dof,~)
+            % decouplesPolarization - Tests whether 'dof' decouples from the remaining 
+            % degrees of freedom.
+            %
+            % Arguments: 
+            % - dof : vector of degrees of freedom, e.g., [1 3] for Lamb waves.
+            % - n   : circumferential wavenumber (only necessary for axial waves in cyl.)
+            % 
+            % See also: Waveguide.decouplesLambvsSH, Waveguide.decouplesPolarization
+            rem = setdiff(1:3, dof); % remaining degrees of freedom 
+            c1test = obj.mat.c(dof,dof,rem,dof); 
+            c2test = obj.mat.c(dof,rem,dof,dof);
             decoupl = all(c1test(:) == 0) & all(c2test(:) == 0);
         end
 
