@@ -41,6 +41,8 @@ classdef LayerPlate < Layer
             % 
             % See also: Waveguide.decouplesLambvsSH, Waveguide.decouplesPolarization
             rem = setdiff(1:3, dof); % remaining degrees of freedom 
+            if isempty(rem), decoupl = true; return; end % no need to test
+
             c1test = obj.mat.c(dof,dof,rem,dof); 
             c2test = obj.mat.c(dof,rem,dof,dof);
             decoupl = all(c1test(:) == 0) & all(c2test(:) == 0);

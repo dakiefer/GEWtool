@@ -104,9 +104,6 @@ methods
         % 
         % See also: LambA, LambSA, Lamb, sh, fullyCoupled.
 
-        if ~obj.decouplesLambvsSH
-            warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
-        end
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = obj.udofLamb;
         udofFix = obj.dofOutofplane(udof); % 3 if [ux, uy, uz], 2 if [ux, uz]
@@ -120,9 +117,6 @@ methods
         % 
         % See also: LambS, LambSA, Lamb, sh, fullyCoupled.
         
-        if ~obj.decouplesLambvsSH
-            warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
-        end
         if ~obj.geom.symmetrized, obj = obj.symmetrizeGeometry; end
         udof = obj.udofLamb;
         udofFix = obj.dofInplane(udof);

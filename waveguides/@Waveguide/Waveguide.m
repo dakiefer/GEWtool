@@ -94,6 +94,13 @@ methods
         %           ignore if not needed. default: 0.
         % 
         % See also: Lamb, sh, decouplesLambvsSH.
+        uNames = obj.displacementNames;
+        polarizationNames = uNames(udof); % will be saved in obj.unknowns
+        if ~obj.decouplesPolarization(udof,n)
+            printNames = polarizationNames(1); 
+            for astr = polarizationNames(2:end), printNames = strcat(printNames, ", ", astr); end
+            warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! The [%s]-displacements do not decouple from the remaining ones. I will proceed anyways.', printNames);
+        end
         Nudof = length(udof);
         if any(obj.geom.Nudof ~= Nudof) % update geometry if necessary
             geomNew = Geometry(obj.geom.zItf, obj.geom.N, Nudof*ones(obj.geom.nLay,1)); 
@@ -102,8 +109,7 @@ methods
         end
 		obj.assembleLayers(udof, n);
         obj.udof = udof;  % remember polarization
-        uNames = obj.displacementNames;
-        obj.unknowns = uNames(obj.udof);
+        obj.unknowns = polarizationNames; 
         if isa(obj,'Cylinder'), obj.n = n; end  % remember circumferential wavenumber
 	end
 
@@ -118,9 +124,6 @@ methods
         % Lamb - Assemble wave operators describing the Lamb polarized waves (in-plane).
         % 
         % See also: sh, fullyCoupled, decouplesLambvsSH.
-        if ~obj.decouplesLambvsSH(n)
-            warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
-        end
         gew = obj.polarization(obj.udofLamb, n);
     end
 
@@ -128,9 +131,6 @@ methods
         % sh - Assemble wave operators describing the shear-horizontal (SH) polarized waves (out-of-plane).
         %
         % See also: Lamb, fullyCoupled, decouplesLambvsSH.
-        if ~obj.decouplesLambvsSH(n)
-            warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! In-plane polarized waves do not decouple from out-of plane polarization. I will proceed anyways.');
-        end
 		gew = obj.polarization(obj.udofSH, n);
     end
 

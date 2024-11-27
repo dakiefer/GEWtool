@@ -103,6 +103,9 @@ classdef LayerCylindrical < Layer
         function decoupl = decouplesPolarization(obj,dof,n)
             % decouplesPolarization - Tests whether 'dof' decouples from the remaining 
             % degrees of freedom. 
+            rem = setdiff(1:3, dof); % remaining degrees of freedom 
+            if isempty(rem), decoupl = true; return; end % no need to test
+
 
             % relevant material matrices: 
             cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
@@ -126,8 +129,7 @@ classdef LayerCylindrical < Layer
             crpA = crp*(A + 1i*n*I);
 
             % define dofs and continuous operator coefficients:
-            rem = setdiff(1:3, dof); % remaining degrees of freedom 
-            iszero = @(cc) all( cc(dof,rem) == 0 ) && all( cc(rem,dof) == 0);
+            iszero = @(cc) all( cc(dof,rem) == 0,'all' ) && all( cc(rem,dof) == 0,'all' );
             decoupl = iszero(cxx) && iszero(cxr) && iszero(cxpA + Acpx) && iszero(Acpr) ...
                 && iszero(AcppA) && iszero(crx) && iszero(crr) && iszero(crpA);
         end
