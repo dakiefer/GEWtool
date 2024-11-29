@@ -1,4 +1,4 @@
-function [Py] = powerFluxTransverse(gew, dat)
+function [Py] = powerFluxTransverse(dat)
 % powerFluxTransverse - Transverse component of the power flux, orthogonal to k.
 % 
 % Computes the total power flux in z-direction. This component is orthogonal to
@@ -12,16 +12,15 @@ function [Py] = powerFluxTransverse(gew, dat)
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
-    compute = @(gewObj,datObj) powerFluxTransverse(gewObj, datObj); % function to apply
-    Py = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    Py = arrayfun(@powerFluxTransverse,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
     return;
 end
 
-if isa(gew,"CylinderCircumferential")
+if isa(dat.gew,"CylinderCircumferential")
     warning('Circumferential waves do not support this function yet. The results will be wrong.');
 end
-py = poyntingVecTransverse(gew, dat);
-Py = GEWintegrate(gew, py);
+py = poyntingVecTransverse(dat);
+Py = GEWintegrate(dat.gew, py);
 
 end

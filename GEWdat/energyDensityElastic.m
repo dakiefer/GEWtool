@@ -1,21 +1,20 @@
-function [eElastic] = energyDensityElastic(gew, dat)
+function [eElastic] = energyDensityElastic(dat)
 %ENERGYDENSITYELASTIC Compute the elastic energy density.
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
-    compute = @(gewObj,datObj) energyDensityElastic(gewObj, datObj); % function to apply
-    eElastic = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    eElastic = arrayfun(@energyDensityElastic,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
     return;
 end
 
-if isDissipative(gew)
+if isDissipative(dat.gew)
     warning('energyDensityElastic(): Is it valid for viscous media?')
 end
 
-S = strain(gew, dat);
-T = stress(gew, dat);
+S = strain(dat);
+T = stress(dat);
 
-eElastic = cell(gew.geom.nLay,1);
-for i = 1:gew.geom.nLay
+eElastic = cell(dat.gew.geom.nLay,1);
+for i = 1:dat.gew.geom.nLay
     eElastic{i} = 1/4*real(sum(sum(conj(S{i}).*T{i}, 5), 4)); % double contraction
 end
 

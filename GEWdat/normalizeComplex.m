@@ -1,4 +1,4 @@
-function dat = normalizeComplex(gew, dat)
+function dat = normalizeComplex(dat)
 % normalizeToPowerFlux Normalize the displacement eigenvectors to unit power flux
 % of the waves. Complex waves are normalized by the cross power flux with their
 % complex conjugate pair. 
@@ -8,18 +8,18 @@ function dat = normalizeComplex(gew, dat)
 
 warning('GEWTOOL:untested', 'Untested function.')
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
-    compute = @(gewObj,datObj) normalizeComplex(gewObj, datObj); % function to apply
-    dat = arrayfun(compute,gew,dat); % apply to every object in the arrays "gew" and "dat"
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    dat = arrayfun(@normalizeComplex,dat); % apply to every object in the arrays "dat"
     return;
 end
 
+gew = dat.gew;
 if any(dat.w ~= dat.w(1,:), 'all') % orthogonality for constant frequency! 
     error('GEWTOOL:normalizeComplex:nonconstfreq', 'Cross power flux must be computed for wavenumbers at constant frequency.');
 end
 
 v = velocity(dat);
-T = stress(gew, dat);
+T = stress(dat);
 
 for m = 1:size(dat.k, 1)
     % search "sibling" mode indkn corresponding to indkm:

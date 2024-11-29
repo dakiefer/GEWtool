@@ -1,4 +1,4 @@
-function [ceMag] = energyVelMag(gew, dat)
+function [ceMag] = energyVelMag(dat)
 % energyVelMag - Energy velocity magnitude |ce|.
 % 
 % The energy velocity vector ce is the ratio of the total power flux vector P to the 
@@ -8,14 +8,13 @@ function [ceMag] = energyVelMag(gew, dat)
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
-    compute = @(gewObj,datObj) energyVelMag(gewObj, datObj); % function to apply
-    ceMag = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    ceMag = arrayfun(@energyVelMag,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
     return;
 end
 
-cex = energyVelAxial(gew, dat);      % ex-direction
-cey = energyVelTransverse(gew, dat); % ey-direction
+cex = energyVelAxial(dat);      % ex-direction
+cey = energyVelTransverse(dat); % ey-direction
 ceMag = sqrt(cex.^2 + cey.^2);
 
 % NOTE: The above computation is done in terms of energy velocity components

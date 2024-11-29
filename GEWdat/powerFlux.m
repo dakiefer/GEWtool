@@ -1,4 +1,4 @@
-function [P] = powerFlux(gew, dat)
+function [P] = powerFlux(dat)
 % POWERFLUX - Power flux vectors.
 %
 % Computes the total power flux vector P. This is done by integrating the power
@@ -9,16 +9,15 @@ function [P] = powerFlux(gew, dat)
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
-    compute = @(gewObj,datObj) powerFlux(gewObj, datObj); % function to apply
-    P = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    P = arrayfun(@powerFlux,dat,'UniformOutput',false); % apply to every object in the array "dat"
     return;
 end
 
-if isa(gew,"CylinderCircumferential")
+if isa(dat.gew,"CylinderCircumferential")
     warning('Circumferential waves do not support this function yet. The results will be wrong.');
 end
-p = poyntingVec(gew, dat);
-P = GEWintegrate(gew, p);
+p = poyntingVec(dat);
+P = GEWintegrate(dat.gew, p);
 
 end

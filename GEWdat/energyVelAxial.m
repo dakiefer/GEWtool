@@ -1,4 +1,4 @@
-function [cex] = energyVelAxial(gew, dat)
+function [cex] = energyVelAxial(dat)
 % ENERGYVELAXIAL - Energy velocity component ce_x along the wave vector k.
 % The energy velocity vector ce is the ratio of the total power flux vector P to the 
 % total stored energy H: ce = P/H . 
@@ -8,14 +8,13 @@ function [cex] = energyVelAxial(gew, dat)
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
-    compute = @(gewObj,datObj) energyVelAxial(gewObj, datObj); % function to apply
-    cex = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    cex = arrayfun(@energyVelAxial,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
     return;
 end
 
-Px = powerFluxAxial(gew, dat); % component aligned with k-vector
-H = energyTotal(gew, dat);
+Px = powerFluxAxial(dat); % component aligned with k-vector
+H = energyTotal(dat);
 cex = Px./H;
 
 % NOTE: this function depends on many of the field calculation functions:

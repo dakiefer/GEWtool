@@ -1,4 +1,4 @@
-function exc = excitabilityLUS(gew, dat, at)
+function exc = excitabilityLUS(dat, at)
 % excitabilityLUS - laser-ultrasound excitability-detectability
 %   An approximation for how well the waves can be excited and detected with a
 %   laser ultrasonic excitation and interferometric detection. The
@@ -23,13 +23,13 @@ function exc = excitabilityLUS(gew, dat, at)
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
-    compute = @(gewObj,datObj) excitabilityLUS(gewObj, datObj, at); % function to apply
-    exc = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    compute = @(datObj) excitabilityLUS(datObj, at); % function to apply
+    exc = arrayfun(compute,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
     return;
 end
 
-n = size(gew.op.M,1);
+n = size(dat.gew.op.M,1);
 numModes = size(dat.k);
 if any(numModes == n) || any(numModes == 2*n)
     warning('GEWTOOL:excitabilityLUS:restrictSolution',...
@@ -40,8 +40,8 @@ end
 
 switch at
     case {'top','t','outer','o'}
-        n = gew.geom.N(end);  % node index
-        l = gew.geom.nLay;    % layer index
+        n = dat.gew.geom.N(end);  % node index
+        l = dat.gew.geom.nLay;    % layer index
     case {'bottom','b','inner','i'}
         n = 1; % node index
         l = 1; % layer index 
@@ -50,10 +50,10 @@ switch at
             'Third argument should be one of "top" or "bottom"');
 end
 
-dat = normalizeReal(gew, dat);
+dat = normalizeReal(dat);
 v = velocity(dat);
-vx = v{l}(:,:,n,gew.udof == 1);
-uz = dat.u{l}(:,:,n,gew.udof == 3);
+vx = v{l}(:,:,n,dat.gew.udof == 1);
+uz = dat.u{l}(:,:,n,dat.gew.udof == 3);
 exc = abs(vx).*abs(uz); % excitability ~vx, detectability ~ uy
 excUnit = median(exc(isfinite(exc)))*1e2;
 exc = exc./excUnit; % normalized excitability (don't use max as there might be singularities where cg->0)

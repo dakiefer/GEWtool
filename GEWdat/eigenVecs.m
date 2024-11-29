@@ -16,22 +16,38 @@ function psi = eigenVecs(gew, u)
 % 
 % % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
-    compute = @(gewObj,datObj) eigenVecs(gewObj, datObj); % function to apply
-    psi = arrayfun(compute,gew,u,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
-    return;
+% if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
+%     compute = @(gewObj,ui) eigenVecs(gewObj, ui); % function to apply
+%     psi = arrayfun(compute,gew,u,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+%     return;
+% end
+
+if isscalar(gew)
+    u = {u}; % convert into cell of size 1x1 corresponding to the one "gew"
+end
+if length(gew) ~= length(u)
+    error('GEWtool:eigenVecs:wrongSize', 'The length of ''gew'' and ''u'' needs to be equal.'); 
 end
 
-sizeU = size(u{1});
-psi = zeros([sizeU(1:2), gew.geom.Ndof]); % allocate
-gdofsAccum = [];
-for l = 1:gew.geom.nLay % convert structured u into unstructured u
-    gdofLay = gew.geom.gdofOfLay{l}; % where to put into the global u vector
-    [gdofNew, ldofNew] = setdiff(gdofLay, gdofsAccum); % remove coincident nodes
-    gdofsAccum = [gdofsAccum, gdofNew]; % remember already treated dofs
-    ulay = reshape(u{l}, sizeU(1), sizeU(2), []);
-    psi(:,:,gdofNew) = ulay(:,:,ldofNew);
+psi = cell(size(gew)); % allocate empty cell
+for i = 1:length(gew)
+    ui = u{i}; 
+    sizeU = size(ui{1});
+    psii = zeros([sizeU(1:2), gew(i).geom.Ndof]); % allocate
+    gdofsAccum = [];
+    for l = 1:gew(i).geom.nLay % convert structured u into unstructured u
+        gdofLay = gew(i).geom.gdofOfLay{l}; % where to put into the global u vector
+        [gdofNew, ldofNew] = setdiff(gdofLay, gdofsAccum); % remove coincident nodes
+        gdofsAccum = [gdofsAccum, gdofNew]; % remember already treated dofs
+        ulay = reshape(ui{l}, sizeU(1), sizeU(2), []);
+        psii(:,:,gdofNew) = ulay(:,:,ldofNew);
+    end
+    psii(:,:,gew(i).geom.gdofDBC) = []; % remove homogeneous DBC nodes
+    psi{i} = psii; 
 end
-psi(:,:,gew.geom.gdofDBC) = []; % remove homogeneous DBC nodes
+
+if isscalar(gew) % unpack if scalar
+    psi = psi{1}; 
+end
 
 end

@@ -43,9 +43,9 @@ title(sprintf('rod of radius %g mm', r/1e-3))
 
 % % plot phase velocity-frequency dispersion 
 figure(2); clf; hold on; 
-plot(datT.w/2/pi/1e6, datT.w./datT.k/1e3,'SeriesIndex',3,'DisplayName','torsional');
-plot(datF.w/2/pi/1e6, datF.w./datF.k/1e3,'SeriesIndex',2,'DisplayName','1st flexural');
-plot(datL.w/2/pi/1e6, datL.w./datL.k/1e3,'SeriesIndex',1,'DisplayName','longitudinal');
+plot(datT.w/2/pi/1e6, datT.cp/1e3,'SeriesIndex',3,'DisplayName','torsional');
+plot(datF.w/2/pi/1e6, datF.cp/1e3,'SeriesIndex',2,'DisplayName','1st flexural');
+plot(datL.w/2/pi/1e6, datL.cp/1e3,'SeriesIndex',1,'DisplayName','longitudinal');
 xlim([0, 5]); ylim([0, mat.cl*2/1e3]) % axes limits
 ylabel('phase velocity in mm/us'), xlabel('frequency f in MHz')
 legend(legendUnq, 'Location','south east')

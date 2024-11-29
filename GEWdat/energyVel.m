@@ -1,4 +1,4 @@
-function [ceMag] = energyVel(gew, dat)
+function [ceMag] = energyVel(dat)
 % energyVel - Alias to energyVelMag(). Energy velocity magnitude |ce|.
 % 
 % The energy velocity vector ce is the ratio of the total power flux vector P to the 
@@ -9,6 +9,6 @@ function [ceMag] = energyVel(gew, dat)
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-ceMag = energyVelMag(gew, dat);
+ceMag = energyVelMag(dat);
 
 end

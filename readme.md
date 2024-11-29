@@ -49,7 +49,7 @@ Proceed by inspecting the laser-ultrasonic excitability of the waves computed ab
 k = linspace(1e-2, 12, 200)/h;          % use more wavenumbers
 gew = plate.Lamb;                       % choose all Lamb waves
 dat = computeW(gew, k, 7);              % compute
-exc = excitabilityLUS(gew, dat, 'top'); % ux*uz at top surface (value of 1 at 100x median)
+exc = excitabilityLUS(dat, 'top'); % ux*uz at top surface (value of 1 at 100x median)
 exc = 20*log10(exc);                    % in decibel
 scatter(dat.k(:)/1e3, dat.w(:)/2/pi/1e6, 15, exc(:), 'filled'), ylim([0, 6]);
 colormap(flipud(colormap)); cb = colorbar; caxis([-50, 0]);

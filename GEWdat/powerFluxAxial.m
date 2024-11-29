@@ -1,4 +1,4 @@
-function [Px] = powerFluxAxial(gew, dat)
+function [Px] = powerFluxAxial(dat)
 % POWERFLUXAXIAL - Axial component of the power flux, i.e., along the wave vector.
 %
 % Computes the total power flux in direction of the wave vector (x-direction).
@@ -9,16 +9,15 @@ function [Px] = powerFluxAxial(gew, dat)
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
-    compute = @(gewObj,datObj) powerFluxAxial(gewObj, datObj); % function to apply
-    Px = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    Px = arrayfun(@powerFluxAxial,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
     return;
 end
 
-if isa(gew,"CylinderCircumferential")
+if isa(dat.gew,"CylinderCircumferential")
     warning('Circumferential waves do not support this function yet. The results will be wrong.');
 end
-px = poyntingVecAxial(gew,dat);
-Px = GEWintegrate(gew, px);
+px = poyntingVecAxial(dat);
+Px = GEWintegrate(dat.gew, px);
 
 end

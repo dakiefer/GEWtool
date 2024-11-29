@@ -1,4 +1,4 @@
-function [Etot] = energyTotal(gew,dat)
+function [Etot] = energyTotal(dat)
 % ENERGYTOTAL - Total time-averaged stored energy across waveguide cross section.
 % The total energy H is the sum of the kinetic energy K and the elastic energy E: 
 % H = K + E .
@@ -15,16 +15,16 @@ function [Etot] = energyTotal(gew,dat)
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
     compute = @(gewObj,datObj) energyTotal(gewObj, datObj); % function to apply
-    Etot = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    Etot = arrayfun(@energyTotal,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
     return;
 end
 
-if ~gew.isDissipative && isreal(dat.k)
-    Etot = 2*energyKinetic(gew,dat); % exploit equipartition of energy
+if ~dat.gew.isDissipative && isreal(dat.k)
+    Etot = 2*energyKinetic(dat); % exploit equipartition of energy
 else
-    Etot = energyKinetic(gew,dat) + energyElastic(gew,dat);
+    Etot = energyKinetic(dat) + energyElastic(dat);
 end
 
 end

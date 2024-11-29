@@ -12,17 +12,12 @@ function datRed = extractModes(dat, indk, indw)
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if ~isscalar(dat)
-    error('GEWTOOL:extractModes:nonscalar','The data structure "dat" should be a scalar, i.e., only for one waveguide problem. Select one of its entries before using this function.');
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    compute = @(datObj) extractModes(datObj, indk, indw);
+    datRed = arrayfun(compute,dat,'UniformOutput',true); % apply to every object in the arrays "dat"
+    return;
 end
 
-nLay = length(dat.u); % number of layers
-uRed = cell(1,nLay); % allocate
-for l = 1:nLay % for every layer
-    uRed{l} = dat.u{l}(indk,indw,:,:);
-end
-datRed.w = dat.w(indk,indw); 
-datRed.k = dat.k(indk,indw);
-datRed.u = uRed; 
+datRed = GEWdat(dat.gew, dat.k(indk,indw), dat.w(indk,indw), dat.Psi(indk,indw,:)); 
 
 end

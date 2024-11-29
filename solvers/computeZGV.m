@@ -39,7 +39,7 @@ if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % dispersion data provi
     if isfield(dat, 'cg')
         cg = dat.cg;
     else
-        cg = groupVelAxial(gew, dat);
+        cg = groupVelAxial(dat);
     end
     sigChange = diff(sign(real(cg)),1,1); % detect where the sign changes
     sigChange = [zeros(1,size(sigChange,2)); sigChange]; % correct size to match cg | w | k

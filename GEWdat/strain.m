@@ -1,4 +1,4 @@
-function [S] = strain(gew,dat)
+function [S] = strain(dat)
 % strain - Strain tensor S.
 % 
 % The strain S is the symmetric part of the displacement gradient F = grad(u), i.e.,
@@ -20,15 +20,14 @@ function [S] = strain(gew,dat)
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
-    compute = @(gewObj,datObj) strain(gewObj, datObj); % function to apply
-    S = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    S = arrayfun(@strain,dat,'UniformOutput',false); % apply to every object in the arrays "dat" 
     return;
 end
 
-S = cell(gew.geom.nLay, 1); % allocate for each layer
-F = displGrad(gew,dat);     % each type of Waveguide "gew" knows how to compute their displacement gradient
-for l = 1:gew.geom.nLay
+S = cell(dat.gew.geom.nLay, 1); % allocate for each layer
+F = displGrad(dat.gew,dat);     % each type of Waveguide "gew" knows how to compute their displacement gradient
+for l = 1:dat.gew.geom.nLay
     S{l} = 1/2*(F{l} + permute(F{l}, [1,2,3,5,4])); % symmetric part of gradient
 end 
 

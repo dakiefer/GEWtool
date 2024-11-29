@@ -1,4 +1,4 @@
-function [u] = unknowns(gew,dat)
+function [u] = unknowns(dat)
 % unknowns - restructure eigenvectors Psi into each of the unknown components. 
 % Example: if Psi = [3*N x 1] is a vector containing ux, uy and uz components,
 % then u = [N x 3] array where u(:,i) = ui. In practice we have eigenvectors at
@@ -10,10 +10,18 @@ function [u] = unknowns(gew,dat)
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-u = cell(gew.geom.nLay, 1); % initialize
-for l = 1:gew.geom.nLay
-    ulay = dat.Psi(:,:,gew.geom.gdofOfLay{l});
-    sz =  [size(dat.k), gew.geom.N(l), gew.geom.Nudof(l)]; 
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    u = arrayfun(@unknowns,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
+    return;
+end
+
+Psi = zeros(dat.Nk, dat.Nw, dat.gew.geom.Ndof); % allocate with zeros
+Psi(:,:,dat.gew.geom.gdofFree) = dat.Psi;       % expand Psi with Dirichlet-BC nodes
+
+u = cell(dat.gew.geom.nLay, 1); % allocate 
+for l = 1:dat.gew.geom.nLay    
+    ulay = Psi(:,:,dat.gew.geom.gdofOfLay{l});
+    sz =  [dat.Nk, dat.Nw, dat.gew.geom.N(l), dat.gew.geom.Nudof(l)]; 
     u{l} = reshape(ulay, sz);
 end
 

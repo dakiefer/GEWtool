@@ -1,4 +1,4 @@
-function [px] = poyntingVecAxial(gew, dat)
+function [px] = poyntingVecAxial(dat)
 % poyntingVecAxial - Axial component of the power flux density vectors. 
 % 
 % The Poynting vector is p = -1/2 v^* . T . Its real part represents the
@@ -9,22 +9,21 @@ function [px] = poyntingVecAxial(gew, dat)
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
-    compute = @(gewObj,datObj) poyntingVecAxial(gewObj, datObj); % function to apply
-    px = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    px = arrayfun(@poyntingVecAxial,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
     return;
 end
 
 v = velocity(dat);
-T = stress(gew, dat); % inefficient: we compute components that we don't need
-if isa(gew,"Plate") % might be in plain strain [ux, uz] or [uy]
-    dof = 1:length(gew.udof); 
+T = stress(dat); % inefficient: we compute components that we don't need
+if isa(dat.gew,"Plate") % might be in plain strain [ux, uz] or [uy]
+    dof = 1:length(dat.gew.udof); 
 else % never in plain strain
-    dof = gew.udof; 
+    dof = dat.gew.udof; 
 end
 
-px = cell(gew.geom.nLay,1);
-for l = 1:gew.geom.nLay
+px = cell(dat.gew.geom.nLay,1);
+for l = 1:dat.gew.geom.nLay
     px{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,dof,1)), 4); % reduce T to components that yield px
 end
 

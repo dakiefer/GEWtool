@@ -22,7 +22,7 @@ dat = computeW(gew, k, nModes);
 % to either (1) specify the number of modes to take into account as is done
 % above, or (2) restrict to the solutions in a given frequency range. Otherwise,
 % more and more modes are considered with increasing discretization order. 
-exc = excitabilityLUS(gew, dat, 'top');
+exc = excitabilityLUS(dat, 'top');
 exc = 20*log10(exc); % in decibel
 [exc, ind] = sort(exc(:)); % plot high excitability last (on top)
 ks = dat.k(ind); ws = dat.w(ind);

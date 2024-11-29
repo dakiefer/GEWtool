@@ -67,12 +67,12 @@ function dat = computeW(gews, k, nModes, opts)
         kh = k*gew.np.h0;
         whn = nan(length(kh), nModes); % allocate
         if opti.eigenvecs
-            u = zeros(length(kh), nModes, gew.geom.Ndof); % allocate
+            u = zeros(length(kh), nModes, length(gdoffree)); % allocate
             parfor (j = 1:length(kh), opti.parallel)
                 [lbd, eVec] = solveAtK(kh(j));
                 [whnj, uj] = retrieveWu(lbd, eVec, nModes, opti); 
                 whn(j,:) = whnj;
-                u(j,:,gdoffree) = uj.'; % save
+                u(j,:,:) = uj.'; % save
             end
         else
             parfor (j = 1:length(kh), opti.parallel)

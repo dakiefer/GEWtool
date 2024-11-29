@@ -22,10 +22,12 @@ legend(legendUnq, 'Location', 'southeast')
 title(sprintf('Lamb waves in %gmm %s', h/1e-3, mat.name))
 
 % % Energy velocity (identical to the group velocity)
-ce = energyVelAxial(gew,dat); % The "axial" component is the one along the wave vector k.
+% We plot the "axial" component cex of the energy velocity vector ce = [cex, cey], 
+% i.e., the one that is along the wave vector k. For an isotropic plate this is
+% the only nonzero component.
 figure(2); clf; hold on; 
-plot(dat(1).w/2/pi/1e6, ce{1}/1e3, 'SeriesIndex',1,'DisplayName','symmetric');
-plot(dat(2).w/2/pi/1e6, ce{2}/1e3, 'SeriesIndex',2,'DisplayName','anti-symm.');
+plot(dat(1).w/2/pi/1e6, dat(1).cex/1e3, 'SeriesIndex',1,'DisplayName','symmetric');
+plot(dat(2).w/2/pi/1e6, dat(2).cex/1e3, 'SeriesIndex',2,'DisplayName','anti-symm.');
 xlim([0, 6]); 
 xlabel('frequency f in MHz'), ylabel('energy velocity ce in mm/us')
 legend(legendUnq, 'Location', 'southeast')

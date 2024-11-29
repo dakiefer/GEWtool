@@ -24,7 +24,7 @@ indw = 5; % modes are ordered from low to high frequencies at constant k
 [~, indk] = min(abs(k - 3000)); % the closest to this specific wavenumber 
 datMode = extractModes(dat,indk,indw); % returns a data structure consistent to ''dat'' but ony with this mode
 u = datMode.u;                  % nodal displacements
-T = stress(gew, datMode);       % nodal stress
+T = stress(datMode);       % nodal stress
 
 figure(1), % dispersion curves
 ph = plot(dat.k(indk,indw), dat.w(indk,indw)/2/pi, 'rd'); % show selected in disp. curve

@@ -11,10 +11,10 @@ properties (Access = public)
 	k            % [Nk x Nw] wavenumbers in rad/m
 	w            % [Nk x Nw] angular frequencies in rad/s
 	Psi = [] 	 % [Nk x Nw x NgdofFree] eigenvectors 
-    Nk = 0 
-    Nw = 0 
+    Nk = 0       % number of wavenumbers (total number of solutions = Nk*Nw) 
+    Nw = 0       % number of frequencies (total number of solutions = Nk*Nw) 
     cp           % phase velocity
-    ce           % energy velocity - magnitude
+    ceMag        % energy velocity - magnitude
     cex          % energy velocity - axial component (aligned with k-vector)
     cey          % energy velocity - transverse component (orthogonal to k-vector)
 end % properties
@@ -59,7 +59,7 @@ methods
         end
     end
     function u = get.u(obj)
-        u = unknowns(obj.gew,obj);
+        u = unknowns(obj);
     end
     function obj = set.u(obj,u)
         obj.Psi = eigenVecs(obj.gew,u);
@@ -67,14 +67,14 @@ methods
     function cp = get.cp(obj)
         cp = obj.w./obj.k; 
     end
-    function ce = get.ce(obj)
-        ce = energyVelMag(obj.gew,obj); 
+    function ceMag = get.ceMag(obj)
+        ceMag = energyVelMag(obj); 
     end
     function cex = get.cex(obj)
-        cex = energyVelAxial(obj.gew,obj); 
+        cex = energyVelAxial(obj); 
     end
     function cey = get.cey(obj)
-        cey = energyVelTransverse(obj.gew,obj); 
+        cey = energyVelTransverse(obj); 
     end
 end
 

@@ -88,12 +88,12 @@ function dat = computeK(gews, w, nModes, opts)
         whn = w*gew.np.h0/gew.np.fh0;
         kh = nan(nModes, length(whn));
         if opti.eigenvecs
-            u = zeros(nModes, length(whn), gew.geom.Ndof); % allocate
+            u = zeros(nModes, length(whn), length(gdoffree)); % allocate
             parfor (j = 1:length(whn), opti.parallel)
                 [lbd, eVec] = solveAtW(whn(j));
                 [khj, uj] = retrieveKu(lbd, eVec, nModes, opti, geom);
                 kh(:,j) = khj; 
-                u(:,j,gdoffree) = uj.';
+                u(:,j,:) = uj.';
             end
         else
             parfor (j = 1:length(whn), opti.parallel)

@@ -1,4 +1,4 @@
-function [cg] = groupVel(gew, dat)
+function [cg] = groupVel(dat)
 % groupVel - Group velocity real-part magnitude |Re{cg}|.
 % 
 % The axial group velocity is computed based on the eigenvectors. No explicit
@@ -17,14 +17,13 @@ function [cg] = groupVel(gew, dat)
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
-    compute = @(gewObj,datObj) groupVel(gewObj, datObj); % function to apply
-    cg = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
+    cg = arrayfun(@groupVel,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
     return; 
 end
 
-if gew.decouplesLambvsSH
-    cg = abs(real(groupVelAxial(gew, dat)));
+if dat.gew.decouplesLambvsSH
+    cg = abs(real(groupVelAxial(dat)));
 else
     error('GEWTOOL:groupVel:notimplemented', ...
         'Your waveguide exhibits nonzero transverse group velocity components, which is not implemented yet. You can instead compute energyVelMag() to achieve the exact same result or you can compute the axial component of the group velocity vector.');
