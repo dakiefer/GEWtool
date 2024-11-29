@@ -1,4 +1,4 @@
-function psi = eigenVecs(gew, dat)
+function psi = eigenVecs(gew, u)
 % EIGENVEC - Convert displacement array to eigenvector. 
 % 
 % This function is used for postprocessing, e.g., in groupVel(). The eigenvector
@@ -18,18 +18,18 @@ function psi = eigenVecs(gew, dat)
 
 if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
     compute = @(gewObj,datObj) eigenVecs(gewObj, datObj); % function to apply
-    psi = arrayfun(compute,gew,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    psi = arrayfun(compute,gew,u,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
     return;
 end
 
-sizeU = size(dat.u{1});
+sizeU = size(u{1});
 psi = zeros([sizeU(1:2), gew.geom.Ndof]); % allocate
 gdofsAccum = [];
 for l = 1:gew.geom.nLay % convert structured u into unstructured u
     gdofLay = gew.geom.gdofOfLay{l}; % where to put into the global u vector
     [gdofNew, ldofNew] = setdiff(gdofLay, gdofsAccum); % remove coincident nodes
     gdofsAccum = [gdofsAccum, gdofNew]; % remember already treated dofs
-    ulay = reshape(dat.u{l}, sizeU(1), sizeU(2), []);
+    ulay = reshape(u{l}, sizeU(1), sizeU(2), []);
     psi(:,:,gdofNew) = ulay(:,:,ldofNew);
 end
 psi(:,:,gew.geom.gdofDBC) = []; % remove homogeneous DBC nodes

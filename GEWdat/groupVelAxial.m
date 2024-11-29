@@ -33,7 +33,7 @@ L2 = gew.op.L2; % stiffness matrix in k^2
 L1 = gew.op.L1; % stiffness matrix in k
 w = dat.w/gew.np.fh0*gew.np.h0; % normalize frequency like the above operators
 k = dat.k*gew.np.h0; % wavenumbers
-u = eigenVecs(gew,dat);
+u = eigenVecs(gew,dat.u);
 
 % v = conj(u); % left eigenvectors;
 % u = permute(u, [1 2 4 3]); % right eigenvectors (contract with second dim of M,L2,L1)
