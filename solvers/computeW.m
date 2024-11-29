@@ -35,6 +35,7 @@ function dat = computeW(gews, k, nModes, opts)
     
     if ~isvector(k), error('Wavenumbers should be a [1xN] array.'); end
     k = k(:); % column vector
+    dat = repmat(GEWdat(k,[],[]),1,length(gews));
     for i=1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
         opti = parseSolverOpts(opts,gew.op,nModes); % opti might be modified in the iteration
@@ -78,20 +79,14 @@ function dat = computeW(gews, k, nModes, opts)
                 lbd = solveAtK(kh(j));
                 whn(j,:) = retrieveW(lbd, nModes);
             end
+            u = [];
         end
         % save to output variable:
         if ~gew.isDissipative
             whn = real(whn); % remove imaginary part due to numerical inaccuracy
         end
-        dat(i).w = whn*gew.np.fh0/gew.np.h0;
-        dat(i).k = kh.*ones(size(whn))/gew.np.h0;
-        if opti.eigenvecs
-            dat(i).u = cell(gew.geom.nLay, 1);
-            for l = 1:gew.geom.nLay
-                ulay = u(:,:,gew.geom.gdofOfLay{l});
-                dat(i).u{l} = reshape(ulay, [size(whn), gew.geom.N(l), gew.geom.Nudof(l)]);
-            end
-        end
+        w = whn*gew.np.fh0/gew.np.h0;
+        dat(i) = GEWdat(gew,k,w,u); % save in an object of class 'GEWdat' 
     end
 end
 

@@ -106,13 +106,12 @@ L2 = gew.op.L2; L1 = gew.op.L1; L0 = gew.op.L0; M = gew.op.M;
 
 warnStat = warning('query', 'MATLAB:nearlySingularMatrix');
 if ~opts.show, warning('off', 'MATLAB:nearlySingularMatrix'); end
-[k, w, k0s] = ZGV_Sylv_MFRDScan(L2, L1, L0, M, opts);
+[k, w] = ZGV_Sylv_MFRDScan(L2, L1, L0, M, opts);
 if strcmp(warnStat.state, 'on'), warning('on', 'MATLAB:nearlySingularMatrix'); end
 
 kzgv = k/gew.np.h0; 
 wzgv = w*gew.np.fh0/gew.np.h0; 
 ind = wzgv <= wmax;
-dat.k = kzgv(ind); dat.w = wzgv(ind);
-if opts.show,  dat.k0s = k0s/gew.np.h0;  end
+dat = GEWdat(gew, kzgv(ind), wzgv(ind));
 
 end

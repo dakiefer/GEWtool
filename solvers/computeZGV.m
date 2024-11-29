@@ -112,8 +112,8 @@ if nargin == 2 % remove nan entries when initial guess vector was not provided m
 end
 
 % return as structure:
-datZGV.k = kzgv/gew.np.h0; 
-datZGV.w = wzgv*gew.np.fh0/gew.np.h0; 
-datZGV.u = uzgv;
+k = kzgv/gew.np.h0; 
+w = wzgv*gew.np.fh0/gew.np.h0; 
+datZGV = GEWdat(gew,k,w,uzgv);
 
 end

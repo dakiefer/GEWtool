@@ -38,7 +38,8 @@ if ~isfield(opts,'membtol'),   opts.membtol=1e-4;    end % tolerance for ZGV-con
 
 [k, w] = ZGVDirect(L2,L1,L0,M,opts);
 
-dat.k = k/gew.np.h0; 
-dat.w = w*gew.np.fh0/gew.np.h0;
+kk = k/gew.np.h0; 
+ww = w*gew.np.fh0/gew.np.h0;
+dat = GEWdat(gew,kk,ww);
 
 end

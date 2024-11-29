@@ -35,6 +35,7 @@ function dat = computeK(gews, w, nModes, opts)
     
     if ~isvector(w), error('Angular frequencies should be a [Nx1] array.'); end
     w = w(:).'; % row vector
+    dat = repmat(GEWdat([],w,[]),1,length(gews));
     for i = 1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
         opti = parseSolverOpts(opts,gew.op,nModes); % opti will be modified in the iteration
@@ -99,16 +100,10 @@ function dat = computeK(gews, w, nModes, opts)
                 lbd = solveAtW(whn(j));
                 kh(:,j) = retrieveK(lbd, nModes, opti);
             end
+            u = [];
         end
-        dat(i).k = kh/gew.np.h0;
-        dat(i).w = w.*ones(size(kh));
-        if opti.eigenvecs
-            dat(i).u = cell(gew.geom.nLay, 1); % initialize
-            for l = 1:gew.geom.nLay
-                ulay = u(:,:,gew.geom.gdofOfLay{l});
-                dat(i).u{l} = reshape(ulay, [size(kh), gew.geom.N(l), gew.geom.Nudof(l)]);
-            end
-        end
+        k = kh/gew.np.h0;
+        dat(i) = GEWdat(gew,k,w,u); % save in an object of class 'GEWdat' 
     end
 end
 
