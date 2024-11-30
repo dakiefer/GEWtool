@@ -35,7 +35,7 @@ hold on, ph2 = plot(dat.k(:), dat.w(:)/2/pi, 'x', 'MarkerEdgeColor', [.5, .5, .5
 
 % % bilayer problem thick-thin:
 b = linspace(r(1)*(1+1e-4), r(3)*(1-1e-4), 7);
-cc = colormap; cc = downsample(cc, ceil(size(cc,1)/length(b))); % line colors based on default colormap
+cc = parula(length(b));
 for ii = 1:length(b)
     r0 = [r(1), b(ii), r(3)];
     cyl = Cylinder(mats, r0, N);

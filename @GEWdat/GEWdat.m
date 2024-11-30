@@ -13,12 +13,12 @@ properties (Access = public)
 	Psi = [] 	 % [Nk x Nw x NgdofFree] eigenvectors 
     Nk = 0       % number of wavenumbers (total number of solutions = Nk*Nw) 
     Nw = 0       % number of frequencies (total number of solutions = Nk*Nw) 
-    cp           % phase velocity
-    ce           % energy velocity vectors
+    cp           % [Nk x Nw] phase velocities in m/s
+    ce           % [Nk x Nw x Nudof] energy velocity vectors in m/s
 end % properties
 
 properties (Dependent)
-    u        % {Nlay} of [Nk x Nw x N x Nudof] unknown field components (displacements, potentials)
+    u        % {Nlay} of [Nk x Nw x N x Nudof] field components (displacements, potentials)
 end
 
 methods 
