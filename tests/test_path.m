@@ -11,15 +11,15 @@ pp = path; % save current path
 restoredefaultpath; 
 
 installdir = fileparts(fileparts(which('test_path')));
-addpath('.');
-addpath(fullfile(installdir, 'GEWdat'));
+addpath(fullfile(installdir, 'dependencies'));
+addpath(fullfile(installdir, 'examples'));
 addpath(fullfile(installdir, 'layers'));
 addpath(fullfile(installdir, 'material'));
 addpath(fullfile(installdir, 'material/database'));
-addpath(fullfile(installdir, 'resourcesAndDeps'));
 addpath(fullfile(installdir, 'solvers'));
-addpath(fullfile(installdir, 'utilitiesAndNumerics'));
+addpath(fullfile(installdir, 'utilities'));
 addpath(fullfile(installdir, 'waveguides'));
+addpath(installdir);
 
 % common variables:
 h = 1e-3;

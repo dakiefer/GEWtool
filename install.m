@@ -7,18 +7,27 @@
 % In order to uninstall GEWtool, in the Matlab GUI go to Home -> Set Path. Then
 % remove all paths containing "GEWtool" and save. 
 % 
-% 2022-2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+% remove old entries from path
+pathStrs = strsplit(path, ':');         % list current path
+pathGEW = strfind(pathStrs,'GEWtool');  % find path entries containing 'GEWtool'
+pathGEW = cellfun(@(p)~isempty(p), pathGEW);   % convert to logicals for indexing
+if ~all(pathGEW == false)
+    rmpath(pathStrs{pathGEW});              % remove old path 
+end
+
+% add new entries to path
 installdir = pwd;
-addpath('.');
-addpath(fullfile(installdir, 'GEWdat'));
+addpath(fullfile(installdir, 'dependencies'));
+addpath(fullfile(installdir, 'examples'));
 addpath(fullfile(installdir, 'layers'));
 addpath(fullfile(installdir, 'material'));
 addpath(fullfile(installdir, 'material/database'));
-addpath(fullfile(installdir, 'resourcesAndDeps'));
 addpath(fullfile(installdir, 'solvers'));
-addpath(fullfile(installdir, 'utilitiesAndNumerics'));
+addpath(fullfile(installdir, 'utilities'));
 addpath(fullfile(installdir, 'waveguides'));
+addpath(installdir);
 savepath % make permanent
 
 % OPTIONAL: 
