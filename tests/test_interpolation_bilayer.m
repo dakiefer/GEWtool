@@ -17,7 +17,7 @@ gew = plate.Lamb;
 dat = computeW(gew,k,indw);
 datMode = extractModes(dat,indk,indw);
 u = datMode.u; 
-T = stress(gew, datMode); 
+T = stress(datMode); 
 
 % % %%%% Retrieve modal field:  %%%%%%
 % nodal points:

@@ -11,8 +11,8 @@ k = linspace(1e-2, 12, 20)/1e-3;
 plate = Plate([mat1 mat2], [0.7e-3 0.3e-3], 6);
 gew = plate.Lamb;
 dat = computeW(gew, k, 3);
-px = poyntingVecAxial(gew,dat); % quantity to integrate
-Pref = powerFluxAxial(gew,dat); % reference
+px = poyntingVecAxial(dat); % quantity to integrate
+Pref = powerFluxAxial(dat); % reference
 
 %% test without argument 
 P = GEWintegrate(gew,px);

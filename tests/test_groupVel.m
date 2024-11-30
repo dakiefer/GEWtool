@@ -17,7 +17,7 @@ mat = Material('steel');
 guide = Plate(mat, h, N);
 gew = guide.LambS;
 dat = computeW(gew, k, nModes); 
-cg = real(groupVelAxial(gew,dat));
+cg = real(groupVelAxial(dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
@@ -40,7 +40,7 @@ mat = Material('steel');
 guide = Plate(mat, h, N);
 gew = guide.LambA;
 dat = computeW(gew, k, nModes); 
-cg = real(groupVelAxial(gew,dat));
+cg = real(groupVelAxial(dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
@@ -63,7 +63,7 @@ mat = Material('steel');
 guide = Plate(mat, h, N);
 gew = guide.Lamb;
 dat = computeW(gew, k, nModes); 
-cg = real(groupVelAxial(gew,dat));
+cg = real(groupVelAxial(dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 % S and A modes might cross. Wrong sorting leads to large errors in dwdk. Test
@@ -88,7 +88,7 @@ mat = Material('triclinic'); mat = mat.rotateEuler(pi/7, 'z');
 guide = Plate(mat, h, N);
 gew = guide.fullyCoupled;
 dat = computeW(gew, k, nModes); 
-cg = real(groupVelAxial(gew,dat));
+cg = real(groupVelAxial(dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
@@ -112,7 +112,7 @@ mat2 = Material('aluminum');
 guide = Plate([mat mat2], h/2, round(N/2));
 gew = guide.Lamb;
 dat = computeW(gew, k, nModes); 
-cg = real(groupVelAxial(gew,dat));
+cg = real(groupVelAxial(dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
@@ -135,7 +135,7 @@ mat = Material('steel');
 guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.longitudinal;
 dat = computeW(gew, k, nModes); 
-cg = real(groupVelAxial(gew,dat));
+cg = real(groupVelAxial(dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
@@ -158,7 +158,7 @@ mat = Material('triclinic'); mat = mat.rotateEuler(pi/7, 'z');
 guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.fullyCoupled(0);
 dat = computeW(gew, k, nModes); 
-cg = real(groupVelAxial(gew,dat));
+cg = real(groupVelAxial(dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
@@ -181,7 +181,7 @@ mat = Material('triclinic'); mat = mat.rotateEuler(pi/7, 'z');
 guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.fullyCoupled(1);
 dat = computeW(gew, k, nModes); 
-cg = real(groupVelAxial(gew,dat));
+cg = real(groupVelAxial(dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
@@ -204,7 +204,7 @@ mat = Material('steel');
 guide = CylinderCircumferential(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.Lamb;
 dat = computeW(gew, k, nModes); 
-cg = real(groupVelAxial(gew,dat));
+cg = real(groupVelAxial(dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);
@@ -227,7 +227,7 @@ mat = Material('triclinic'); mat = mat.rotateEuler(0, pi/7, 0);
 guide = CylinderCircumferential(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.fullyCoupled;
 dat = computeW(gew, k, nModes); 
-cg = real(groupVelAxial(gew,dat));
+cg = real(groupVelAxial(dat));
 dwdk = diff(dat.w,1,1)./diff(dat.k,1,1); dwdk(end+1,:) = nan; % dwdk = circshift(dwdk,1,1);
 
 devCgDwdk = abs(cg - dwdk);

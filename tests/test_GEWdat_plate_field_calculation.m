@@ -50,7 +50,7 @@ if exist('show', 'var') && show
 end
 
 %% strain: 
-S = strain(gew, dat);
+S = strain(dat);
 S = abs(S{1});
 S = S(:,:,1,1,1);
 err = (abs(S(:) - SRef(:)))./SRef(:);
@@ -65,7 +65,7 @@ end
 %% stress: 
 T0 = 1; % mean(TRef(:));
 TRefN = TRef/T0;
-T = stress(gew, dat);
+T = stress(dat);
 T = abs(T{1}(:,:,1,1,1))/T0; % complex-valued, Txx at top is generally non-zero
 err = (abs(T(:) - TRefN(:)))./TRefN(:);
 assert( all(err < relTol) )
@@ -84,7 +84,7 @@ end
 indRef = real(datRef.k) > 0;
 ind =    real(dat.k) > 0;
 pRefPos = pRef(indRef); % only with real(k) > 0
-p = poyntingVec(gew, dat);
+p = poyntingVec(dat);
 p = p{1}(:,:,1,1);
 p = p(ind); % only with real(k) > 0
 err = abs(p - pRefPos)./pRefPos; % relative error
@@ -97,7 +97,7 @@ if exist('show', 'var') && show
 end
 
 %% kinetik energy 
-Ek = energyKinetic(gew, dat);
+Ek = energyKinetic(dat);
 err = (abs(Ek(:) - EkRef(:)))./EkRef(:);
 assert( all(err < relTol) )
 
@@ -108,7 +108,7 @@ if exist('show', 'var') && show
 end
 
 %% elastic energy:
-Es = energyElastic(gew, dat);
+Es = energyElastic(dat);
 err = (abs(Es(:) - EsRef(:)))./EsRef(:);
 assert( all(err < relTol) )
 
@@ -126,7 +126,7 @@ end
 indRef = real(datRef.k) > 0;
 ind =    real(dat.k) > 0;
 PRefPos = PRef(indRef);
-P = powerFlux(gew, dat);
+P = powerFlux(dat);
 PPos = P(ind);
 err = (abs(PPos - PRefPos))/mean(abs(PRefPos)); % absolute normalized error
 assert( all(err < relTol) )
@@ -145,7 +145,7 @@ end
 indRef = real(datRef.k) > 0;
 ind =    real(dat.k) > 0;
 ceRefPos = ceRef(indRef);
-ce = energyVelAxial(gew, dat);
+ce = energyVelAxial(dat);
 cePos = ce(ind);
 err = (abs(cePos - ceRefPos))/mean(abs(ceRefPos)); % absolute normalized error
 assert( all(err < relTol) )

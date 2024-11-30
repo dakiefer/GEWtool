@@ -17,8 +17,8 @@ mat = Material('steel');
 guide = Plate(mat, h, N);
 gew = guide.LambS;
 dat = computeW(gew, k, 6); 
-cgx = real(groupVelAxial(gew,dat));
-cex = real(energyVelAxial(gew,dat));
+cgx = real(groupVelAxial(dat));
+cex = real(energyVelAxial(dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
 assert( max(devCgCe,[],'all') <= 1e-4 )
@@ -36,8 +36,8 @@ mat = Material('steel');
 guide = Plate(mat, h, N);
 gew = guide.LambA;
 dat = computeW(gew, k, 6); 
-cgx = real(groupVelAxial(gew,dat));
-cex = real(energyVelAxial(gew,dat));
+cgx = real(groupVelAxial(dat));
+cex = real(energyVelAxial(dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
 assert( max(devCgCe,[],'all') <= 1e-4 )
@@ -55,8 +55,8 @@ mat = Material('steel');
 guide = Plate(mat, h, N);
 gew = guide.Lamb;
 dat = computeW(gew, k, 6); 
-cgx = real(groupVelAxial(gew,dat));
-cex = real(energyVelAxial(gew,dat));
+cgx = real(groupVelAxial(dat));
+cex = real(energyVelAxial(dat));
 
 % S and A modes might cross. Wrong sorting leads to large errors in dwdk. Test
 % only the remaining points:
@@ -76,8 +76,8 @@ mat = Material('triclinic'); mat = mat.rotateEuler(pi/7, 'z');
 guide = Plate(mat, h, N);
 gew = guide.fullyCoupled;
 dat = computeW(gew, k, 6); 
-cgx = real(groupVelAxial(gew,dat));
-cex = real(energyVelAxial(gew,dat));
+cgx = real(groupVelAxial(dat));
+cex = real(energyVelAxial(dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
 assert( max(devCgCe,[],'all') <= 1e-5 )
@@ -96,8 +96,8 @@ mat2 = Material('aluminum');
 guide = Plate([mat mat2], h/2, round(N/2));
 gew = guide.Lamb;
 dat = computeW(gew, k, 6); 
-cgx = real(groupVelAxial(gew,dat));
-cex = real(energyVelAxial(gew,dat));
+cgx = real(groupVelAxial(dat));
+cex = real(energyVelAxial(dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
 assert( max(devCgCe,[],'all') <= 1e-4 )
@@ -119,8 +119,8 @@ mat = Material('steel');
 guide = Cylinder(mat, [h, 2*h]-0.8*h/2, N); % small inner radius -> curvature is important
 gew = guide.longitudinal;
 dat = computeW(gew, k, 6); 
-cgx = real(groupVelAxial(gew,dat));
-cex = real(energyVelAxial(gew,dat));
+cgx = real(groupVelAxial(dat));
+cex = real(energyVelAxial(dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
 assert( max(devCgCe,[],'all') <= 1e-4 )
@@ -139,8 +139,8 @@ mat = Material('triclinic'); mat = mat.rotateEuler(pi/7, 'z');
 guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.fullyCoupled(0);
 dat = computeW(gew, k, 6); 
-cgx = real(groupVelAxial(gew,dat));
-cex = real(energyVelAxial(gew,dat));
+cgx = real(groupVelAxial(dat));
+cex = real(energyVelAxial(dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
 assert( max(devCgCe,[],'all') <= 1e-4 )
@@ -159,8 +159,8 @@ mat = Material('triclinic'); mat = mat.rotateEuler(pi/7, 'z');
 guide = Cylinder(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.fullyCoupled(1);
 dat = computeW(gew, k, 6); 
-cgx = real(groupVelAxial(gew,dat));
-cex = real(energyVelAxial(gew,dat));
+cgx = real(groupVelAxial(dat));
+cex = real(energyVelAxial(dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
 assert( max(devCgCe,[],'all') <= 1e-4 )
@@ -179,8 +179,8 @@ mat = Material('steel');
 guide = CylinderCircumferential(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
 gew = guide.Lamb;
 dat = computeW(gew, k, 6);
-cgx = real(groupVelAxial(gew,dat));
-cex = real(energyVelAxial(gew,dat));
+cgx = real(groupVelAxial(dat));
+cex = real(energyVelAxial(dat));
 
 devCgCe = abs(cgx - cex)/mat.cl;
 

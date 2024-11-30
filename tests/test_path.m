@@ -26,12 +26,12 @@ h = 1e-3;
 N = 8;
 k = linspace(1e-2, 12, 2)/h; % wavenumbers to solve for
 
-%% Plate example:
+%% Plate example
 mat = Material('steel');
 plate = Plate(mat, h, N);
 gew = plate.Lamb;
 dat = computeW(gew, k); 
-cg = energyVelAxial(gew,dat); % check postprocessing
+cg = energyVelAxial(dat); % check postprocessing
 
 % % If no errors were thrown, we assume that everything is on the path as it
 % should.
