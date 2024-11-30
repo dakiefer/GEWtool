@@ -14,9 +14,7 @@ properties (Access = public)
     Nk = 0       % number of wavenumbers (total number of solutions = Nk*Nw) 
     Nw = 0       % number of frequencies (total number of solutions = Nk*Nw) 
     cp           % phase velocity
-    ceMag        % energy velocity - magnitude
-    cex          % energy velocity - axial component (aligned with k-vector)
-    cey          % energy velocity - transverse component (orthogonal to k-vector)
+    ce           % energy velocity vectors
 end % properties
 
 properties (Dependent)
@@ -70,16 +68,9 @@ methods
     function cp = get.cp(obj)
         cp = obj.w./obj.k; 
     end
-    function ceMag = get.ceMag(obj)
-        ceMag = energyVelMag(obj); 
+    function ce = get.ce(obj)
+        ce = energyVelVec(obj); 
     end
-    function cex = get.cex(obj)
-        cex = energyVelAxial(obj); 
-    end
-    function cey = get.cey(obj)
-        cey = energyVelTransverse(obj); 
-    end
-    % u = unknowns(obj)
 end
 
 end % class
