@@ -31,7 +31,10 @@ methods
         % - k:     [Nk x Nw] or [Nk x 1] wavenumbers in rad/m
         % - w:     [Nk x Nw] or [1 x Nw] angular frequencies in rad/s
         % - Psi:   [Nk x Nw x NgdofFree] eigenvectors 
-        obj.gew = gew;
+        if ~isa(gew,'Waveguide')
+            error('GEWtool:GEWdat', 'The first argument needs to be an object of type Waveguide are a subclass thereof.'); 
+        end
+        obj.gew = copy(gew);
         obj.k = k; 
         obj.Nk = size(k,1);
         obj.w = w; 
@@ -76,6 +79,7 @@ methods
     function cey = get.cey(obj)
         cey = energyVelTransverse(obj); 
     end
+    % u = unknowns(obj)
 end
 
 end % class

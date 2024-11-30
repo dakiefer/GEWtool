@@ -35,7 +35,7 @@ function dat = computeW(gews, k, nModes, opts)
     
     if ~isvector(k), error('Wavenumbers should be a [1xN] array.'); end
     k = k(:); % column vector
-    dat = repmat(GEWdat(k,[],[]),1,length(gews));
+    dat = repmat(GEWdat(gews(1),k,[],[]),1,length(gews));
     for i=1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
         opti = parseSolverOpts(opts,gew.op,nModes); % opti might be modified in the iteration
