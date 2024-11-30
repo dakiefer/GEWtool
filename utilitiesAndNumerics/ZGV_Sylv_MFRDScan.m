@@ -1,4 +1,4 @@
-function [kzgv, wzgv, k0s] = ZGV_Sylv_MFRDScan(L2, L1, L0, M, opts)
+function [kzgv, wzgv, uzgv] = ZGV_Sylv_MFRDScan(L2, L1, L0, M, opts)
 % ZGV_Sylv_MFRDScan - Compute ZGV points via iterative shift and search using fast eigenvalue solver.
 %
 % Returns ZGV points (k, w) with the smallest k for 
@@ -71,7 +71,7 @@ found = 0;   % number of ZGV points found
 k0 = kStart; % wavenumber shift close to which we compute candidates
 kmin = 1e-4*kStart; % search candidates above this value
 iter = 0;    % number of iterations
-kzgv = []; wzgv = []; % ZGV wavenumbers and frequencies
+kzgv = []; wzgv = []; uzgv = []; % ZGV wavenumbers, frequencies and eigenvectors
 k0s = nan(1,MaxIter);    % to collect used target values
 optsNewton.beta_corr = true; optsNewton.show = false; optsNewton.maxsteps = 10; % options for ZGVNewtonBeta()
 warningStatus = warning('query', 'MATLAB:eigs:NotAllEigsConverged');
@@ -91,21 +91,24 @@ while k0<kEnd && iter<MaxIter
             % [kR,wR,~,isConverged] = ZGVNewtonBeta(full(L2), full(L1), full(L0), full(M),...
             %     real(ks(j)), w, [], optsNewton);
             if opts.hermitian
-                [kR,wR,~,isConverged] = ZGVNewtonBeta(full(L2), full(L1), full(L0), full(M),...
+                [kR,wR,uR,isConverged] = ZGVNewtonBeta(full(L2), full(L1), full(L0), full(M),...
                 real(ks(j)), w, [], optsNewton);
             else 
-                [kR,wR,~,~,isConverged] = ZGVNewtonComplex(full(L2), full(L1), full(L0), full(M),...
+                [kR,wR,uR,~,isConverged] = ZGVNewtonComplex(full(L2), full(L1), full(L0), full(M),...
                 real(ks(j)), w, [], [], optsNewton);
             end
             % add converged solutions to list of ZGV points:
             if isConverged && kR>kmin && wR<wmax
                 if isempty(kzgv)
-                    kzgv = kR; wzgv = wR; found = 1;
+                    kzgv = kR; wzgv = wR; uzgv = uR.'; found = 1;
                 else % only add if not yet in list
                     difSquare = (kzgv - kR).^2 + (wzgv - wR).^2; % zgvs - [kR, wR];
                     minNormDif = sqrt(min(difSquare));
                     if minNormDif > 1e-8*sqrt(kR^2 + wR^2) % relative to norm [kR, wR]
-                        kzgv = [kzgv; kR]; wzgv = [wzgv; wR]; found = found + 1;
+                        kzgv = [kzgv; kR]; 
+                        wzgv = [wzgv; wR]; 
+                        uzgv = [uzgv; uR.'];
+                        found = found + 1;
                     end
                 end
             end
@@ -132,6 +135,7 @@ if strcmp(warningStatus.state, 'on'), warning('on', 'MATLAB:eigs:NotAllEigsConve
 
 [wzgv, ind] = sort(wzgv); % sort in frequency before returning
 kzgv = kzgv(ind);
+uzgv = uzgv(ind,:);
 
 function x = multDelta0(y)
     Y1 = reshape(y(1:n),m,m);
