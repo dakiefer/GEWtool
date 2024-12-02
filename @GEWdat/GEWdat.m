@@ -60,7 +60,7 @@ methods
         end
     end
     function u = get.u(obj)
-        u = unknowns(obj);
+        u = fieldComponents(obj);
     end
     function obj = set.u(obj,u)
         obj.Psi = eigenVecs(obj.gew,u);

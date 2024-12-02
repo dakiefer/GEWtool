@@ -1,5 +1,5 @@
-function [u] = unknowns(dat)
-% unknowns - restructure eigenvectors Psi into each of the unknown components. 
+function [u] = fieldComponents(dat)
+% fieldComponents - restructure eigenvectors Psi into each of the field components. 
 % Example: if Psi = [3*N x 1] is a vector containing ux, uy and uz components,
 % then u = [N x 3] array where u(:,i) = ui. In practice we have eigenvectors at
 % Nk wavenumbers with Nw frequencies. Then the above Psi is of size [Nk x Nw x 3*N], 
@@ -11,7 +11,7 @@ function [u] = unknowns(dat)
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
-    u = arrayfun(@unknowns,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
+    u = arrayfun(@fieldComponents,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
     return;
 end
 

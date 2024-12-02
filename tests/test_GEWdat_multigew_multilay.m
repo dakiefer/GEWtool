@@ -53,7 +53,7 @@ funcList = {
             @poyntingVecTransverse,     false,      1,      {};
             @strain,                    false,    [2 2],    {};
             @stress,                    false,    [2 2],    {};
-            @unknowns,                  false,      2,      {}; 
+            @fieldComponents,           false,      2,      {}; 
             @velocity,                  false,      2,      {};
             };  
 
