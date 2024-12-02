@@ -14,7 +14,7 @@ properties (Access = public)
     Nk = 0       % number of wavenumbers (total number of solutions = Nk*Nw) 
     Nw = 0       % number of frequencies (total number of solutions = Nk*Nw) 
     cp           % [Nk x Nw] phase velocities in m/s
-    ce           % [Nk x Nw x Nudof] energy velocity vectors in m/s
+    ce           % [Nk x Nw] or [Nk x Nw x Nudof] energy velocities in m/s. If Lamb and SH waves decouple, only the axial component of ce is computed. Otherwise, all components are computed.
 end % properties
 
 properties (Dependent)
@@ -69,7 +69,11 @@ methods
         cp = obj.w./obj.k; 
     end
     function ce = get.ce(obj)
-        ce = energyVelVec(obj); 
+        if obj.gew.decouplesLambvsSH
+            ce = energyVelAxial(obj); 
+        else
+            ce = energyVelVec(obj); 
+        end
     end
 end
 
