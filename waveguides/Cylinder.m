@@ -52,6 +52,7 @@ methods
         % See also: torsional, flexural, decouplesLambvsSH.
         n = 0;
         gew = obj.Lamb(n);
+        gew.family = 'longitudinal';
     end
 
     function gew = torsional(obj)
@@ -64,6 +65,7 @@ methods
         % See also: longitudinal, flexural, decouplesLambvsSH.
         n = 0;
         gew = obj.sh(n);
+        gew.family = 'torsional';
     end
 
     function gew = flexural(obj,n)
@@ -73,6 +75,7 @@ methods
         % 
         % See also: torsional, longitudinal, decouplesLambvsSH.
         gew = obj.fullyCoupled(n);
+        gew.family = sprintf('flexural n = %d',n);
     end
 
     function decoupl = decouplesLongitudinalvsTorsional(obj,n)

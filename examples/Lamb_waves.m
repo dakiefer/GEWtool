@@ -13,12 +13,8 @@ plate = Plate(mat, h, N);        % create waveguide description
 gew = plate.LambSA; tic;         % choose S+A Lamb waves (assembles matrices)
 dat = computeW(gew, k, 6); toc;  % solve and save 6 modes (argument optional)
 
-figure(1); clf; hold on
-plot(dat(1).k/1e3, dat(1).w/2/pi/1e6,'SeriesIndex',1,'DisplayName','symmetric');
-plot(dat(2).k/1e3, dat(2).w/2/pi/1e6,'SeriesIndex',2,'DisplayName','anti-symm.');
-ylim([0, 1]*dat(1).w(end,1)/2/pi/1e6); 
-xlabel('wavenumber k in rad/mm'), ylabel('frequency f in MHz')
-legend(legendUnq, 'Location', 'southeast')
+figure(1); clf; 
+plot(dat);
 title(sprintf('Lamb waves in %gmm %s', h/1e-3, mat.name))
 
 % % Energy velocity (identical to the group velocity)
@@ -29,8 +25,8 @@ title(sprintf('Lamb waves in %gmm %s', h/1e-3, mat.name))
 % GEWdat directory. You can explore this directory to see what postprocessing
 % functions are available.
 figure(2); clf; hold on; 
-plot(dat(1).w/2/pi/1e6, dat(1).ce(:,:,1)/1e3, 'SeriesIndex',1,'DisplayName','symmetric');
-plot(dat(2).w/2/pi/1e6, dat(2).ce(:,:,1)/1e3, 'SeriesIndex',2,'DisplayName','anti-symm.');
+plot(dat(1).w/2/pi/1e6, dat(1).ce/1e3, 'SeriesIndex',1,'DisplayName','symmetric');
+plot(dat(2).w/2/pi/1e6, dat(2).ce/1e3, 'SeriesIndex',2,'DisplayName','anti-symm.');
 xlim([0, 1]*dat(1).w(end,1)/2/pi/1e6); 
 xlabel('frequency f in MHz'), ylabel('energy velocity ce in mm/us')
 legend(legendUnq, 'Location', 'southeast')

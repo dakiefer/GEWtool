@@ -50,6 +50,7 @@ methods
     function gew = fullyCoupled(obj)
         n = 0;
         gew = fullyCoupled@Waveguide(obj, n);
+        gew.family = 'all';
     end
 
     function gew = fullyCoupledA(obj)
@@ -63,6 +64,7 @@ methods
         udofFix = obj.dofInplane(udof); 
         gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix ux- and uy-displacements at bottom (z=0)
+        gew.family = 'all anti-sym.';
     end
 
     function gew = fullyCoupledS(obj)
@@ -76,6 +78,7 @@ methods
         udofFix = obj.dofOutofplane(udof); % 3 if [ux, uy, uz], 2 if [ux, uz]
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix uz-displacement at bottom (z=0)
+        gew.family = 'all sym.';
     end
 
     function gews = fullyCoupledSA(obj)
@@ -96,6 +99,7 @@ methods
     function gew = Lamb(obj)
         n = 0;
         gew = Lamb@Waveguide(obj, n);
+        gew.family = 'Lamb';
     end
     
     function gew = LambS(obj)
@@ -109,6 +113,7 @@ methods
         udofFix = obj.dofOutofplane(udof); % 3 if [ux, uy, uz], 2 if [ux, uz]
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix uz-displacement at bottom (z=0)
+        gew.family = 'Lamb sym.';
     end
     
     function gew = LambA(obj)
@@ -122,6 +127,7 @@ methods
         udofFix = obj.dofInplane(udof);
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix ux-displacement at bottom (z=0)
+        gew.family = 'Lamb anti-sym.';
     end
     
     function gews = LambSA(obj)
@@ -142,6 +148,7 @@ methods
     function gew = sh(obj)
         n = 0;
         gew = sh@Waveguide(obj, n);
+        gew.family = 'SH waves';
     end
 
     function decoupl = decouplesSA(obj, verb)

@@ -15,6 +15,7 @@ properties (Access = public)
     udof = []   % polarization: displacement components accounted for
     unknowns = []  % names of independent variables 
 	np  		% normalization parameters (material parameters, geometry)
+    family = '' % family of waves, e.g., Lamb/SH/Lamb symmetric/etc...
 end % properties
 
 properties (Access = protected)
@@ -110,6 +111,9 @@ methods
 		obj.assembleLayers(udof, n);
         obj.udof = udof;  % remember polarization
         obj.unknowns = polarizationNames; 
+        polStr = strjoin(polarizationNames,'-')+"-polarized"; 
+        if n ~= 0, polStr = polStr+sprintf(", n = %d",n); end
+        obj.family = char(polStr);
         if isa(obj,'Cylinder'), obj.n = n; end  % remember circumferential wavenumber
 	end
 

@@ -75,6 +75,24 @@ methods
             ce = energyVelVec(obj); 
         end
     end
+    function h = plot(dat, varargin)
+        % plot - Plot frequency-wavenumber dispersion curves.
+        for i = 1:length(dat)
+            ww = dat(i).w; kk = dat(i).k;
+            ww(end+1,:) = nan; kk(end+1,:) = nan; % plote each mode discontinuous
+            args = varargin; 
+            if ~any(strcmpi(varargin,'DisplayName')) % case insensitive
+                args{end+1} = 'DisplayName'; args{end+1} = dat(i).gew.family; 
+            end
+            h(i) = plot(kk(:)/1e3, ww(:)/2/pi/1e6, args{:});
+            hold on;
+        end
+        ylim([0, 1]*dat(1).w(end,1)/2/pi/1e6); 
+        xlabel('wavenumber $k$ in rad/mm','Interpreter','latex'), 
+        ylabel('frequency $\omega/2\pi$ in MHz','Interpreter','latex')
+        legend('Location', 'southeast');
+        if nargout == 0, clear h; end
+    end
 end
 
 end % class

@@ -51,6 +51,7 @@ methods
         b = gew.geom.zItf(end,end)/gew.np.h0; % normalized outer radius 
         gew.op.L2 = gew.op.L2*b^2;
         gew.op.L1 = gew.op.L1*b;
+        gew.family = 'Lamb-like';
     end
 
     function gew = sh(obj)
@@ -66,6 +67,7 @@ methods
         b = gew.geom.zItf(end,end)/gew.np.h0; % normalized outer radius 
         gew.op.L2 = gew.op.L2*b^2;
         gew.op.L1 = gew.op.L1*b;
+        gew.family = 'SH-like';
     end
 
     function gew = fullyCoupled(obj)
@@ -80,6 +82,7 @@ methods
         b = gew.geom.zItf(end,end)/gew.np.h0; % normalized outer radius 
         gew.op.L2 = gew.op.L2*b^2;
         gew.op.L1 = gew.op.L1*b;
+        gew.family = 'all';
     end
 
 end % methods

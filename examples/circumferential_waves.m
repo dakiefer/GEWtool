@@ -25,10 +25,8 @@ gew = cyl.sh;                   % polarized in x (axial direction)
 datSH = computeW(gew, k, 8);    % compute
 
 % plot frequency-wavenumber dispersion 
-fig = figure(1); clf; hold on;
-plot(datSH.k/1e3, datSH.w/2/pi/1e6, 'SeriesIndex',1,'DisplayName','r-phi-polarized');
-plot(datL.k/1e3, datL.w/2/pi/1e6, 'SeriesIndex',2,'DisplayName','x-polarized');
+fig = figure(1); clf; 
+plot([datSH datL]); 
 ylim([0, 6]); xlim([0, 10]);
 xlabel('wavenumber ko in rad/mm'), ylabel('frequency w/2pi in MHz')
-legend(legendUnq,'Location','southeast')
 title(sprintf('circumferential waves (ri: %g mm, ro: %g mm)', ri/1e-3, ro/1e-3));
