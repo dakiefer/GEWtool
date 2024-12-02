@@ -17,13 +17,13 @@ methods
         % stiffnessOp - stiffness operators L0, L1, L2
         cn = obj.mat.c/np.c0; % normalized stiffness tensor
         % relevant material matrices: 
-        cpp = squeeze(cn(3,:,:,3));
-        cpr = squeeze(cn(3,:,:,2));
-        crr = squeeze(cn(2,:,:,2)); % boundary flux
-        crp = squeeze(cn(2,:,:,3)); % boundary flux
+        cpp = squeeze(cn(2,:,:,2));
+        cpr = squeeze(cn(2,:,:,3));
+        crr = squeeze(cn(3,:,:,3)); % boundary flux
+        crp = squeeze(cn(3,:,:,2)); % boundary flux
 
         % include terms due to curvature (to be done before reducing to udof!)
-        A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
+        A = Cylinder.AphiDerivative; % differetiation in curvilinear coordinate system
         Acpr = A*cpr; 
         AcppA = A*cpp*A; 
         cppA = cpp*A; 
@@ -65,13 +65,13 @@ methods
 
         % relevant material matrices: 
         cn = obj.mat.c/obj.mat.c(1,2,1,2); % normalized stiffness tensor
-        crr = squeeze(cn(2,:,:,2));
-        cpp = squeeze(cn(3,:,:,3));
-        crp = squeeze(cn(2,:,:,3));
-        cpr = squeeze(cn(3,:,:,2));
+        crr = squeeze(cn(3,:,:,3));
+        cpp = squeeze(cn(2,:,:,2));
+        crp = squeeze(cn(3,:,:,2));
+        cpr = squeeze(cn(2,:,:,3));
 
         % include terms due to curvature
-        A = [0, 0, 0; 0, 0, -1; 0, 1, 0]; % differetiation in curvilinear coordinate system
+        A = Cylinder.AphiDerivative; % differetiation in curvilinear coordinate system
         Acpr = A*cpr; 
         AcppA = A*cpp*A; 
         cppA = cpp*A; 

@@ -214,7 +214,7 @@ devCgDwdk = devCgDwdk(200:end); % remove nan entries and the biggest mismatch (l
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
     maxDev = max(devCgDwdk,[],'all')
-    figure(8); clf; hold on; title('Cylinder triclinic n = 1')
+    figure(8); clf; hold on; title('Circumferential steel - Lamb')
     plot(dat.w(:), dwdk(:), 'rx', 'DisplayName','$\partial \omega / \partial k$');
     plot(dat.w(:), cg(:), 'k.', 'DisplayName','cg');
     legend('Location','southeast');
@@ -237,7 +237,7 @@ devCgDwdk = devCgDwdk(200:end); % remove nan entries and the biggest mismatch (l
 % plot if the variable "show" has been set to true
 if exist('show', 'var') && show
     maxDev = max(devCgDwdk,[],'all')
-    figure(8); clf; hold on; title('Cylinder triclinic n = 1')
+    figure(8); clf; hold on; title('Circumferential triclinic - fully coupled')
     plot(dat.w(:), dwdk(:), 'rx', 'DisplayName','$\partial \omega / \partial k$');
     plot(dat.w(:), cg(:), 'k.', 'DisplayName','cg');
     legend('Location','southeast');

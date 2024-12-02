@@ -25,7 +25,7 @@ cyl = CylinderCircumferential(mat, [a b], N); % waveguide
 gew = cyl.Lamb;              % assembles matrices 
 dat = computeW(gew, k, 8);   % compute 
 
-%% Compare to Zemanek
+%% Compare to Qu
 pic=imread('data/Qu_circumferential.png');   % load reference
 fig = figure(1); clf; hold on
 image([0,10],[10,0],pic); axis xy
