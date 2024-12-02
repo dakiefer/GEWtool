@@ -44,6 +44,7 @@ for i=1:numel(N)
 end
 
 %% assembling time
+if exist('show', 'var') && show, meanAssemblingTime = mean(time), end
 assert( mean(time) < 40e-4 )
 
 %% convergence

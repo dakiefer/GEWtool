@@ -10,7 +10,6 @@
 % specify parameters:
 r = [4e-3, 4.995e-3, 5e-3];
 N = [12, 12];
-Nudof = [3, 3];
 zirc = Material('zircaloy'); 
 steel = Material('steel');
 mats = {zirc, steel};

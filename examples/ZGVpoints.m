@@ -73,16 +73,17 @@ plot(zgvScan.k(:)*h, zgvScan.w(:)*h/2/pi/1e3, 'ksquare', 'DisplayName', 'Scannin
 if isfield(zgvScan, 'k0s'), xline(zgvScan.k0s*h, 'HandleVisibility', 'off'); end
 drawnow;
 
-%% Direct method
-% This method is implemented in computeZGVDirect(). It does not need initial
-% guesses and guarantees to find all ZGV points as long as the matrices defining
-% the problem are not too big. This is rather slow and should not be used for
-% matrices bigger than about 40x40. 
-fprintf('\n\n++ Direct method: ++\n')
-tic, zgvDirect = computeZGVDirect(gew); timing = toc;
-nZGV = length(zgvDirect.w(zgvDirect.w < wmax));
-fprintf('Computed %d ZGV points in %g s.\n', nZGV, timing); 
-
-figure(fig);
-plot(zgvDirect.k(:)*h, zgvDirect.w(:)*h/2/pi/1e3, 'k.', 'MarkerSize', 8, 'DisplayName', 'Direct method');
-drawnow;
+% %% Direct method
+% % This method is implemented in computeZGVDirect(). It does not need initial
+% % guesses and guarantees to find all ZGV points as long as the matrices defining
+% % the problem are not too big. This is rather slow and should not be used for
+% % matrices bigger than about 40x40. As it is slow, this block is uncommented
+% % per default. 
+% fprintf('\n\n++ Direct method: ++\n')
+% tic, zgvDirect = computeZGVDirect(gew); timing = toc;
+% nZGV = length(zgvDirect.w(zgvDirect.w < wmax));
+% fprintf('Computed %d ZGV points in %g s.\n', nZGV, timing); 
+% 
+% figure(fig);
+% plot(zgvDirect.k(:)*h, zgvDirect.w(:)*h/2/pi/1e3, 'k.', 'MarkerSize', 8, 'DisplayName', 'Direct method');
+% drawnow;

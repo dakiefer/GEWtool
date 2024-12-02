@@ -45,7 +45,7 @@ classdef Layer
             obj.w = wn; % integration weights on unit domain (post-processing)
             obj.eta = zn;
             obj.mat = mat; % material
-            obj.N = N; % polynomial order
+            obj.N = N; % number of nodes
         end
 
         function M = massOp(obj, udof, np, hl)

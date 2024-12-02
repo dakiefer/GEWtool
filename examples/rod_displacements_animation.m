@@ -40,7 +40,7 @@ axis off;
 
 % iterate over time
 T = 2*pi/w;     % period
-NT = 3;         % number of periods
+NT = 1;         % number of periods
 t = linspace(0, NT*T, NT*80); % time samples
 for i = 2:length(t)
     rDeformed = ri + real(ue(:,:,2)*exp(1i*w*t(i))); 

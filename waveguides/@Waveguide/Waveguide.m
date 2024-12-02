@@ -9,7 +9,7 @@ classdef Waveguide < matlab.mixin.Copyable
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 properties (Access = public)
-	geom        % geometry object describing the discretized, multilayered structure
+	geom = []   % geometry object describing the discretized, multilayered structure
 	lay         % layers as {1 x Nlay} cell array
 	op = [] 	% operators describing the wave propagation
     udof = []   % polarization: displacement components accounted for
@@ -59,7 +59,7 @@ methods
         end
 		obj.mat = mats; % protected property is later used in constructor of subclass
         % choose normalization parameters (physical units for the calculation):
-        np.h0 =   obj.h/length(mats);       % unit distance
+        np.h0 =   (rs(end)-rs(1))/length(mats);       % unit distance
 		np.c0 =   averageProp(mats, 'c');   % unit stiffness
 		np.rho0 = averageProp(mats, 'rho'); % unit mass
         np.eps0 = averageProp(mats, 'eps'); % unit permittivity
@@ -82,7 +82,7 @@ methods
 	end
 
     function h = get.h(obj)
-        h = obj.geom.zItf(end)-obj.geom.zItf(1);
+        h = sum( cellfun(@(l)l.h, obj.lay) );
     end
 
     function obj = polarization(obj, udof, n)
