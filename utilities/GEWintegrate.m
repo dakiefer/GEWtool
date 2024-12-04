@@ -37,10 +37,10 @@ for l = ls  % for every layer specified in ls
     lay = gew.lay{l};
     hi = gew.geom.hl(l); % thickness of layer i
     w = shiftdim(lay.w(:), -dim+1);       % integration weights moved to dim n
-    if isa(gew,"Cylinder") && lay.r(1) ~= 0
+    if isa(gew,"Cylinder") && ~isa(gew,"CylinderCircumferential") && lay.r(1) ~= 0
         r = shiftdim(lay.r(:), -dim+1); % shifted to dimension of integration
         integrand = f{l}.*r;
-    elseif isa(gew,"Cylinder") && lay.r(1) == 0 % avoid integrating at r = 0
+    elseif isa(gew,"Cylinder") && ~isa(gew,"CylinderCircumferential") && lay.r(1) == 0 % avoid integrating at r = 0
         [flNew, ri, wi] = interpolateToGaussLegendre(lay, f{l}, dim);
         w = wi; % replace integration weights with those of the new grid
         integrand = flNew.*ri;
