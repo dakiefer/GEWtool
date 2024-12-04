@@ -75,21 +75,42 @@ methods
             ce = energyVelVec(obj); 
         end
     end
+    function ind = isPropagative(obj,reltol)
+        if nargin < 2, reltol = 1e-5; end
+        ind = cell(size(obj));
+        for i = 1:length(obj)
+            krMag = abs(real(obj(i).k*obj(i).gew.h));
+            kiMag = abs(imag(obj(i).k*obj(i).gew.h));
+            ind{i} = krMag < reltol*kiMag;
+        end
+    end
     function h = plot(dat, varargin)
         % plot - Plot frequency-wavenumber dispersion curves.
+        hasStyle = nargin ~= 1; % if lineSpec not provided, we will be choosing a default
+        if ~dat(1).gew.isDissipative && isreal(dat(1).k) % we computed at const k
+            wrange = dat(1).w(end,1); 
+            style = '-';
+        else % we computed at const w
+            wrange = dat(1).w(end,end);
+            style = '.';
+        end
         holdStat = ishold; % creats new axis if not yet existent
         for i = 1:length(dat)
-            ww = dat(i).w; kk = dat(i).k;
+            ww = dat(i).w; kk = real(dat(i).k);
             ww(end+1,:) = nan; kk(end+1,:) = nan; % plote each mode discontinuous
             args = varargin; 
             if ~any(strcmpi(varargin,'DisplayName')) % case insensitive
                 args{end+1} = 'DisplayName'; args{end+1} = dat(i).gew.family; 
             end
-            h(i) = plot(kk(:)/1e3, ww(:)/2/pi/1e6, args{:});
+            if hasStyle
+                h(i) = plot(kk(:)/1e3, ww(:)/2/pi/1e6, args{:});
+            else
+                h(i) = plot(kk(:)/1e3, ww(:)/2/pi/1e6, style, args{:});
+            end
             hold on;
         end
         if ~holdStat, hold off; end % restore hold status to previous value
-        ylim([0, 1]*dat(1).w(end,1)/2/pi/1e6); 
+        ylim([0, 1]*wrange/2/pi/1e6); 
         xlabel('wavenumber $k$ in rad/mm','Interpreter','latex'), 
         ylabel('frequency $\omega/2\pi$ in MHz','Interpreter','latex')
         legend('Location', 'southeast');
