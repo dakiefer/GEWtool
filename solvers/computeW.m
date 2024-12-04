@@ -18,6 +18,7 @@ function dat = computeW(gews, k, nModes, opts)
     %            - 'sparse': false (default) | true. Use sparse matrices.
     %            - 'subspace': false (default) | true. Use eigs() instead of eig().
     %            - 'parallel': false (default) | true. Multi-core computation.
+    %            - 'show': print the used options when computing (for debugging)
     %
     % Return value:
     % - dat:     A data structure containing 
@@ -38,18 +39,9 @@ function dat = computeW(gews, k, nModes, opts)
     dat = repmat(GEWdat(gews(1),k,[],[]),1,length(gews));
     for i=1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
-        opti = parseSolverOpts(opts,gew.op,nModes); % opti might be modified in the iteration
-        if nargin < 3 || isempty(nModes) || isinf(nModes) % default
-            nModes = size(gew.op.M,1); 
-        end
-        if nModes > size(gew.op.M,1)
-            warning('GEWTOOL:computeW:tooManyModes', 'More modes requested than available. Resetting nModes to the matrix size.')
-            nModes = size(gew.op.M,1);
-        end
+        [opti, nModes] = parseSolverOpts(opts, gew.op, nModes); % opti might be modified in the iteration
         if isfield(opti,'target') & isnumeric(opti.target)
-            opti.target = (opti.target*gew.np.h0/gew.np.fh0)^2;
-        else 
-            opti.target = 'smallestabs'; % parfor throws error if target undefined
+            opti.target = (opti.target*gew.np.h0/gew.np.fh0)^2; % we are computing w^2 
         end
         if opti.sparse
             M = sparse(gew.op.M); L0 = sparse(gew.op.L0); L1 = sparse(gew.op.L1); L2 = sparse(gew.op.L2);

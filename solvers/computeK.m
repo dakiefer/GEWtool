@@ -18,6 +18,7 @@ function dat = computeK(gews, w, nModes, opts)
     %            - 'sparse': false (default) | true. Use sparse matrices.
     %            - 'subspace': false (default) | true. Use eigs() instead of eig().
     %            - 'parallel': false (default) | true. Multi-core computation.
+    %            - 'show': print the used options when computing (for debugging)
     %
     % Return value:
     % - dat:     A data structure containing 
@@ -38,18 +39,9 @@ function dat = computeK(gews, w, nModes, opts)
     dat = repmat(GEWdat(gews(1),[],w,[]),1,length(gews));
     for i = 1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
-        opti = parseSolverOpts(opts,gew.op,nModes); % opti will be modified in the iteration
-        if nargin < 3 || isempty(nModes) || isinf(nModes)
-            nModes = size(gew.op.M,1);  % for now we dont distinguish between linearized and quadratic EVP
-        end
-        if nModes > size(gew.op.M,1)
-            warning('GEWTOOL:computeK:tooManyModes', 'More modes requested than available. Resetting nModes to the matrix size.')
-            nModes = size(gew.op.M,1);
-        end
+        [opti, nModes] = parseSolverOpts(opts, gew.op, nModes); % opti will be modified in the iteration
         if isfield(opti,'target') & isnumeric(opti.target)
-            opti.target = opti.target*gews.np.h0;
-        else 
-            opti.target = 'smallestabs'; % parfor throws error if target undefined
+            opti.target = opti.target*gews.np.h0; % normalize to match gew.op
         end
         if opti.sparse
             M = sparse(gew.op.M); L0 = sparse(gew.op.L0); L1 = sparse(gew.op.L1); L2 = sparse(gew.op.L2);

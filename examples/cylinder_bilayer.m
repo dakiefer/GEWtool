@@ -16,7 +16,7 @@ chrom = Material('chromium');
 %% with thin layer:
 cyl = Cylinder({zirc, chrom}, [ri, ro, ro+h1], N); % create waveguide description 
 gew = cyl.fullyCoupled(n); % waves of circumferential order n
-dat = computeW(gew, k); 
+dat = computeW(gew, k, 20); % compute 20 modes
 
 figure; hold on;
 plot(dat.k, dat.w/2/pi,'SeriesIndex',1,'DisplayName',strcat(num2str(h1/1e-6), ' um')); 
@@ -26,7 +26,7 @@ xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
 %% with thick layer:
 cyl = Cylinder({zirc, chrom}, [ri, ro, ro+h2], N); % create waveguide description 
 gew = cyl.fullyCoupled(n); % waves of circumferential order n
-dat = computeW(gew, k); 
+dat = computeW(gew, k, 20); % compute 20 modes
 
 plot(dat.k, dat.w/2/pi,'SeriesIndex',2,'DisplayName',strcat(num2str(h2/1e-6), ' um')); 
 xlim([0, 20/(ro-ri)]); 
