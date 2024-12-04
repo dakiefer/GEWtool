@@ -13,7 +13,7 @@ properties (Access = public)
 	lay         % layers as {1 x Nlay} cell array
 	op = [] 	% operators describing the wave propagation
     udof = []   % polarization: displacement components accounted for
-    unknowns = []  % names of independent variables 
+    vars = []   % names of independent variables, i.e., displacement components
 	np  		% normalization parameters (material parameters, geometry)
     family = '' % family of waves, e.g., Lamb/SH/Lamb symmetric/etc...
 end % properties
@@ -96,7 +96,7 @@ methods
         % 
         % See also: Lamb, sh, decouplesLambvsSH.
         uNames = obj.displacementNames;
-        polarizationNames = uNames(udof); % will be saved in obj.unknowns
+        polarizationNames = uNames(udof); % will be saved in obj.vars
         if ~obj.decouplesPolarization(udof,n)
             printNames = polarizationNames(1); 
             for astr = polarizationNames(2:end), printNames = strcat(printNames, ", ", astr); end
@@ -110,7 +110,7 @@ methods
         end
 		obj.assembleLayers(udof, n);
         obj.udof = udof;  % remember polarization
-        obj.unknowns = polarizationNames; 
+        obj.vars = polarizationNames; 
         polStr = strjoin(polarizationNames,'-')+"-polarized"; 
         if n ~= 0, polStr = polStr+sprintf(", n = %d",n); end
         obj.family = char(polStr);
