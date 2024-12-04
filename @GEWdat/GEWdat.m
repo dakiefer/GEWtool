@@ -77,6 +77,7 @@ methods
     end
     function h = plot(dat, varargin)
         % plot - Plot frequency-wavenumber dispersion curves.
+        holdStat = ishold; % creats new axis if not yet existent
         for i = 1:length(dat)
             ww = dat(i).w; kk = dat(i).k;
             ww(end+1,:) = nan; kk(end+1,:) = nan; % plote each mode discontinuous
@@ -87,6 +88,7 @@ methods
             h(i) = plot(kk(:)/1e3, ww(:)/2/pi/1e6, args{:});
             hold on;
         end
+        if ~holdStat, hold off; end % restore hold status to previous value
         ylim([0, 1]*dat(1).w(end,1)/2/pi/1e6); 
         xlabel('wavenumber $k$ in rad/mm','Interpreter','latex'), 
         ylabel('frequency $\omega/2\pi$ in MHz','Interpreter','latex')
