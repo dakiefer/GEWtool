@@ -24,9 +24,9 @@ classdef LayerPlate < Layer
             czz = squeeze(cn(3,udof,udof,3)); % boundary flux
             % assemble element stiffness terms:
             K2 = kron(cxx, obj.PP); 
-            K1 = kron(cxz, obj.PPd); % stiffness
-            G1 = kron(czx, -obj.PPd.');  % boundary flux
-            G0 = kron(czz, -obj.PdPd.'); % boundary flux
+            K1 = kron(cxz, obj.PD); % stiffness
+            G1 = kron(czx, -obj.PD.');  % boundary flux
+            G0 = kron(czz, -obj.DD.'); % boundary flux
             % combine to polynomial of (ik):
             L0 = G0/hl;  L1 = K1 + G1;  L2 = K2*hl;
         end

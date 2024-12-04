@@ -71,20 +71,20 @@ Psid = diff(Psi);             % differentiated polynomials
 eta = chebfun('x', [0, 1]); % computational coordinate eta in [0, 1].
 rnfun = a/h + eta;          % normalized radial coordinates: [r1 r2]/h
 obj.PP = elemPP(Psi);
-obj.PPd = elemPPd(Psi, Psid);
+obj.PD = elemPD(Psi, Psid);
 obj.PPr = elemPPr(Psi, rnfun);
-obj.PPdr = elemPPdr(Psi, Psid, rnfun);
-obj.PdPdr = elemPdPdr(Psid, rnfun);
+obj.PDr = elemPDr(Psi, Psid, rnfun);
+obj.DDr = elemDDr(Psid, rnfun);
 obj.PPinvr = elemPPinvr(Psi, rnfun);
 
 %% problem setup: (i*kh)^2*L2 + (i*kh)*L1(i*n) + L0(i*n) + w^2*M = 0
 % element stiffness:
 K2 = kron(cxx, obj.PPr)*hn^2;
-K1 = kron(cxr, obj.PPdr)*hn + kron( cxp*(1i*n*I + A) + (1i*n*I + A)*cpx , obj.PP)*hn;
-K0 = kron((1i*n*I + A)*cpr, obj.PPd) + kron((1i*n*I + A)*cpp*(1i*n*I + A), obj.PPinvr);
+K1 = kron(cxr, obj.PDr)*hn + kron( cxp*(1i*n*I + A) + (1i*n*I + A)*cpx , obj.PP)*hn;
+K0 = kron((1i*n*I + A)*cpr, obj.PD) + kron((1i*n*I + A)*cpp*(1i*n*I + A), obj.PPinvr);
 % element flux:
-G1 = kron( crx , -obj.PPdr.' )*hn;
-G0 = kron( crr , -obj.PdPdr.' )  +  kron( crp*(1i*n*I + A) , -obj.PPd.' );
+G1 = kron( crx , -obj.PDr.' )*hn;
+G0 = kron( crr , -obj.DDr.' )  +  kron( crp*(1i*n*I + A) , -obj.PD.' );
 % combine to polynomial of (ik):
 L2 = K2; L1 = K1 + G1; L0 = K0 + G0;
 M = kron(rhon*I, obj.PPr)*hn^2;
@@ -126,8 +126,8 @@ function me = elemPP(P)
         end
     end
 end
-function le1 = elemPPd(P, Pd) 
-    % elemPPd: integral of product matrix of ∫P*P'dy (element stiffness and flux)
+function le1 = elemPD(P, Pd) 
+    % elemPD: integral of product matrix of ∫P*P'dy (element stiffness and flux)
     le1 = zeros(size(P,2));
     for i = 1:size(P,2)
         for j = 1:size(Pd,2)
@@ -145,8 +145,8 @@ function ppr = elemPPr(P, r)
         end
     end
 end
-function ppdr = elemPPdr(P, Pd, r) 
-    % elemPPdr: integral ∫P*P'*1/r dr of basis functions P
+function ppdr = elemPDr(P, Pd, r) 
+    % elemPDr: integral ∫P*P'*1/r dr of basis functions P
     ppdr = zeros(size(P,2));
     for i = 1:size(P,2)
         for j = 1:size(Pd,2)
@@ -154,8 +154,8 @@ function ppdr = elemPPdr(P, Pd, r)
         end
     end
 end
-function k0 = elemPdPdr(Pd, r) 
-    % elemPdPd: integral of product matrix of ∫P'*P'dy (element flux)
+function k0 = elemDDr(Pd, r) 
+    % elemDD: integral of product matrix of ∫P'*P'dy (element flux)
     k0 = zeros(size(Pd,2));
     for i = 1:size(Pd,2)
         for j = i:size(Pd,2)

@@ -45,11 +45,11 @@ methods
         K2pp = kron(cpp,   obj.PPInvr);
         K1pp = kron(cppA + Acpp, obj.PPInvr);
         K0pp = kron(AcppA, obj.PPInvr);
-        G0rr = kron(crr,  -obj.PdPdr.');
-        K1pr = kron(cpr,   obj.PPd);
-        G1pr = kron(crp,  -obj.PPd.');
-        K0pr = kron(Acpr,  obj.PPd);
-        G0pr = kron(crpA, -obj.PPd.');
+        G0rr = kron(crr,  -obj.DDr.');
+        K1pr = kron(cpr,   obj.PD);
+        G1pr = kron(crp,  -obj.PD.');
+        K0pr = kron(Acpr,  obj.PD);
+        G0pr = kron(crpA, -obj.PD.');
 
         % combine to polynomial of (in):
         L2 = K2pp;

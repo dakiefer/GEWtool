@@ -9,8 +9,8 @@ classdef LayerCylindrical < Layer
 
     properties 
         PPr     % integral of weighted product matrix of ansatz functions ∫P*P r dr
-        PPdr    % integral of weighted product matrix of ansatz functions ∫P*P' r dr 
-        PdPdr   % integral of weighted product matrix of ansatz functions ∫P'*P' r dr 
+        PDr    % integral of weighted product matrix of ansatz functions ∫P*P' r dr 
+        DDr   % integral of weighted product matrix of ansatz functions ∫P'*P' r dr 
         PPInvr  % integral of weighted product matrix of ansatz functions ∫P*P 1/r dr 
     end
     properties (Dependent)
@@ -31,8 +31,8 @@ classdef LayerCylindrical < Layer
             % % element matrices specific to cylindrical coordinates:
             basis.r = basis.z(:) + rs(1)/h; % map nodes on [0, 1] -> [r1,r2]/(r2-r1)
             obj.PPr = LayerCylindrical.elemPPr(basis.P, basis.w, basis.r);             % ∫P*P r dr
-            obj.PPdr = LayerCylindrical.elemPPdr(basis.P, basis.Pd, basis.w, basis.r); % ∫P*P' r dr 
-            obj.PdPdr = LayerCylindrical.elemPdPdr(basis.Pd, basis.w, basis.r);        % ∫P'*P' r dr 
+            obj.PDr = LayerCylindrical.elemPDr(basis.P, basis.D, basis.w, basis.r); % ∫P*P' r dr 
+            obj.DDr = LayerCylindrical.elemDDr(basis.D, basis.w, basis.r);        % ∫P'*P' r dr 
             obj.PPInvr = LayerCylindrical.elemPPInvr(basis.P, basis.w, basis.r);       % ∫P*P 1/r dr 
         end
 
@@ -79,11 +79,11 @@ classdef LayerCylindrical < Layer
             % assemble element stiffness terms:
             K2xx = kron(cxx,   obj.PPr);
             K0pp = kron(AcppA, obj.PPInvr);
-            G0rr = kron(crr,  -obj.PdPdr.');
-            K1xr = kron(cxr,   obj.PPdr);
-            G1xr = kron(crx,  -obj.PPdr.');
-            K0pr = kron(Acpr,  obj.PPd);
-            G0pr = kron(crpA, -obj.PPd.');
+            G0rr = kron(crr,  -obj.DDr.');
+            K1xr = kron(cxr,   obj.PDr);
+            G1xr = kron(crx,  -obj.PDr.');
+            K0pr = kron(Acpr,  obj.PD);
+            G0pr = kron(crpA, -obj.PD.');
             K1xp = kron(cxpA + Acpx, obj.PP);
             
             % combine to polynomial of (ik):
@@ -156,17 +156,17 @@ classdef LayerCylindrical < Layer
             PtimesPr = r.*PtimesP;
             ppr = squeeze( sum(w.'.*PtimesPr,1) );
         end
-        function ppdr = elemPPdr(P, Pd, w, r) 
-            % elemPPdr - integral ∫P*P'*r dr of basis functions P
-            PtimesPd = P.*permute(Pd,[1 3 2]); % size: [integration points, len P, len P]
-            PtimesPdr = r.*PtimesPd;
-            ppdr = squeeze( sum(w.'.*PtimesPdr,1) );
+        function pdr = elemPDr(P, D, w, r) 
+            % elemPDr - integral ∫P*P'*r dr of basis functions P
+            PtimesD = P.*permute(D,[1 3 2]); % size: [integration points, len P, len P]
+            PtimesDr = r.*PtimesD;
+            pdr = squeeze( sum(w.'.*PtimesDr,1) );
         end
-        function ppdr = elemPdPdr(Pd, w, r) 
-            % elemPdPdr - integral ∫P'*P'*r dr of basis functions P
-            PdtimesPd = Pd.*permute(Pd,[1 3 2]); % size: [integration points, len P, len P]
-            PdtimesPdr = r.*PdtimesPd;
-            ppdr = squeeze( sum(w.'.*PdtimesPdr,1) );
+        function ddr = elemDDr(D, w, r) 
+            % elemDDr - integral ∫P'*P'*r dr of basis functions P
+            DtimesD = D.*permute(D,[1 3 2]); % size: [integration points, len P, len P]
+            DtimesDr = r.*DtimesD;
+            ddr = squeeze( sum(w.'.*DtimesDr,1) );
         end
         function ppri = elemPPInvr(P, w, r) 
             % elemPPInvr - integral ∫P*P*1/r dr of basis functions P

@@ -37,8 +37,8 @@ Pd = diff(P);
 
 % % "element" matrices for one displacement component:
 pp = elemPP(P);         % ∫ Pi*Pj dy
-pd = elemPPd(P, Pd);    % ∫ Pi*Pj' dy
-dd = elemPdPd(Pd);      % ∫ Pi'*Pj' dy
+pd = elemPD(P, Pd);    % ∫ Pi*Pj' dy
+dd = elemDD(Pd);      % ∫ Pi'*Pj' dy
 % % assemble for the displacement components:
 M  = kron(rhon*I,pp);
 L2 = kron(cxx, pp);
@@ -123,8 +123,8 @@ function pp = elemPP(P)
     end
 end
 
-function pd = elemPPd(P, Pd) 
-    % elemPPd - integral ∫P*P'dy of basis functions P (element stiffness and flux)
+function pd = elemPD(P, Pd) 
+    % elemPD - integral ∫P*P'dy of basis functions P (element stiffness and flux)
     N = size(P,2);
     pd = zeros(N);
     for i = 1:N
@@ -134,8 +134,8 @@ function pd = elemPPd(P, Pd)
     end
 end
 
-function dd = elemPdPd(Pd)
-    % elemPdPd - integral ∫P'*P'dy of basis functions P (element flux)
+function dd = elemDD(Pd)
+    % elemDD - integral ∫P'*P'dy of basis functions P (element flux)
     N = size(Pd,2);
     dd = zeros(N);
     for i = 1:N

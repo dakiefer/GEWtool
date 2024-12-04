@@ -14,8 +14,8 @@ classdef Layer
         N   % number of collocation points
         mat % material
         PP  % integral of product matrix of ansatz functions ∫P*Pdz
-        PPd % integral of product matrix of ∫P*P'dz
-        PdPd % integral of product matrix of ∫P'*P'dz
+        PD % integral of product matrix of ∫P*P'dz
+        DD % integral of product matrix of ∫P'*P'dz
         D1  % diff matrix on unit domain 
         w   % integration coeffs on unit domain
     end
@@ -37,8 +37,8 @@ classdef Layer
             obj.D1 = collocD(zn); % save differentiation matrix for later post-processing
             % % element matrices:
             obj.PP = Layer.elemPP(basis.P, basis.w);
-            obj.PPd = Layer.elemPPd(basis.P, basis.Pd, basis.w);
-            obj.PdPd = Layer.elemPdPd(basis.Pd, basis.w);
+            obj.PD = Layer.elemPD(basis.P, basis.D, basis.w);
+            obj.DD = Layer.elemDD(basis.D, basis.w);
             % % save coordinates and other properties:
             obj.h = zlim(end) - zlim(1); % physical thickness
             obj.z = obj.h*zn + zlim(1);
@@ -57,22 +57,22 @@ classdef Layer
     end % methods
 
     methods (Static)
-        function me = elemPP(P, w) 
+        function pp = elemPP(P, w) 
             % elemPP - integral ∫P*Pdz of basis functions P (element mass)
             PtimesP = P.*permute(P,[1 3 2]);
-            me = squeeze( sum(w.'.*PtimesP,1) );
+            pp = squeeze( sum(w.'.*PtimesP,1) );
         end
 
-        function le1 = elemPPd(P, Pd, w) 
-            % elemPPd - integral ∫P*P'dz of basis functions P (element stiffness and flux)
-            PtimesPd = P.*permute(Pd,[1 3 2]);
-            le1 = squeeze( sum(w.'.*PtimesPd,1) );
+        function pd = elemPD(P, D, w) 
+            % elemPD - integral ∫P*P'dz of basis functions P (element stiffness and flux)
+            PtimesD = P.*permute(D,[1 3 2]);
+            pd = squeeze( sum(w.'.*PtimesD,1) );
         end
 
-        function g0 = elemPdPd(Pd, w) 
-            % elemPdPd - integral ∫P'*P'dz of basis functions P (element flux)
-            PdtimesPd = Pd.*permute(Pd,[1 3 2]);
-            g0 = squeeze( sum(w.'.*PdtimesPd,1) );
+        function dd = elemDD(D, w) 
+            % elemDD - integral ∫P'*P'dz of basis functions P (element flux)
+            DtimesD = D.*permute(D,[1 3 2]);
+            dd = squeeze( sum(w.'.*DtimesD,1) );
         end
 
         function [zn, wn] = nodes(N)
@@ -100,7 +100,7 @@ classdef Layer
             % % Use the element nodes zn as integration points (zi = zn):
             [zi, wi] = lglnodes(N-1);  % integration nodes and weights
             zi = flip(zi)/2 + 1/2; wi = wi.'/2; % scale to [0, 1]
-            basis.P = Pn;   basis.Pd = Pdn;    basis.w = wi;     basis.z = zi;
+            basis.P = Pn;   basis.D = Pdn;    basis.w = wi;     basis.z = zi;
         end
 
         function basis = basisGaussLegendre(zn)
@@ -128,7 +128,7 @@ classdef Layer
                 Pi(:,j)  = barylag([zn,Pn(:,j)],zi);  % interpolate Pj(z) to zi
                 Pdi(:,j) = barylag([zn,Pdn(:,j)],zi); % interpolate Pj'(z) to zi
             end
-            basis.P = Pi;   basis.Pd = Pdi;    basis.w = wi;    basis.z = zi;
+            basis.P = Pi;   basis.D = Pdi;    basis.w = wi;    basis.z = zi;
         end
 
         %% overload operators: 
