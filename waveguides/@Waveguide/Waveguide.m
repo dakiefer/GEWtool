@@ -294,6 +294,15 @@ methods
         nM = length(obj.cutoffFreq(wmax, 'includeZeroFreq'));
     end
 
+    function udof = udofAxial(obj)
+        lb = obj.udofLamb; 
+        udof = lb(lb ~= 3); % the 3-component is always the out-of-plane one
+    end
+
+    function udof = udofTransverse(obj)
+        udof = obj.udofSH; % the SH-component corresponds to the transverse in-plane one
+    end
+
     % declare functions implemented in external files:
 	gew = assembleLayers(obj, udof, n)
 end

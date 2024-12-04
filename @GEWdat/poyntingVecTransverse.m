@@ -17,14 +17,15 @@ end
 
 v = velocity(dat);
 T = stress(dat);     % inefficient: we compute components that we don't need
-dof = 1:length(dat.gew.udof); % polarization
+y = dat.gew.udofTransverse; % 2 for Plate and Cylinder, 1 for Circumferential
 
 py = cell(dat.gew.geom.nLay,1);
 for l = 1:dat.gew.geom.nLay
-    if dat.gew.geom.Nudof(l) == 3
-        py{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,dof,2)), 4); % reduce T to components that yield py
+    if size(v{l},4) == size(T{l},4)
+        py{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,:,y)), 4); % reduce T to components that yield py
     else
-        py{l} = zeros([size(dat.w), dat.gew.geom.N(l)]);
+        dof = dat.gew.udof; 
+        py{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,dof,y)), 4); % except for dof, v = 0
     end
 end
 

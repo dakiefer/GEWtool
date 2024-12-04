@@ -16,15 +16,16 @@ end
 
 v = velocity(dat);
 T = stress(dat); % inefficient: we compute components that we don't need
-if isa(dat.gew,"Plate") % might be in plain strain [ux, uz] or [uy]
-    dof = 1:length(dat.gew.udof); 
-else % never in plain strain
-    dof = dat.gew.udof; 
-end
+x = dat.gew.udofAxial; % 1 for Plate and Cylinder, 2 for Circumferential
 
 px = cell(dat.gew.geom.nLay,1);
 for l = 1:dat.gew.geom.nLay
-    px{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,dof,1)), 4); % reduce T to components that yield px
+    if size(v{l},4) == size(T{l},4)
+        px{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,:,x)), 4); % reduce T to components that yield px
+    else
+        dof = dat.gew.udof; 
+        px{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,dof,x)), 4); % except for dof, v = 0
+    end
 end
 
 end

@@ -15,12 +15,16 @@ end
 
 v = velocity(dat);
 T = stress(dat);
-dof = 1:length(dat.gew.udof);      % polarization
 
 p = cell(dat.gew.geom.nLay,1);
 for l = 1:dat.gew.geom.nLay
-    pl = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,dof,:)), 4);
-    p{l} = permute(pl, [1 2 3 5 4]);
+    if size(v{l},4) == size(T{l},4)
+        pl = -1/2*sum(real(conj(v{l}).*T{l}), 4);
+    else
+        dof = dat.gew.udof; 
+        pl = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,dof,:)), 4); % except for dof, v = 0
+    end
+    p{l} = permute(pl, [1 2 3 5 4]); % removes 4th dimension (singleton) 
 end
 
 end
