@@ -6,8 +6,10 @@ function R = eulerAnglesToRotationMatrix(varargin)
 % - axis:    (one of 'x', 'y', 'z') axis to rotate about
 % 
 % You can specify as many sets of angle-axis pairs as you desire. The rotation
-% will be performed in the provided order in the fixed initial coordinate system
-% (extrinsic).
+% will be performed in the provided order in the current coordinate system
+% (intrinsic). This means that the second rotation is performed around the axis
+% that results from the first rotation. To rotate around a fixed coordinate
+% system (extrinsic), you can provide the rotation operations in reverse order.
 % 
 % usage: 
 % R = eulerAnglesToRotationMatrix(angle, axis); 
@@ -55,8 +57,8 @@ for i = 1:Nrots
             ax = 0; % 3 == 0 (don't shift matrix)
     end
     Ri = circshift(Z0(angles(i)), [ax, ax]); % rotation matrix around ax by angle i
-    R = R*Ri;   % extrinsic, passive rotation axes{1} -> axes{2}, etc (in that order). 
-                % Reversing matrix multiplication changes to intrinsic rotation.
+    R = Ri*R;   % intrinsic, passive rotation axes{1} -> axes{2}, etc (in that order). 
+                % Reversing matrix multiplication changes to extrinsic rotation.
 end
 
 end % function 
