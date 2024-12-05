@@ -5,9 +5,19 @@ function B = rotateEuler(A, varargin)
 % - A:       (3x3x...x3 numeric) nth-order tensor (all dimensions 3)
 % - angle:   (scalar numeric) angle in radian to rotate
 % - axis:    (one of 'x', 'y', 'z') axis to rotate about
-% You can specify as many sets of angle-axis pairs as you desire. The rotation
-% will be performed in the provided order in the fixed initial coordinate system
-% (extrinsic).
+% You can specify as many sets of angle-axis pairs as you desire. The passive
+% rotation will be performed in the provided order in the fixed initial
+% coordinate system (extrinsic). If you prefer to perform intrinsic rotations,
+% you can provide the angle-axis pairs in reverse order. Passive means that the
+% frame is rotated instead of the object itself.
+% 
+% EXAMPLE. Assume you want to rotate the initial frame xyz to the final frame XYZ. 
+% A first rotation gives x'y'z', a second one yields x''y''z'' and the third one 
+% results in XYZ. You can achieve this rotation in two equivalent ways: 
+% - extrinsic rotation: g around z, b around x, a around z (zxz-rotation)
+% >> B = rotateEuler(A, g, 'z', b, 'x', a, 'z'); 
+% - intrinsic rotation: a round z, b around x', g around z'' (zx'z''-rotation)
+% >> B = rotateEuler(A, a, 'z', b, 'x', g, 'z'); 
 % 
 % Alternative Arguments:
 % - A:       (3x3x...x3 numeric) nth-order tensor (all dimensions 3)
