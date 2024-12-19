@@ -1,0 +1,12 @@
+{
+"name":"LiNbO3",
+"rho":4700,
+"C":[[2.03e11,   0.53e11,  0.75e11,  0.09e11,  0,       0],
+    [ 0.53e11,   2.03e11,  0.75e11,  -0.09e11, 0,       0],
+    [ 0.75e11,   0.75e11,  2.43e11,  0,        0,       0],
+    [ 0.09e11,   -0.09e11, 0,        0.6e11,   0,       0],
+    [ 0,         0,        0,        0,        0.6e11,  0.09e11],
+    [ 0,         0,        0,        0,        0.09e11, 0.75e11]],
+"symmetry":"trigonal",
+"source":"Ma R, Liu W, Sun X, Zhou S, Lin D. FEM Simulation of a High-Performance 128°Y-X LiNbO3/SiO2/Si Functional Substrate for Surface Acoustic Wave Gyroscopes. Micromachines (Basel). 2022 Jan 27;13(2):202. doi: 10.3390/mi13020202. PMID: 35208326; PMCID: PMC8879009. https://pmc.ncbi.nlm.nih.gov/articles/PMC8879009/#sec2-micromachines-13-00202"
+}
