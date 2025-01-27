@@ -8,12 +8,12 @@ classdef LayerPlatePiezo < LayerPlate
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
     
     methods
-        function obj = LayerPlatePiezo(mat, ys, N)
+        function obj = LayerPlatePiezo(mat, zs, N)
             % LayerPlate - Create a LayerPlate object.
             if ~isa(mat, 'MaterialPiezoelectric')
                 error('GEWTOOL:LayerPlatePiezo', 'The material should be of class MaterialPiezoelectric.');
             end
-            obj = obj@LayerPlate(mat, ys, N);
+            obj = obj@LayerPlate(mat, zs, N);
         end
 
         function [M] = massOp(obj, udof, np, hl, ~)
@@ -56,29 +56,29 @@ classdef LayerPlatePiezo < LayerPlate
             
             % assemble element stiffness terms:
             K2 = kron(A,  obj.PP); 
-            K1 = kron(Bt,  obj.PPd);
-            G1 = kron(B, -obj.PPd.');  % boundary flux
-            G0 = kron(C, -obj.PdPd.'); % boundary flux
+            K1 = kron(Bt, obj.PD);
+            G1 = kron(B, -obj.PD.');  % boundary flux
+            G0 = kron(C, -obj.DD.'); % boundary flux
             % combine to polynomial of (ik):
             L0 = G0/hl;  L1 = K1 + G1;  L2 = K2*hl;
         end
         
-        function decoupl = decouplesLambvsSH(obj,~)
-            % decouplesLambvsSH - Tests whether the Lamb- and SH-polarized waves decouple. Argument n is optional and does nothing.
-            warning('TODO this function could be re-used from the LayerPlate class.')
-            xy = [1 2]; % Lamb polarization
-            z =  3; % SH polarization 
-            c1test = obj.mat.c(xy,xy,z,xy); 
-            c2test = obj.mat.c(xy,z,xy,xy);
-            decoupl = all(c1test(:) == 0) & all(c2test(:) == 0);
-        end
+        function decoupl = decouplesPolarization(obj,dof,~)
+            % decouplesPolarization - Tests whether 'dof' decouples from the remaining 
+            % degrees of freedom.
+            %
+            % Arguments: 
+            % - dof : vector of degrees of freedom, e.g., [1 3] for Lamb waves.
+            % - n   : circumferential wavenumber (only necessary for axial waves in cyl.)
+            % 
+            % See also: Waveguide.decouplesLambvsSH, Waveguide.decouplesPolarization
 
-        %% overload operators: 
-        function ret = eq(a, b)
-            ret = eq@Layer(a, b);
-        end
-        function ret = ne(a, b)
-            ret = ne@Layer(a, b);
+            if ~decouplesPolarization@LayerPlate(obj,dof)
+                decoupl = false; return;
+            end
+            rem = setdiff(1:3, dof); % remaining degrees of freedom 
+            etest = obj.mat.e(dof,rem,dof);
+            decoupl = all(etest(:) == 0);
         end
         
     end % methods
