@@ -19,8 +19,8 @@ classdef (InferiorClasses = {?MaterialIsotropic}) Material
 properties
     name        % name for the material: string
     symmetry    % symmetry class: e.g., "isotropic": string
-    c double    % 4th order stiffness tensor
     rho double  % mass density [1x1]
+    c double    % 4th order stiffness tensor
 end
 
 properties (Dependent)
@@ -258,7 +258,7 @@ methods
         % 
         % Arguments:
         % - obj:   Material object.
-        % - ax:    axis as a scalar integer 1 = x, 2 = y, or 3 = z. (Default: 2)
+        % - ax:    axis as a scalar integer 1 = x, 2 = y, or 3 = z. (Default: 3)
         % - tol:   tolerance for finite precision test. (Default: 1e4*eps)
         if nargin < 3
             tol = 1e4*eps;
@@ -272,7 +272,7 @@ methods
     end
 
     function decoupl = decouplesSA(obj)
-        % DECOUPLESSA - test if invariant to reflection along y-axis.
+        % DECOUPLESSA - test if invariant to reflection along z-axis.
         % Basically an alias to isInvariantOnReflection().
         decoupl = obj.isInvariantOnReflection(3); % full polarization
     end
