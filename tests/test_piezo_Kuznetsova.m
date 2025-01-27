@@ -17,7 +17,7 @@ N = 15;
 mat0 = MaterialPiezoelectric('lithium_niobate');
 matYX = mat0.rotateEuler(pi/2,'x');
 % matXY30 = mat0.rotateEuler(-pi/2,'y',pi+30/180*pi,'x');
-matXY30 = mat0.rotateEuler((30+90)/180*pi,'z',pi/2,'y');
+matXY30 = mat0.rotateEuler(pi/2,'y',(30+90)/180*pi,'z');
 
 %% Y-cut, propagation in X-direction  
 plate = Plate(matYX, h, N);
