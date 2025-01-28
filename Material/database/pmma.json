@@ -1,8 +1,8 @@
 {
-	"name": "Acrylic plastic Comsol",
-	"lambda": 2.7654e+09,
-	"mu": 	  1.1852e+09,
-	"rho": 	  1190, 
-	"symmetry": "isotropic",
-	"source": "comsol material file (293.15 K)"
+"name": "Acrylic plastic Comsol",
+"lambda": 2.7654e+09,
+"mu": 	  1.1852e+09,
+"rho": 	  1190, 
+"symmetry": "isotropic",
+"source": "comsol material file (293.15 K)"
 }

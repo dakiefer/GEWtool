@@ -1,7 +1,7 @@
 {
-	"name": "Aluminum EN 6061-T6",
-	"symmetry": "isotropic",
-	"lambda": 5.4308e+10,
-	"mu": 2.7174e+10,
-	"rho": 2704
+"name": "Aluminum EN 6061-T6",
+"symmetry": "isotropic",
+"lambda": 5.4308e+10,
+"mu": 2.7174e+10,
+"rho": 2704
 }

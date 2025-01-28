@@ -1,13 +1,13 @@
 {
-	"name": "T800/913",
-    "rho": 	1550,
-	"C": 	[[154e9,   3.7e9,    3.7e9,    0,       0,      0],
-             [3.7e9,   9.5e9,    5.2e9,    0,       0,      0],
-             [3.7e9,   5.2e9,    9.5e9,    0,       0,      0], 
-             [0,        0,       0,        2.15e9,  0,      0],
-             [0,        0,       0,        0,       4.2e9,  0],
-             [0,        0,       0,        0,       0,      4.2e9]
-            ],
-	"symmetry": "transversely isotropic",
-    "source": "A. M. A. Huber and M. G. R. Sause, “Classification of solutions for guided waves in anisotropic composites with large numbers of layers,” The Journal of the Acoustical Society of America, vol. 144, no. 6, pp. 3236–3251, Dec. 2018, doi: 10.1121/1.5082299."
+"name": "T800/913",
+"rho": 	1550,
+"C": 	[[154e9,   3.7e9,    3.7e9,    0,       0,      0],
+         [3.7e9,   9.5e9,    5.2e9,    0,       0,      0],
+         [3.7e9,   5.2e9,    9.5e9,    0,       0,      0], 
+         [0,        0,       0,        2.15e9,  0,      0],
+         [0,        0,       0,        0,       4.2e9,  0],
+         [0,        0,       0,        0,       0,      4.2e9]
+        ],
+"symmetry": "transversely isotropic",
+"source": "A. M. A. Huber and M. G. R. Sause, “Classification of solutions for guided waves in anisotropic composites with large numbers of layers,” The Journal of the Acoustical Society of America, vol. 144, no. 6, pp. 3236–3251, Dec. 2018, doi: 10.1121/1.5082299."
 }

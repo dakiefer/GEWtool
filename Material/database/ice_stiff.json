@@ -1,7 +1,7 @@
 {
-	"name": "ice stiff",
-	"lambda": 5.8381e+09,
-	"mu": 	  3.0075e+09,
-	"rho": 	  931,
-	"symmetry": "isotropic"
+"name": "ice stiff",
+"lambda": 5.8381e+09,
+"mu": 	  3.0075e+09,
+"rho": 	  931,
+"symmetry": "isotropic"
 }

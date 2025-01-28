@@ -1,7 +1,7 @@
 {
-	"name": "Tedur",
-	"lambda": 6.7056e+09,
-	"mu":     2.808e+09,
-	"rho": 	  1614,
-	"symmetry": "isotropic"
+"name": "Tedur",
+"lambda": 6.7056e+09,
+"mu":     2.808e+09,
+"rho": 	  1614,
+"symmetry": "isotropic"
 }

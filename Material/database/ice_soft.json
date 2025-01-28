@@ -1,7 +1,7 @@
 {
-	"name": "ice soft",
-	"lambda": 1.4595e+09,
-	"mu": 	  751880000,
-	"rho": 	  931,
-	"symmetry": "isotropic"
+"name": "ice soft",
+"lambda": 1.4595e+09,
+"mu": 	  751880000,
+"rho": 	  931,
+"symmetry": "isotropic"
 }

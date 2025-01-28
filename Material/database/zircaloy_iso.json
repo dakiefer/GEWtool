@@ -1,9 +1,8 @@
 {
-	"name": "zirconium alloy",
-	"symmetry": "isotropic",
-    "rho": 	    6550,
-	"lambda":   103.1e9,
-    "mu":       36.24e9,
-    "Nindep":   5,
-    "source": "http://www.matweb.com/search/DataSheet.aspx?MatGUID=e36a9590eb5945de94d89a35097b7faa&ckck=1"
+"name": "zirconium alloy",
+"symmetry": "isotropic",
+"rho": 	    6550,
+"lambda":   103.1e9,
+"mu":       36.24e9,
+"source": "http://www.matweb.com/search/DataSheet.aspx?MatGUID=e36a9590eb5945de94d89a35097b7faa&ckck=1"
 }

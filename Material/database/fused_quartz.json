@@ -1,0 +1,8 @@
+{
+"name": "fused quartz", 
+"symmetry": "isotropic",
+"lambda": 1.5781e+10,
+"mu": 3.0635e+10,
+"rho": 2203,
+"source":"K. Chen et al., IEEE Trans. Biomed. Eng., 2023, doi: 10.1109/TBME.2022.3197213"
+}

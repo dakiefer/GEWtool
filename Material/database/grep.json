@@ -1,14 +1,14 @@
 {
-	"name": "fibre reinforced graphite/epoxy (GREP)",
-	"symmetry": "transversely isotropic",
-    "rho": 1540,
-    "C":[[1.09e+11,    6.5e+09,      6.5e+09,       0,       0,       0],
-    	 [ 6.5e+09,   1.43e+10,     6.78e+09,       0,       0,       0],
-    	 [ 6.5e+09,   6.78e+09,     1.43e+10,       0,       0,       0],
-    	 [  0,            0,            0,   3.76e+09,       0,       0],
-    	 [  0,            0,            0,          0,   5.27e+09,    0],
-    	 [  0,            0,            0,          0,        0,   5.27e+09]
-		],
-    "source": "B. Dubuc, A. Ebrahimkhanlou, and S. Salamone, “Computation of propagating and non-propagating guided modes in nonuniformly stressed plates using spectral methods,” The Journal of the Acoustical Society of America, vol. 143, no. 6, pp. 3220–3230, Jun. 2018, doi: 10.1121/1.5040140."
+"name": "fibre reinforced graphite/epoxy (GREP)",
+"symmetry": "transversely isotropic",
+"rho": 1540,
+"C":[[1.09e+11,    6.5e+09,      6.5e+09,       0,       0,       0],
+	 [ 6.5e+09,   1.43e+10,     6.78e+09,       0,       0,       0],
+	 [ 6.5e+09,   6.78e+09,     1.43e+10,       0,       0,       0],
+	 [  0,            0,            0,   3.76e+09,       0,       0],
+	 [  0,            0,            0,          0,   5.27e+09,    0],
+	 [  0,            0,            0,          0,        0,   5.27e+09]
+	],
+"source": "B. Dubuc, A. Ebrahimkhanlou, and S. Salamone, “Computation of propagating and non-propagating guided modes in nonuniformly stressed plates using spectral methods,” The Journal of the Acoustical Society of America, vol. 143, no. 6, pp. 3220–3230, Jun. 2018, doi: 10.1121/1.5040140."
 }
 
