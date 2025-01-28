@@ -7,18 +7,28 @@
 
 **Features**:
 
-- Multi-layered plates, tubes and rods
-- Super fast, guarantees to find all solutions
-- General anisotropy, dissipation
-- Compute real frequencies, complex wavenumbers, or ZGV points
-- Choose polarization (Lamb/SH/coupled) and parity (S/A)
+- multi-layered plates, tubes and rods
+- anisotropy, piezoelectricity, dissipation
+- super fast, guarantees to find all solutions
+- compute real frequencies, complex wavenumbers, or ZGV points
+- choose polarization (Lamb/SH/coupled) and parity (S/A)
 
 [![GitHub](assets/logo_github.svg)](https://github.com/dakiefer/GEWtool) Code repository: [https://github.com/dakiefer/GEWtool](https://github.com/dakiefer/GEWtool)
+
+> [!WARNING]
+> **v2.0 introduces the following backward-incompatibilities**:
+>
+> - directory structure updated: you will need to re-run `install.m` after updating to v2.0.
+> - `rotateEuler()` changed from extrinsic to intrinsic rotations! Reverse the order of rotation sequences in your old scripts to get the same results as with older GEWtool versions. 
+>   See `help rotateEuler` for more information.
+> - changed coordinate system
+>   - plate: ex-ey-ez system: ex is propagation direction, _ez is normal_ to the plate surface (previously, this was ey)
+>   - cylinder: ex-ephi-er system: ex is propagation direction, er is the radial direction
+> - solver functions: return a `GEWdat` object instead of a `struct`
 
 > [!NOTE]
 > **Coming soon**:
 >
-> - Piezoelectricity 
 > - Leaky waves
 > 
 > Contact me if you have questions:  [daniel.kiefer@espci.fr](mailto:daniel.kiefer@espci.fr)
@@ -33,9 +43,7 @@ k = linspace(1e-2, 12, 100)/h;   % wavenumbers to solve for
 plate = Plate(mat, h, N);        % create waveguide description 
 gews = plate.LambSA; tic;        % choose S+A Lamb waves (assembles matrices)
 dat = computeW(gews, k, 4); toc; % solve and save 4 modes (argument optional)
-plot(dat(1).k, dat(1).w/2/pi, 'Color', "#3B518B"); hold on;        % symmetric
-plot(dat(2).k, dat(2).w/2/pi, 'Color', "#5EC962"); ylim([0, 6e6]); % anti-sym
-xlabel('wavenumber k in rad/m'), ylabel('frequency f in Hz')
+plot(dat); 											 % plot dispersion curves
 ```
 
 output:
@@ -47,9 +55,9 @@ Proceed by inspecting the laser-ultrasonic excitability of the waves computed ab
 
 ```matlab
 k = linspace(1e-2, 12, 200)/h;          % use more wavenumbers
-gew = plate.Lamb;                       % choose all Lamb waves
+gew = plate.Lamb;                       % choose all Lamb waves this time
 dat = computeW(gew, k, 7);              % compute
-exc = excitabilityLUS(dat, 'top'); % ux*uz at top surface (value of 1 at 100x median)
+exc = excitabilityLUS(dat, 'top'); % vx*uz at top surface (value of 1 at 100x median)
 exc = 20*log10(exc);                    % in decibel
 scatter(dat.k(:)/1e3, dat.w(:)/2/pi/1e6, 15, exc(:), 'filled'), ylim([0, 6]);
 colormap(flipud(colormap)); cb = colorbar; caxis([-50, 0]);
@@ -147,7 +155,7 @@ Hauke Gravenkamp, Pierre Chantelot, Claire Prada, Clemens Grünsteidl and Michae
 
 ## Author
 
-2022–2024 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris, Université PSL.
+2022–2025 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris, Université PSL.
 
 I have several years of experience in waveguide modeling and numerical implementations thereof. In January 2022 I decided to create a new modular and versatile code from scratch. The result is GEWtool. My hope is that it be a valuable research tool and at the same time a helpful educational resource for those interested in numerical methods and elastic waves.
 

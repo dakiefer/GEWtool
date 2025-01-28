@@ -2,6 +2,28 @@
 
 Documents the changes to GEWtool.
 
+## 2.0 (2025-01-28)
+
+- FEATURE **piezoelectric plates** are now supported. Simply pass a piezoelectric material to the Plate class.
+- FEATURE **More convenient post-processing**. `GEWdat` is now a class. It saves the computed results and the Waveguide object for later post-processing. Properties: `gew` (waveguide object), `k` (wavenumbers), `w` (angular frequencies), `Psi` (eigenvectors), `Nk` (number of wavenumbers), `Nw` (number of frequencies), `cp` (phase velocity), `ce` (energy velocity magnitude), `cex` (energy velocity's axial component), `cey` (energy velocity's transverse component), `u` (field components). Functions: `plot()` wavenumber-frequency dispersion curves.
+- FEATURE **use subspace methods** per default when matrices are big. Much faster computation of multilayered guides.
+- FEATURE `Waveguide.family` property informs about the type of waves, e.g., Lamb, etc
+- FEATURE `Waveguide.vars` property stores the names of the independent field variables, e.g., ["ux", "uz"] for Lamb waves.
+- `fieldComponents()`: function to re-structure eigenvectors to array of size of the modeled field components (displacement components, potential, etc). Accessible as `GEWdat.u`. 
+- `decouplesPolarization()` can now test the decoupling of any set of unknowns
+- `polarization()` now warns when the requested polarization does not decouple from the rest. Used internally by Lamb(), etc.
+- `computeZGVScan()` now also returns the eigenvectors
+
+**WARNING**: Take into account the following backward-incompatible changes when running your old code: 
+
+- directory structure updated: **you will need to re-run `install.m`** after updating to v2.0.
+- `rotateEuler()` **changed from extrinsic to intrinsic rotations**! Reverse the order of rotation sequences in your scripts to get the same results as before. See `help rotateEuler` for more information.
+- **changed coordinate system**
+  - plate: ex-ey-ez system: ex is propagation direction, _ez is normal_ to the plate surface (previously, this was ey)
+  - cylinder: ex-ephi-er system: ex is propagation direction, er is the radial direction
+- solver functions: return a `GEWdat` object instead of a `struct`
+- renamed the following properties of the Layer class: Pd -> D, PdPd -> DD, PPd -> PD.
+
 ## 1.6 (2024-11-25)
 
 - FEATURE **circumferential waves** in hollow cylinders. Rods (full cylinders do not support this at the moment). 
