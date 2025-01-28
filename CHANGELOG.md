@@ -8,7 +8,7 @@ Documents the changes to GEWtool.
 - FEATURE **More convenient post-processing**. `GEWdat` is now a class. It saves the computed results and the Waveguide object for later post-processing. Properties: `gew` (waveguide object), `k` (wavenumbers), `w` (angular frequencies), `Psi` (eigenvectors), `Nk` (number of wavenumbers), `Nw` (number of frequencies), `cp` (phase velocity), `ce` (energy velocity magnitude), `cex` (energy velocity's axial component), `cey` (energy velocity's transverse component), `u` (field components). Functions: `plot()` wavenumber-frequency dispersion curves.
 - FEATURE **use subspace methods** per default when matrices are big. Much faster computation of multilayered guides.
 - FEATURE `Waveguide.family` property informs about the type of waves, e.g., Lamb, etc
-- FEATURE `Waveguide.vars` property stores the names of the independent field variables, e.g., ["ux", "uz"] for Lamb waves.
+- FEATURE `Waveguide.displComp` property stores the names of the mechanical polarization components, e.g., ["ux", "uz"] for Lamb waves.
 - `fieldComponents()`: function to re-structure eigenvectors to array of size of the modeled field components (displacement components, potential, etc). Accessible as `GEWdat.u`. 
 - `decouplesPolarization()` can now test the decoupling of any set of unknowns
 - `polarization()` now warns when the requested polarization does not decouple from the rest. Used internally by Lamb(), etc.

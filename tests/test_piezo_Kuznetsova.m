@@ -21,7 +21,7 @@ matXY30 = mat0.rotateEuler(pi/2,'y',(30+90)/180*pi,'z');
 
 %% Y-cut, propagation in X-direction  
 plate = Plate(matYX, h, N);
-gew = plate.polarization(1:3, 0); 
+gew = plate.fullyCoupled; 
 dat = computeW(gew, k, 10);
 pic=imread('data/Kuznetsova_yCutXdir.png');   % load reference
 fig = figure; clf; hold on
@@ -37,7 +37,7 @@ assert( userTestConfirmation(fig) )
 
 %% X-cut, propagation in Y+30°-direction  
 plate = Plate(matXY30, h, N);
-gew = plate.polarization(1:3, 0); 
+gew = plate.fullyCoupled; 
 dat = computeW(gew, k, 10);
 pic=imread('data/Kuznetsova_xCutY30dir.png');   % load reference
 fig = figure; clf; hold on

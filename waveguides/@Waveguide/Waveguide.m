@@ -13,7 +13,7 @@ properties (Access = public)
 	lay         % layers as {1 x Nlay} cell array
 	op = [] 	% operators describing the wave propagation
     udof = []   % polarization: displacement components accounted for
-    vars = []   % names of independent variables, i.e., displacement components
+    displComp = [] % names of mechanical polarization components
 	np  		% normalization parameters (material parameters, geometry)
     family = '' % family of waves, e.g., Lamb/SH/Lamb symmetric/etc...
 end % properties
@@ -95,14 +95,14 @@ methods
         %           ignore if not needed. default: 0.
         % 
         % See also: Lamb, sh, decouplesLambvsSH.
-        uNames = obj.displacementNames;
-        polarizationNames = uNames(udof); % will be saved in obj.vars
+        displNames = obj.displacementNames;
+        polarizationNames = displNames(udof); % will be saved in obj.displComp
         if ~obj.decouplesPolarization(udof,n)
-            printNames = polarizationNames(1); 
+            printNames = polarizationNames(1); % initialize
             for astr = polarizationNames(2:end), printNames = strcat(printNames, ", ", astr); end
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! The [%s]-displacements do not decouple from the remaining ones. I will proceed anyways.', printNames);
         end
-        Nunknowns = nan(size(obj.lay)); 
+        Nunknowns = nan(size(obj.lay)); % initialize 
         for i = 1:length(Nunknowns)
             Nunknowns(i) = obj.lay{i}.Nunknowns(udof); % number of unknowns depends on the physics 
         end
@@ -113,7 +113,7 @@ methods
         end
 		obj.assembleLayers(udof, n);
         obj.udof = udof;  % remember polarization
-        obj.vars = polarizationNames; 
+        obj.displComp = polarizationNames; 
         polStr = strjoin(polarizationNames,'-')+"-polarized"; 
         if n ~= 0, polStr = polStr+sprintf(", n = %d",n); end
         obj.family = char(polStr);
