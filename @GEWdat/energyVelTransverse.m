@@ -4,6 +4,12 @@ function [cey] = energyVelTransverse(dat)
 % to the total stored energy. The transverse energy velocity will usually be 
 % nonzero for propagation in nonprincipal directions of an anisotropic material.
 % 
+% Usage: 
+% > cey = energyVelTransverse(dat); 
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % See also: ENERGYVELAXIAL, POWERFLUXTRANSVERSE.
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

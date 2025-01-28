@@ -5,6 +5,12 @@ function [px] = poyntingVecAxial(dat)
 % time-averaged power flux density vector. The x-component is aligned with the
 % wave vector k and is the "axial component". 
 % 
+% Usage: 
+% > px = poyntingVecAxial(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % see also: poyntingVec, velocity, stress, powerFlux
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

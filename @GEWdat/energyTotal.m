@@ -13,6 +13,12 @@ function [Etot] = energyTotal(dat)
 % Testing of Materials: Theoretical Foundations (translated from German), 1st
 % ed. Boca Raton: CRC Press, 2012. doi: 10.1201/b11724.
 % 
+% Usage: 
+% > Etot = energyTotal(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"

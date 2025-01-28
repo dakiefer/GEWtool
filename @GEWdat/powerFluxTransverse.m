@@ -8,6 +8,12 @@ function [Py] = powerFluxTransverse(dat)
 % will usually be nonzero for propagation along a non-symmetry direction of an 
 % anisotropic material.
 % 
+% Usage: 
+% > Py = powerFluxTransverse(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % See also: powerFlux, powerFluxAxial
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

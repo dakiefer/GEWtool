@@ -5,6 +5,12 @@ function [Px] = powerFluxAxial(dat)
 % This is done by integrating the power flux density's x-component (poynting
 % vector component) over the waveguide's cross-section (thickness).
 % 
+% Usage: 
+% > Px = powerFluxAxial(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % See also: powerFlux, powerFluxTransverse
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

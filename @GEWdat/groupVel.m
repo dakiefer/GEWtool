@@ -13,6 +13,12 @@ function [cg] = groupVel(dat)
 % The imaginary part is considered meaningless. After taking the magnitude it
 % can no longer be separated from the real part, so we remove it before. 
 % 
+% Usage: 
+% > cg = groupVel(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % See also: groupVelAxial, energyVelAxial.
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

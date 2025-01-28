@@ -4,6 +4,12 @@ function [cex] = energyVelAxial(dat)
 % total stored energy H: ce = P/H . 
 % The axial component is the x-component, i.e., ce_x = P_x/H. 
 % 
+% Usage: 
+% > cex = energyVelAxial(dat); 
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % See also: ENERGYVEL, ENERGYVELTRANSVERSE, POWERFLUXAXIAL, POWERFLUX
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

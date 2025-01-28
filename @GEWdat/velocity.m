@@ -1,5 +1,12 @@
 function [v] = velocity(dat)
 %VELOCITY compute the particle velocities
+% 
+% Usage: 
+% > v = velocity(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "gew"
     v = arrayfun(@velocity,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"

@@ -1,5 +1,12 @@
 function [ekin] = energyDensityKinetic(dat)
 %ENERGYDENSITYKINETIK Compute the kinetik energy density Ekin.
+%
+% Usage: 
+% > ekin = energyDensityKinetic(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
     ekin = arrayfun(@energyDensityKinetic,dat,'UniformOutput',false); % apply to every object in the arrays "dat"

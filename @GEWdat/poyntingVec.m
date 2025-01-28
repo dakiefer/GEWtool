@@ -4,6 +4,12 @@ function [p] = poyntingVec(dat)
 % The Poynting vector is p = -1/2 v^* . T . Its real part represents the
 % time-averaged power flux density vectors. 
 % 
+% Usage: 
+% > p = poyntingVec(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % See also: poyntingVec, velocity, stress, powerFlux
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

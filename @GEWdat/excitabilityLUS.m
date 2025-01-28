@@ -4,24 +4,26 @@ function exc = excitabilityLUS(dat, at)
 %   laser ultrasonic excitation and interferometric detection. The
 %   excitability/detectability depends on the modal displacements on the waveguide's
 %   surface where the measurement is performed:
-%   - excitability  ~ ux (shear tractions are induced by small-diamiter laser in 
+%   - excitability  ~ vx (shear tractions are induced by small-diameter laser in 
 %                   nonablasive regime)
-%   - detectability ~ uy (normal displacements are detected) 
-%   excitabilityLUS() returns the product ux*uy normlized such that an
+%   - detectability ~ uz (normal displacements are detected) 
+%   excitabilityLUS() returns the product vx*uz normlized such that an
 %   excitability of 1 is obtained 1e2 above the median excitability. To mantain
 %   the same normalization with different discretiations (i.e., obtained number
-%   of modes) it is important to either (1) specify the desired number of modes
-%   in computeW(), or (2) restrict to the solutions in a given frequency range.
+%   of modes) it is important to either (i) specify the desired number of modes
+%   in computeW(), or (ii) restrict to the solutions in a given frequency range.
 %   Otherwise, more and more modes are considered with increasing discretization
-%   order. Ploting decibel values in [-40, 0] usually gives nice pictures.
+%   order. Plotting decibel values in [-40, 0] usually gives nice pictures.
 %
 %   Usage: 
-%   exc = excitabilityLUS(gew, dat, at):   provide the waveguide description
-%   "gew", the dispersion data "dat" and select the surface by chosing "at": 
-%       - for the last layer's surface:  'top' | 'outer' | 't' | 'o', or 
-%       - for the first layer's surface: 'bottom' | 'inner' | 'b' | 'i'.
+%   > exc = excitabilityLUS(dat, at); 
+%
+%   Arguments:
+%   Provide the dispersion data "dat" and select the surface by chosing "at" as: 
+%   - for the last layer's top surface:     'top' | 'outer' | 't' | 'o', or 
+%   - for the first layer's bottom surface: 'bottom' | 'inner' | 'b' | 'i'.
 % 
-% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2022-2025 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
     compute = @(datObj) excitabilityLUS(datObj, at); % function to apply

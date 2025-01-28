@@ -3,6 +3,12 @@ function [ce] = energyVelVec(dat)
 % The energy velocity vector ce is the ratio of the total power flux vector P to the 
 % total stored energy H: ce = P/H . 
 % 
+% Usage: 
+% > ce = energyVelVec(dat); 
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % See also: energyVelAxial, energyVelTransverse, powerFlux
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

@@ -18,6 +18,12 @@ function [S] = strain(dat)
 % 
 % In 3d waveguides, a different formulation is again needed.
 % 
+% Usage: 
+% > S = strain(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"

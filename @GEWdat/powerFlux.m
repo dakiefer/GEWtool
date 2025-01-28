@@ -5,6 +5,12 @@ function [P] = powerFlux(dat)
 % flux density p (poynting vector) over the waveguide's cross-section (e.g., plate
 % thickness).
 % 
+% Usage: 
+% > P = powerFlux(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % See also: powerFluxAxial, powerFluxTransverse
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

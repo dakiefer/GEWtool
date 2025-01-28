@@ -6,6 +6,12 @@ function [T] = stress(dat)
 % 
 % T = c : F
 % 
+% Usage: 
+% > T = stress(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"

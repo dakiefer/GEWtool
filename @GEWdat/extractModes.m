@@ -1,6 +1,9 @@
 function datRed = extractModes(dat, indk, indw)
 % EXTRACTMODES - Returns the data of the indicated modes (wavenumber-frequency). 
 % 
+% Usage: 
+% > datRed = extractModes(dat, indk, indw);
+%
 % Arguments: 
 % - dat:   dispersion data structure as returned by the solver functions
 % - indk:  vector that indexes the desired wavenumbers (first dimension in dat fields)

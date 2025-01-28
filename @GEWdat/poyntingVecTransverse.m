@@ -6,6 +6,12 @@ function [py] = poyntingVecTransverse(dat)
 % y-component and it is orthogonal to the wave vector k (which is in ex direction) 
 % and the plate's normal ez.
 % 
+% Usage: 
+% > py = poyntingVecTransverse(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % see also: poyntingVec, powerFlux
 % 
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

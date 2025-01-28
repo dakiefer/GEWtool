@@ -10,6 +10,12 @@ function [cg] = groupVelAxial(dat)
 % general setting, you can compute the energy velocity, which for the
 % nondissipative case is identical to the group velocity.
 % 
+% Usage: 
+% > cgx = groupVelAxial(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % See also: energyVel, energyVelVec.
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

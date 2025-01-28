@@ -8,6 +8,12 @@ function [u] = fieldComponents(dat)
 % the layer lind = 3 of the mode at kind = 5 and wind = 10 is
 % >> u{lind}(kind,wind,:,1)
 % 
+% Usage: 
+% > u = fieldComponents(dat);
+% 
+% Arguments: 
+% - dat:    GEWdat object that stores the computed modes. 
+%
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
