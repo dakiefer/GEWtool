@@ -88,7 +88,8 @@ methods
         % plot - Plot frequency-wavenumber dispersion curves.
         hasStyle = nargin ~= 1; % if lineSpec not provided, we will be choosing a default
         if ~dat(1).gew.isDissipative && isreal(dat(1).k) % we computed at const k
-            wrange = dat(1).w(end,1); 
+            wlist = arrayfun( @(dati) dati.w(end,1), dat );
+            wrange = max(wlist); 
             style = '-';
         else % we computed at const w
             wrange = dat(1).w(end,end);
