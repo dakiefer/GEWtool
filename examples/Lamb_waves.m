@@ -2,7 +2,11 @@
 % This example shows how to compute Lamb waves. The symmetric and anti-symmetric
 % waves are computed separately. This is faster and the modes are correctly
 % orderd.
-% 
+%
+%  _↑z____________________________________ top surface
+%   →x     --> k  guided wave      c,rho   plate (stiffness c, mass density rho)
+%  _______________________________________ bottom surface
+%
 % 2024-2025 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 mat = MaterialIsotropic('steel'); % load from database (or create your own)
