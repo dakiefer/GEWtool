@@ -12,9 +12,9 @@ classdef MaterialPiezoelectric < Material
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 properties
-    epsilon  % electric permittivity tensor
-    eVoigt   % piezoelectric coupling parameters in Voigt notation
     eps0 = 8.8541878188e-12; % permittivity of vacuum
+    epsilon  % electric permittivity tensor = epsr*eps0
+    E        % piezoelectric coupling parameters in Voigt notation
 end
 
 properties (Dependent)
@@ -39,7 +39,7 @@ methods
             error('GEWTOOL:Material:unknownArgument', 'Provide filename to load or structure describing material.');
         end
         obj = obj@Material(data);
-        obj.eVoigt = data.e;
+        obj.E = data.E;
         obj.epsilon = data.epsr*obj.eps0;
     end
 
@@ -48,17 +48,17 @@ methods
         matStruct.name = obj.name;
         matStruct.rho = obj.rho;
         matStruct.C = obj.C;
-        matStruct.e = obj.eVoigt; 
+        matStruct.E = obj.E; 
         matStruct.epsr = obj.epsilon/obj.eps0; 
         matStruct.symmetry = obj.symmetry;
     end
 
     function e = get.e(obj)
-        e = voigt2tensor(obj.eVoigt);
+        e = voigt2tensor(obj.E);
     end
     function obj = set.e(obj, e)
         validateattributes(e,'numeric',{'size',[3 3 3]});
-        obj.eVoigt = tensor2voigt(e);
+        obj.E = tensor2voigt(e);
     end
 
     function obj = permute(obj, perm)
@@ -85,32 +85,32 @@ methods
         % - obj: Material object.
         % - Q:   Orthogonal matrix discribing the transformation, e.g., a rotation.
         c0 = norm(obj.c(:)); % normalization constant
-        crot = transformBasis(obj.c/c0, Q);
-        crot = round( crot, floor(-log10(eps))-3 )*c0; % 12 digits accuracy + upscaling
+        cRot = transformBasis(obj.c/c0, Q);
+        cRot = round( cRot, floor(-log10(eps))-3 )*c0; % 12 digits accuracy + upscaling
         e0 = norm(obj.e(:));
-        erot = transformBasis(obj.e/e0, Q);
-        erot = round( erot, floor(-log10(eps))-3 )*e0; % 12 digits accuracy + upscaling
-        E0 = norm(obj.epsilon(:));
-        Erot = transformBasis(obj.epsilon/E0, Q); 
-        Erot = round (Erot, floor(-log10(eps))-3 )*E0; 
+        eRot = transformBasis(obj.e/e0, Q);
+        eRot = round( eRot, floor(-log10(eps))-3 )*e0; % 12 digits accuracy + upscaling
+        epsilon0 = norm(obj.epsilon(:));
+        epsilonRot = transformBasis(obj.epsilon/epsilon0, Q); % permittivity
+        epsilonRot = round (epsilonRot, floor(-log10(eps))-3 )*epsilon0; 
         if obj.isSymmetric
-            crot = (crot + permute(crot, [3 4 1 2]))/2; % avoid assymetry due to rotation
+            cRot = (cRot + permute(cRot, [3 4 1 2]))/2; % avoid assymetry due to rotation
         end
         if obj.isSymmetric([2 1 3 4])
-            crot = (crot + permute(crot, [2 1 3 4]))/2; % avoid assymetry due to rotation
+            cRot = (cRot + permute(cRot, [2 1 3 4]))/2; % avoid assymetry due to rotation
         end
         if obj.isSymmetric([1 2 4 3])
-            crot = (crot + permute(crot, [1 2 4 3]))/2; % avoid assymetry due to rotation
+            cRot = (cRot + permute(cRot, [1 2 4 3]))/2; % avoid assymetry due to rotation
         end
         if all( abs( obj.e - permute(obj.e,[1 3 2]) ) <= 1e4*eps*e0, 'all')
-            erot = (erot + permute(erot, [1 3 2]))/2; % avoid assymetry due to rotation
+            eRot = (eRot + permute(eRot, [1 3 2]))/2; % avoid assymetry due to rotation
         end
-        if all( abs( obj.epsilon - obj.epsilon.' ) <= 1e4*eps*E0, 'all')
-            Erot = (Erot + Erot.')/2; % avoid assymetry due to rotation
+        if all( abs( obj.epsilon - obj.epsilon.' ) <= 1e4*eps*epsilon0, 'all')
+            epsilonRot = (epsilonRot + epsilonRot.')/2; % avoid assymetry due to rotation
         end
-        obj.c = crot;
-        obj.e = erot; 
-        obj.epsilon = Erot;
+        obj.c = cRot;
+        obj.e = eRot; 
+        obj.epsilon = epsilonRot;
     end
     
     function sym = isInvariantOnReflection(obj, ax, tol)
@@ -129,17 +129,17 @@ methods
         matR = obj.reflect(ax);
         matOrig = obj.transformBasis(eye(3)); % same rounding as in matR
         csym = all((matOrig.c - matR.c)/norm(matOrig.c(:)) <= tol, 'all'); % all zero -> true
-        Esym = all((matOrig.eps - matR.eps)/norm(matOrig.eps(:)) <= tol, 'all'); % all zero -> true
+        psym = all((matOrig.epsilon - matR.epsilon)/norm(matOrig.epsilon(:)) <= tol, 'all'); % permittivity: all zero -> true
         esym = all((matOrig.e - matR.e)/norm(matOrig.e(:)) <= tol, 'all'); % all zero -> true
-        sym = csym & Esym & esym;
+        sym = csym & psym & esym;
     end
 
     function dis = isDissipative(obj)
         dis = true;
         cTest = isreal(obj.c) && obj.isSymmetric; 
-        ETest = isreal(obj.epsilon) && issymmetric(obj.epsilon); 
+        pTest = isreal(obj.epsilon) && issymmetric(obj.epsilon); 
         eTest = isreal(obj.e) && all( abs( obj.e - permute(obj.e,[1 3 2]) ) <= 1e4*eps*norm(obj.e(:)), 'all');
-        if cTest && ETest && eTest
+        if cTest && pTest && eTest
             dis = false; 
         end
     end

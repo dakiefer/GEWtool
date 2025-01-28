@@ -1,11 +1,12 @@
 classdef LayerPlatePiezo < LayerPlate
 % LayerPlatePiezo - Class to represent one layer of a multi-layered piezoelectric plate.
 % There is usually no need to use this class explicitly (used internally by 
-% Plate).
+% Plate). If the material "mat" is piezoelectric, the Plate class will
+% automatically choose to construct a "LayerPlatePiezo". 
 %
 % See also Plate, Waveguide.
 % 
-% 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2024-2025 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
     
     methods
         function obj = LayerPlatePiezo(mat, zs, N)
@@ -27,7 +28,7 @@ classdef LayerPlatePiezo < LayerPlate
             % stiffnessOp - stiffness operators L0, L1, L2
             cn = obj.mat.c/np.c0; % normalized stiffness tensor
             en = obj.mat.e/np.e0;
-            En = obj.mat.epsilon/np.eps0; % np.eps0 is average of epsilon tensor components
+            pn = obj.mat.epsilon/np.eps0; % permittivity: np.eps0 is average of epsilon tensor components
             hl = hl/np.h0; % normalize
             % relevant material matrices: 
             cxx = squeeze(cn(1,udof,udof,1));
@@ -38,26 +39,26 @@ classdef LayerPlatePiezo < LayerPlate
             exz = squeeze(en(1,3,udof));
             ezx = squeeze(en(3,1,udof));
             ezz = squeeze(en(3,3,udof));
-            Exx = En(1,1);
-            Exz = En(1,3);
-            Ezx = En(3,1);
-            Ezz = En(3,3);
+            pxx = pn(1,1);
+            pxz = pn(1,3);
+            pzx = pn(3,1);
+            pzz = pn(3,3);
             % assemble equations:
             % equation 1: balance of linear momentum, i.e., div(c:grad(u) + grad(Phi).e) + w^2 rho u = 0
             % equation 2: charge-free material, i.e.,       div(e:grad(u) - eps.grad(Phi)) = 0
             A  = [cxx,    exx;      % ~ (ik)^2
-                  exx.'  -Exx];
+                  exx.'  -pxx];
             B  = [czx,    exz;      % ~ (ik)^1
-                  ezx.'  -Ezx];
+                  ezx.'  -pzx];
             Bt = [cxz,    ezx;      % ~ (ik)^1
-                  exz.'  -Exz];
+                  exz.'  -pxz];
             C  = [czz,    ezz;      % ~ (ik)^0
-                  ezz.'  -Ezz];
+                  ezz.'  -pzz];
             
             % assemble element stiffness terms:
             K2 = kron(A,  obj.PP); 
             K1 = kron(Bt, obj.PD);
-            G1 = kron(B, -obj.PD.');  % boundary flux
+            G1 = kron(B, -obj.PD.'); % boundary flux
             G0 = kron(C, -obj.DD.'); % boundary flux
             % combine to polynomial of (ik):
             L0 = G0/hl;  L1 = K1 + G1;  L2 = K2*hl;
