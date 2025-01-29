@@ -1,6 +1,6 @@
 {
     "title": "GEWtool",
-    "description": "<p><strong>Compute guided elastic wave (GEW) dispersion in MATLAB.</strong></p><p><code>GEWtool</code> is an advanced system to compute and postprocess guided elastodynamic waves (GEWs) in plates and cylinders. It is simple to use yet provides full access to the computational results as well as the underlying code. You are welcome to contribute to this open-source project.</p><p><strong>Features</strong>:</p><ul><li>Multi-layered plates, tubes and rods</li><li>Super fast, guarantees to find all solutions</li><li>General anisotropy, dissipation</li><li>Compute real frequencies, complex wavenumbers, or ZGV points</li><li>Choose polarization (Lamb/SH/coupled) and parity (S/A)</li></ul><p><strong>More information:</strong>: <a href=https://github.com/dakiefer/GEWtool>https://github.com/dakiefer/GEWtool</a></p>",
+    "description": "<p><strong>Compute guided elastic wave (GEW) dispersion in MATLAB.</strong></p><p><code>GEWtool</code> is an advanced system to compute and postprocess guided elastodynamic waves (GEWs) in plates and cylinders. It is simple to use yet provides full access to the computational results as well as the underlying code. You are welcome to contribute to this open-source project.</p><p><strong>Features</strong>:</p><ul><li>Multi-layered plates, tubes and rods</li><li>General anisotropy, <strong>piezoelectricity</strong>, dissipation</li><li>Super fast, guarantees to find all solutions</li><li>Compute real frequencies, complex wavenumbers, or ZGV points</li><li>Choose polarization (Lamb/SH/coupled) and parity (S/A)</li></ul><p><strong>More information:</strong>: <a href=https://github.com/dakiefer/GEWtool>https://github.com/dakiefer/GEWtool</a></p>",
     "creators": [
         {
             "name": "Kiefer, Daniel A.",
@@ -19,6 +19,12 @@
             "type": "RelatedPerson",
             "name": "Clement, Gatien",
             "affiliation": "Institut Langevin, ESPCI Paris, Université PSL"
+        },
+        {
+            "type": "RelatedPerson",
+            "name": "Grünsteidl, Clemens",
+            "affiliation": "Research Center for Non Destructive Testing GmbH (RECENDT)",
+            "orcid": "0000-0001-5101-8479"
         }
     ],
     "upload_type": "software",
@@ -33,6 +39,7 @@
     ],
     "references": [ 
         "D. A. Kiefer, S. Mezil, and C. Prada, \"Beating resonance patterns and extreme power flux skewing in anisotropic elastic plates,\" Science Advances, vol. 9, no. 51, p. eadk6846, Dec. 2023, http://doi.org/10.1126/sciadv.adk6846",
+        "D. A. Kiefer, G. Watzl, K. Burgholzer, M. Ryzy, and C. Grünsteidl, \"Electroelastic guided wave dispersion in piezoelectric plates: spectral methods and laser-ultrasound experiments,\" ArXiV, Nov. 2024. http://doi.org/10.48550/arXiv.2412.07389",
         "D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, \"Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,\" The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, http://doi.org/10.1121/10.0017252",
         "D. A. Kiefer, Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering. in FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, no. 42. Erlangen: FAU University Press, 2022. http://doi.org/10.25593/978-3-96147-550-6"
     ],

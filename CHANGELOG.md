@@ -2,7 +2,7 @@
 
 Documents the changes to GEWtool.
 
-## 2.0 (2025-01-28)
+## 2.0 (2025-01-29)
 
 - FEATURE **piezoelectric plates** are now supported. Simply pass a piezoelectric material to the Plate class.
 - FEATURE **More convenient post-processing**. `GEWdat` is now a class. It saves the computed results and the Waveguide object for later post-processing. Properties: `gew` (waveguide object), `k` (wavenumbers), `w` (angular frequencies), `Psi` (eigenvectors), `Nk` (number of wavenumbers), `Nw` (number of frequencies), `cp` (phase velocity), `ce` (energy velocity magnitude), `cex` (energy velocity's axial component), `cey` (energy velocity's transverse component), `u` (field components). Functions: `plot()` wavenumber-frequency dispersion curves.

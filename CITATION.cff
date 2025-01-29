@@ -19,6 +19,8 @@ repository-code: 'https://github.com/dakiefer/GEWtool'
 keywords:
   - guided waves
   - dispersion
+  - piezoelectricity
+  - SAW
   - Lamb waves
   - anisotropy
   - elastodynamics
