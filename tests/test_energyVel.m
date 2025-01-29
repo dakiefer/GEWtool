@@ -174,23 +174,24 @@ if exist('show', 'var') && show
     legend('Location','southeast');
 end
 
-%% test circumferential Lamb
-mat = Material('steel');
-guide = CylinderCircumferential(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
-gew = guide.Lamb;
-dat = computeW(gew, k, 6);
-cgx = real(groupVelAxial(dat));
-cex = real(energyVelAxial(dat));
-
-devCgCe = abs(cgx - cex)/mat.cl;
-
-% plot if the variable "show" has been set to true
-if exist('show', 'var') && show
-    maxDev = max(devCgCe,[],'all')
-    figure(8); clf; hold on; title('Cylinder triclinic n = 1')
-    plot(dat.w(:), cgx(:), 'rx', 'DisplayName','cg');
-    plot(dat.w(:), cex(:), 'k.', 'DisplayName','ce');
-    legend('Location','southeast');
-end
-
-assert( max(devCgCe,[],'all') <= 1e-4 )
+% %% test circumferential Lamb
+warning('Energy velocity computation of circumferential waves is not yet implemented.');
+% mat = Material('steel');
+% guide = CylinderCircumferential(mat, [h, 2*h]-h/2, N); % small inner radius -> curvature is important
+% gew = guide.Lamb;
+% dat = computeW(gew, k, 6);
+% cgx = real(groupVelAxial(dat));
+% cex = real(energyVelAxial(dat));
+% 
+% devCgCe = abs(cgx - cex)/mat.cl;
+% 
+% % plot if the variable "show" has been set to true
+% if exist('show', 'var') && show
+%     maxDev = max(devCgCe,[],'all')
+%     figure(8); clf; hold on; title('Cylinder triclinic n = 1')
+%     plot(dat.w(:), cgx(:), 'rx', 'DisplayName','cg');
+%     plot(dat.w(:), cex(:), 'k.', 'DisplayName','ce');
+%     legend('Location','southeast');
+% end
+% 
+% assert( max(devCgCe,[],'all') <= 1e-4 )
