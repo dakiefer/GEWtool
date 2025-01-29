@@ -8,7 +8,7 @@
 **Features**:
 
 - multi-layered plates, tubes and rods
-- anisotropy, piezoelectricity, dissipation
+- anisotropy, **piezoelectricity**, dissipation
 - super fast, guarantees to find all solutions
 - compute real frequencies, complex wavenumbers, or ZGV points
 - choose polarization (Lamb/SH/coupled) and parity (S/A)
@@ -94,9 +94,13 @@ You can also display help for all functions and classes, e.g., by typing `help P
 
 GEWtool implements the *Spectral Element Method (SEM)* (higher-order Finite Elements) to solve the *waveguide problem*, i.e., the boundary value problem that describes wave propagation in the structure. Such an approach is commonly qualified as 'semi-analytical'. Contrary to classical root-finding of the characteristic equation, this method does not miss solutions. Moreover, unlike Finite Elements, the Spectral Elements lead to small but dense matrices. 
 
-Solusions are computed with machine precision provided you have set the discretization order `N` sufficiently high. The higher you go in frequency-thickness, the higher `N`  should be. As a rule of thumb: half of the obtained modes will be accurate. The figure below shows the convergence with respect to the Rayleigh-Lamb root of the S1 mode at 5.6 rad/mm in an aluminum plate (solution close to 5 MHz mm). A [Spectral Collocation](https://github.com/dakiefer/GEW_dispersion_script) implementation is shown in comparison. GEWtool attains 13 digits accuracy with N = 16 in this case.
+Solusions are computed with machine precision provided you have set the number of nodes `N` sufficiently high. The higher you go in frequency-thickness, the higher `N`  should be. As a rule of thumb: half of the obtained modes will be accurate. The figure below shows the convergence with respect to the Rayleigh-Lamb root of the S1 mode at 5.6 rad/mm in an aluminum plate (solution close to 5 MHz mm). This root has been computed with numerical precision using Matlab's fzero() function. A [Spectral Collocation](https://github.com/dakiefer/GEW_dispersion_script) Method (SCM) is shown in comparison as well as the classical linear Finite Elements Method (FEM) that is also implemented in GEWtool. When using SEM, GEWtool attains 10 digits accuracy with `N` = 13 (matrices of size 26x26) in this case.
 
-![relative error w.r.t. Rayleigh-Lamb root](assets/convergence.png)
+![relative error w.r.t. Rayleigh-Lamb root](assets/convergence.jpg)
+
+The computational time does not only depend on the matrix size but also on the algorithm chosen to solve the eigenvalue problem. A comparison between a direct algorithm (`eig`) and a subspace method (`eigs`) is depicted in the figure below. GEWtool automatically chooses the appropriate algorithm to use (heuristically with a fixed threshold). This way,  the computation will be fast even when you are modeling waveguides with hundreds of layers, which results in large matrices.
+
+![computing time vs algorithm](assets/time_qz_vs_subspace.jpg)
 
 For more  information on the waveguide problem and the numerical methods, refer to the literature cited in the sections below.
 
@@ -123,8 +127,9 @@ If this code is useful to you, please cite it as (always indicating the DOI):
 Please also cite the related publication(s) as relevant, e.g., 
 
 > [1] D. A. Kiefer, S. Mezil, and C. Prada, “Beating resonance patterns and extreme power flux skewing in anisotropic elastic plates,” Science Advances, vol. 9, no. 51, p. eadk6846, Dec. 2023, doi: [10.1126/sciadv.adk6846](http://doi.org/10.1126/sciadv.adk6846). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_sciadv_beatingresonances/2023_SciAdv_BeatingResonances.pdf).  
-> [2] H. Gravenkamp, B. Plestenjak, and D. A. Kiefer, “Notes on osculations and mode tracing in semi-analytical waveguide modeling,” Ultrasonics, vol. 135, p. 107112, Jul. 2023, doi: [10.1016/j.ultras.2023.107112](http://doi.org/10.1016/j.ultras.2023.107112). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_gravenkamp_osculations/2023_Gravenkamp_Osculations.pdf).  
-> [3] D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_JASA_Computing_ZGV/2023_JASA_Computing_ZGV.pdf).
+> [2] D. A. Kiefer, G. Watzl, K. Burgholzer, M. Ryzy, and C. Grünsteidl, “Electroelastic guided wave dispersion in piezoelectric plates: spectral methods and laser-ultrasound experiments,” Nov. 2024, doi: [10.48550/arXiv.2412.07389](http://doi.org/10.48550/arXiv.2412.07389).  
+> [3] H. Gravenkamp, B. Plestenjak, and D. A. Kiefer, “Notes on osculations and mode tracing in semi-analytical waveguide modeling,” Ultrasonics, vol. 135, p. 107112, Jul. 2023, doi: [10.1016/j.ultras.2023.107112](http://doi.org/10.1016/j.ultras.2023.107112). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_gravenkamp_osculations/2023_Gravenkamp_Osculations.pdf).  
+> [4] D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_JASA_Computing_ZGV/2023_JASA_Computing_ZGV.pdf).
 
 ## Further literature 
 
@@ -150,8 +155,11 @@ Numerical methods to compute ZGV points
 **Gatien Clement**,  Institut Langevin, ESPCI Paris, Université PSL  
 Homogenization, quaternions, rotation angles
 
+**Clemens Grünsteidl**, Research Center for Non Destructive Testing GmbH (RECENDT), Austria  
+Piezoelectricity
+
 Acknowledgments - Many inspiring discussions influenced GEWtool. D. A. Kiefer is thankful to:   
-Hauke Gravenkamp, Pierre Chantelot, Claire Prada, Clemens Grünsteidl and Michael Ponschab
+Hauke Gravenkamp, Pierre Chantelot, Claire Prada and Michael Ponschab
 
 ## Author
 

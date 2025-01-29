@@ -1,7 +1,7 @@
 % We use a FEM discretization with three-noded elements:
 h = 1e-3; 
 mat = Material('steel'); 
-nLay = 5:5:70; 
+nLay = 5:5:55; 
 N = 3; 
 nModes = 10;
 k = linspace(1e-2, 25, 100)/h; 
@@ -31,7 +31,7 @@ optSub.standardEVP = standardEVP;
 optSub.eigenvecs = eigenvecs; 
 
 % print the parsed options once at the beginning (if show = true): 
-disp('The options for the QR method are:'); optQRM.show = true;
+disp('The options for the direct method are:'); optQRM.show = true;
 datQRM = computeW(gew, k, nModes, optQRM); 
 disp('The options for the subspace method are:'); optSub.show = true;
 datSub = computeW(gew, k, nModes, optSub);  
@@ -55,7 +55,7 @@ end
 %% plot timing 
 figure;
 bar(n, [tQRM(:), tSub(:)]);
-legend({'QZ', 'subspace'}, 'Location','northwest')
-xlabel('matrix size n'); 
+legend({'direct', 'subspace'}, 'Location','northwest')
+xlabel('matrix size $n$'); 
 ylabel('computing time in s');
 title('Standard EVP')
