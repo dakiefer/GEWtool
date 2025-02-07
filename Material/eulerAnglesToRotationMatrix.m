@@ -26,6 +26,17 @@ function R = eulerAnglesToRotationMatrix(varargin)
 % 
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
+% extract whether to perform extrinsic or active rotations:
+extrinsic = false;
+active = false; 
+tmp = string(varargin); 
+varargin = varargin(tmp ~= "intrinsic" & tmp ~= "passive"); % is the default anyways
+isextrinsic = tmp == "extrinsic"; 
+isactive = tmp == "active"; 
+if any(isextrinsic), extrinsic = true; end
+if any(isactive), active = true; end
+varargin = varargin(~isextrinsic & ~isactive);
+
 % some error checking:
 if length(varargin) == 3 
     if isnumeric(varargin{1}) && isnumeric(varargin{2}) && isnumeric(varargin{3})
@@ -40,6 +51,14 @@ end
 angles = cell2mat(varargin(1:2:end));
 axes = varargin(2:2:end);
 Nrots = length(angles);
+
+if extrinsic & ~active
+    angles = flip(angles); axes = flip(axes); 
+elseif ~extrinsic & active
+    angles = flip(-angles); axes = flip(axes); 
+elseif extrinsic & active
+    angles = -angles;
+end
 
 % generic rotation about z-axis (passive, i.e., the axes are rotated):
 Z0 = @(phi) [cos(phi), sin(phi), 0; 

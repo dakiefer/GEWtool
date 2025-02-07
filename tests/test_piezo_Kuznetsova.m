@@ -15,11 +15,9 @@ h = 1e-3;
 k = linspace(0.15, 15, 60).'/h; % wavenumber list where to solve 
 N = 15;
 mat0 = MaterialPiezoelectric('lithium_niobate');
-matYX = mat0.rotateEuler(pi/2,'x');
-% matXY30 = mat0.rotateEuler(-pi/2,'y',pi+30/180*pi,'x');
-matXY30 = mat0.rotateEuler(pi/2,'y',(30+90)/180*pi,'z');
 
 %% Y-cut, propagation in X-direction  
+matYX = mat0.rotateEuler(-pi/2,'x'); % passive intrinsic rotation
 plate = Plate(matYX, h, N);
 gew = plate.fullyCoupled; 
 dat = computeW(gew, k, 10);
@@ -35,7 +33,8 @@ legend(legendUnq, 'Location','southeast');
 % request user to evaluate test:
 assert( userTestConfirmation(fig) )
 
-%% X-cut, propagation in Y+30°-direction  
+%% X-cut, propagation in Y+30°-direction 
+matXY30 = mat0.rotateEuler(pi/2, 'y', (90+30)/180*pi, 'z'); % passive, intrinsic per default
 plate = Plate(matXY30, h, N);
 gew = plate.fullyCoupled; 
 dat = computeW(gew, k, 10);
