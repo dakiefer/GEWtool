@@ -89,10 +89,10 @@ methods
             data.rho = varargin{4};
             data.symmetry = 'isotropic';
         end
-        if strcmp(data.symmetry, 'isotropic') 
-            data.c = MaterialIsotropic.lame2stiffnessTensor(data.lambda, data.mu);
-        elseif isfield(data, 'C') 
+        if isfield(data, 'C') || isprop(data, 'C')
             data.c = voigt2tensor(data.C);
+        elseif strcmp(data.symmetry, 'isotropic')
+            data.c = MaterialIsotropic.lame2stiffnessTensor(data.lambda, data.mu);
         end
         obj.c = data.c;
         obj.rho = data.rho;
@@ -109,7 +109,7 @@ methods
         % struct - convert Material object to a struct.
         matStruct.name = obj.name;
         matStruct.rho = obj.rho;
-        if strcmp(obj.symmetry, 'isotropic') 
+        if isa(obj,'MaterialIsotropic')
             matStruct.lambda = obj.lambda;
             matStruct.mu = obj.mu;
         else

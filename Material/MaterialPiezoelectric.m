@@ -30,7 +30,7 @@ methods
         % mat = MaterialPiezoelectric(param); % from structure "param" with fields "name", "C", "rho", "eVoigt", and "epsl"
         %
         if isa(varargin{1}, 'Material') || isa(varargin{1}, 'struct') % convert from subclasses to superclass
-            data = varargin{1};
+            data = struct(varargin{1});
         elseif ischar(varargin{1}) || isstring(varargin{1})  % load by name
             matname = char(varargin{1});
             filename = [matname '.json'];
@@ -39,8 +39,24 @@ methods
             error('GEWTOOL:Material:unknownArgument', 'Provide filename to load or structure describing material.');
         end
         obj = obj@Material(data);
-        obj.E = data.E;
-        obj.epsilon = data.epsr*obj.eps0;
+        if isfield(data,'e') && ~isfield(data,'E') % backward compatibility
+            data.E = data.e; data = rmfield(data,'e');
+            warning('GEWTOOL:MaterialPiezoelectric:wrongFieldName', 'The field name "e" is obsolete. Instead, you should use a capitalized "E" for the piezoelectric stress constants in Voigt notation.');
+        end
+        if isfield(data, 'E')
+            obj.E = data.E;
+        else
+            obj.E = zeros(3,6); % no piezoelectric coupling
+        end
+        if isfield(data,'epsr') && all(size(data.epsr) == [3 3]) % anisotropic 
+            obj.epsilon = data.epsr*obj.eps0;
+        elseif isfield(data,'epsr') && isscalar(data.epsr) % isotropic 
+            obj.epsilon = data.epsr*eye(3,3)*obj.eps0;
+        elseif ~isfield(data,'epsr')
+            obj.epsilon = eye(3,3)*obj.eps0; % place-holder needs to be specified by user 
+        else
+            error('GEWTOOL:MaterialPiezoelectric','Wrong size of "epsr" field.'); 
+        end
     end
 
     function matStruct = struct(obj) 
