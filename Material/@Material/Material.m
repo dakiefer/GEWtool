@@ -183,9 +183,10 @@ methods
     end
 
     function obj = rotateEuler(obj, varargin)
-        % ROTATEEULER - Rotate the material tensors by the given angle-axis sequence.
-        % This Method is equivalent to the function rotateEuler() that operates 
-        % on a tensor instead of a Material object.
+        % ROTATEEULER - Rotate the material tensors by the given angle-axis
+        % sequence. This Method that operates on a Material object is equivalent
+        % to the function "rotateEuler()", which operates on an n-dimensional
+        % array (tensor). For usage, read the help of "rotateEuler".
         %
         % See also: rotateEuler
         %
