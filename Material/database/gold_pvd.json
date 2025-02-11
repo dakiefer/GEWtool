@@ -1,0 +1,11 @@
+{
+"name":"Gold",
+"rho":19280,
+"lambda":1.0185e+11,
+"mu":1.3889e+10,
+"symmetry":"isotropic",
+"epsr":6.9,
+"sigma":4.2572e+07,
+"note":"Gold by physical vapor deposition. Mechanical parameters can largely vary.",
+"source":"https://www.mit.edu/~6.777/matprops/gold.htm"
+}
