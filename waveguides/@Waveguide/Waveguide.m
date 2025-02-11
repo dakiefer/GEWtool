@@ -146,10 +146,10 @@ methods
         % returns
         % - true: if any of the layers is composed of a dissipative material
         % - false: otherwise
-        dis = true; 
+        dis = false; 
         for l = obj.lay
-            if ~isDissipative(l{1}.mat)
-                dis = false; 
+            if isDissipative(l{1}.mat)
+                dis = true; 
                 return;
             end
         end
