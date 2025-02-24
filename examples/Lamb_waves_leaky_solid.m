@@ -10,8 +10,8 @@ gewFree = plate.Lamb; tic;        % choose S+A Lamb waves (assembles matrices)
 nModes = 25; 
 
 datFree = computeK(gewFree,w,nModes);
-ceFree = energyVelAxial(gewFree,datFree);
-pFree = poyntingVec(gewFree,datFree); pFree = pFree{1};
+ceFree = energyVelAxial(datFree);
+pFree = poyntingVec(datFree); pFree = pFree{1};
 
 %% incorporate fluid loading
 gew = copy(gewFree);
@@ -45,9 +45,9 @@ MM1 = [ Z,    -al*Rkb, -at*Rke,   Z   ;
 
 
 dat = solveLeaky(LL3,LL2,LL1,LL0,MM,MM1,w,4*nModes,gew.np);
-Px = powerFluxAxial(gew,dat);
-ce = energyVelAxial(gew,dat);
-p =  poyntingVec(gew,dat); p = p{1}; 
+Px = powerFluxAxial(dat);
+ce = energyVelAxial(dat);
+p =  poyntingVec(dat); p = p{1}; 
 p = p/max(abs(p(:,:,1,2)),[],'all');
 % pyTop = p(:,:,end,2);
 pyBottom = p(:,:,1,2);

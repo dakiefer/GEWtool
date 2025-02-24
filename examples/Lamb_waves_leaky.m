@@ -10,9 +10,9 @@ gewFree = plate.Lamb; tic;        % choose S+A Lamb waves (assembles matrices)
 nModes = 20; 
 
 datFree = computeK(gewFree,w,nModes);
-ceFree = energyVelAxial(gewFree,datFree);
-PxFree = powerFluxAxial(gewFree,datFree); 
-pFree = poyntingVec(gewFree,datFree); pFree = pFree{1};
+ceFree = energyVelAxial(datFree);
+PxFree = powerFluxAxial(datFree); 
+pFree = poyntingVec(datFree); pFree = pFree{1};
 
 %% incorporate fluid loading
 gew = copy(gewFree);
@@ -23,8 +23,8 @@ rhof = 1000/rho0; cf = 1500/fh0; % water loading
 N = gew.geom.N;
 dofA = 2*N + 1; % dof of degree of freedom for the fluid A
 dofB = 2*N + 2; % dof of degree of freedom for the fluid B
-dofuA = N+1;      % dof of uy displacement in plate that is in contact with A
-dofuB = 2*N;        % dof of uy displacement in plate that is in contact with B
+dofuA = N+1;      % dof of uz displacement in plate that is in contact with A
+dofuB = 2*N;        % dof of uz displacement in plate that is in contact with B
 nDof = 2*N + 2; % size of matrices
 
 % expand matrices: 
@@ -63,20 +63,22 @@ MM  = [M   ,   -1/cf^2*R  ;
 % clear opts; opts.eigenvecs = true; opts.standardEVP = false; opts.subspace = false;
 % dat = computeK(gew, w, 30, opts); toc; % solve and save 4 modes (argument optional)
 dat = solveLeaky(LL2,LL1,LL0,MM,w,2*nModes,gew.np);
-Px = powerFluxAxial(gew,dat);
-ce = energyVelAxial(gew,dat);
-p =  poyntingVec(gew,dat); p = p{1}; 
+dat.gew = gew;
+Px = powerFluxAxial(dat);
+ce = energyVelAxial(dat);
+p =  poyntingVec(dat); p = p{1}; 
 P0 = mean(abs(Px(:)));
 % p = p./abs(Px);
 p = p/max(abs(p(:,:,end,1)),[],'all');
-pyTop = p(:,:,end,2);
-pyBottom = p(:,:,1,2);
+pzTop = p(:,:,end,2);
+pzBottom = p(:,:,1,2);
 
 %% plot
 % indLeaky = dat.k >= -inf;
-tol = 0;
-indLeaky = pyTop >= -tol & pyBottom <= tol;
+% tol = 0;
+% indLeaky = pzTop >= -tol & pzBottom <= tol;
 % indLeaky = abs(imag(dat.k)) > 1e-5;
+indLeaky = abs(dat.k/h) < 1e2;
 
 nModesPowerFlux = length(find(indLeaky)); 
 nModesTotal = length(find(~isnan(dat.k)));
