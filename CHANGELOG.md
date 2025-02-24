@@ -22,6 +22,8 @@ Documents the changes to GEWtool.
   - plate: ex-ey-ez system: ex is propagation direction, _ez is normal_ to the plate surface (previously, this was ey)
   - cylinder: ex-ephi-er system: ex is propagation direction, er is the radial direction
 - solver functions: return a `GEWdat` object instead of a `struct`
+- postprocessing functions: now only require the `GEWdat` object returned by the solver, e.g., 
+  `cex = energyVelAxial(dat);` instead of `cex = energyVelAxial(gew,dat);`
 - renamed the following properties of the Layer class: Pd -> D, PdPd -> DD, PPd -> PD.
 
 ## 1.6 (2024-11-25)

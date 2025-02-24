@@ -19,12 +19,13 @@
 > **v2.0 introduces the following backward-incompatibilities**:
 >
 > - directory structure updated: you will need to re-run `install.m` after updating to v2.0.
-> - `rotateEuler()` changed from extrinsic to intrinsic rotations! Reverse the order of rotation sequences in your old scripts to get the same results as with older GEWtool versions. 
->   See `help rotateEuler` for more information.
+> - `rotateEuler()` changed from extrinsic to intrinsic rotations! This only affects you if you do several rotations in a row. Reverse the order of the rotation sequence in your old scripts to get the same results as previously. See `help rotateEuler` for more information.
 > - changed coordinate system
 >   - plate: ex-ey-ez system: ex is propagation direction, _ez is normal_ to the plate surface (previously, this was ey)
 >   - cylinder: ex-ephi-er system: ex is propagation direction, er is the radial direction
 > - solver functions: return a `GEWdat` object instead of a `struct`
+> - postprocessing functions: now only require the `GEWdat` object returned by the solver, e.g., 
+>   `cex = energyVelAxial(dat);` instead of `cex = energyVelAxial(gew,dat);`
 
 > [!NOTE]
 > **Coming soon**:
