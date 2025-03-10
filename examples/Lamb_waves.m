@@ -9,7 +9,7 @@
 %
 % 2024-2025 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-mat = MaterialIsotropic('steel'); % load from database (or create your own)
+mat = MaterialIsotropic('aluminum'); % load from database (or create your own)
 h = 1e-3;                        % thickness in m
 N = 12;                          % number of nodes (dictates accuracy)
 k = linspace(1e-2, 15, 100)/h;   % wavenumbers to solve for
