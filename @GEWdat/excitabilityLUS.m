@@ -27,7 +27,7 @@ function exc = excitabilityLUS(dat, at)
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
     compute = @(datObj) excitabilityLUS(datObj, at); % function to apply
-    exc = arrayfun(compute,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
+    exc = arrayfun(compute,dat,'UniformOutput',false); % apply to every object in the array "dat"
     return;
 end
 

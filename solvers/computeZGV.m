@@ -33,7 +33,7 @@ if nargin == 2 || (nargin == 3 && isstruct(varargin{1})) % dispersion data provi
     dat = varargin{1};
     if ~isscalar(gew) % compute recursively for every waveguide problem 
         compute = @(gewObj,datObj) computeZGV(gewObj, datObj, varargin{2:end}); % function to apply
-        datZGV = arrayfun(compute,gew,dat); % apply to every object in the arrays "gew" and "dat"
+        datZGV = arrayfun(compute,gew,dat); % apply to every object in the array "dat"
         return; 
     end
     if isfield(dat, 'cg')

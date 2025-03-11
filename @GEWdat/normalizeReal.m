@@ -2,7 +2,7 @@ function datN = normalizeReal(dat)
 % normalizeReal - Normalize propagating modes with real wavenumbers. 
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
-    datN = arrayfun(@normalizeReal,dat); % apply to every object in the arrays "dat"
+    datN = arrayfun(@normalizeReal,dat); % apply to every object in the array "dat"
     return;
 end
 

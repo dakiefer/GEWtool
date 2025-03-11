@@ -6,7 +6,7 @@ function Pmn = crossPowerFlux(dat)
 % Malabar: Krieger Publishing Company, 1990.
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
-    Pmn = arrayfun(@crossPowerFlux,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
+    Pmn = arrayfun(@crossPowerFlux,dat,'UniformOutput',false); % apply to every object in the array "dat"
     return;
 end
 

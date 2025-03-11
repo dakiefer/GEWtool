@@ -9,7 +9,7 @@ function [Ekin] = energyKinetic(dat)
 %
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
-    Ekin = arrayfun(@energyKinetic,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
+    Ekin = arrayfun(@energyKinetic,dat,'UniformOutput',false); % apply to every object in the array "dat"
     return;
 end
 

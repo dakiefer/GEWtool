@@ -27,7 +27,7 @@ function [S] = strain(dat)
 % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
-    S = arrayfun(@strain,dat,'UniformOutput',false); % apply to every object in the arrays "dat" 
+    S = arrayfun(@strain,dat,'UniformOutput',false); % apply to every object in the array "dat" 
     return;
 end
 

@@ -9,7 +9,7 @@ function [v] = velocity(dat)
 %
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "gew"
-    v = arrayfun(@velocity,dat,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+    v = arrayfun(@velocity,dat,'UniformOutput',false); % apply to every object in the array "dat"
     return;
 end
 

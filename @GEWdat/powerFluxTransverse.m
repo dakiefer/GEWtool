@@ -19,7 +19,7 @@ function [Py] = powerFluxTransverse(dat)
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
-    Py = arrayfun(@powerFluxTransverse,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
+    Py = arrayfun(@powerFluxTransverse,dat,'UniformOutput',false); % apply to every object in the array "dat"
     return;
 end
 

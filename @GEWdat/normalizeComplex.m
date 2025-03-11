@@ -9,7 +9,7 @@ function dat = normalizeComplex(dat)
 warning('GEWTOOL:untested', 'Untested function.')
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
-    dat = arrayfun(@normalizeComplex,dat); % apply to every object in the arrays "dat"
+    dat = arrayfun(@normalizeComplex,dat); % apply to every object in the array "dat"
     return;
 end
 

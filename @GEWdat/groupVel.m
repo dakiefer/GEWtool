@@ -24,7 +24,7 @@ function [cg] = groupVel(dat)
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
-    cg = arrayfun(@groupVel,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
+    cg = arrayfun(@groupVel,dat,'UniformOutput',false); % apply to every object in the array "dat"
     return; 
 end
 

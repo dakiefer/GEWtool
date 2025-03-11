@@ -23,7 +23,7 @@ function [Etot] = energyTotal(dat)
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
     compute = @(gewObj,datObj) energyTotal(gewObj, datObj); % function to apply
-    Etot = arrayfun(@energyTotal,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
+    Etot = arrayfun(@energyTotal,dat,'UniformOutput',false); % apply to every object in the array "dat"
     return;
 end
 

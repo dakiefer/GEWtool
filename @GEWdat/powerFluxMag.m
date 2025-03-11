@@ -15,7 +15,7 @@ function [Pmag] = powerFluxMag(dat)
 % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "gew"
-    Pmag = arrayfun(@powerFluxMag,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
+    Pmag = arrayfun(@powerFluxMag,dat,'UniformOutput',false); % apply to every object in the array "dat"
     return;
 end
 

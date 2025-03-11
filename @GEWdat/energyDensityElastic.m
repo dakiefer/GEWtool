@@ -9,7 +9,7 @@ function [eElastic] = energyDensityElastic(dat)
 %
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
-    eElastic = arrayfun(@energyDensityElastic,dat,'UniformOutput',false); % apply to every object in the arrays "dat"
+    eElastic = arrayfun(@energyDensityElastic,dat,'UniformOutput',false); % apply to every object in the array "dat"
     return;
 end
 

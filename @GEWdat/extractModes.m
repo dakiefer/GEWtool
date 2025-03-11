@@ -17,7 +17,7 @@ function datRed = extractModes(dat, indk, indw)
 
 if ~isscalar(dat) % compute recursively for every waveguide problem in the vector "dat"
     compute = @(datObj) extractModes(datObj, indk, indw);
-    datRed = arrayfun(compute,dat,'UniformOutput',true); % apply to every object in the arrays "dat"
+    datRed = arrayfun(compute,dat,'UniformOutput',true); % apply to every object in the array "dat"
     return;
 end
 

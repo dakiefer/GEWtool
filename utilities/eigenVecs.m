@@ -18,7 +18,7 @@ function psi = eigenVecs(gew, u)
 
 % if ~isscalar(gew) % compute recursively for every waveguide problem in the vector "gew"
 %     compute = @(gewObj,ui) eigenVecs(gewObj, ui); % function to apply
-%     psi = arrayfun(compute,gew,u,'UniformOutput',false); % apply to every object in the arrays "gew" and "dat"
+%     psi = arrayfun(compute,gew,u,'UniformOutput',false); % apply to every object in the array "dat"
 %     return;
 % end
 
