@@ -124,6 +124,21 @@ methods
         dofz = dofAll(indz);
     end
 
+    function [l, n, u] = layerNodeCompOf(obj, gdof)
+    % layerNodeCompOf - find the layer number l and node number n corresponding to
+    % the global degree of freedom gdof. 
+        gdof = obj.gdofFree(gdof); % get gdof before removal of Dirichlet nodes 
+        for l = 1:obj.nLay
+            gdofList = obj.gdofOfLay{l}; 
+            nxu = find(gdofList == gdof);
+            if ~isempty(nxu)
+                n = mod(nxu-1,obj.N)+1; 
+                u = floor((nxu-1)/obj.N)+1;
+                return;
+            end
+        end
+    end
+
 end % methods
 
 end % class
