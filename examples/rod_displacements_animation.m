@@ -1,9 +1,9 @@
 %% Animate the modal field of a rod
 % The displacements on an arbitrary cross-section are visualized for one selected mode.
 % 
-% 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2024-2025 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-mat = Material('aluminum');
+mat = MaterialIsotropic('aluminum');
 N = 20;         % number of nodes on radius
 h = 1e-3;       % outer radius in m
 r = [0, h];     % radial coordinates (full cylinder when inner radius is zero)
@@ -26,34 +26,44 @@ Nphi = 40;           % number of points on circumference
 % Note: longitudinal and torsional waves do not have all displacement components.
 scale = max(ri)/10; % how strongly the grid is deformed: change if necessary
 ue = ue/max(abs(ue(:)))*scale; 
+% ue = 1/2*( ue + conj(ue) );  % if you want to get modes in ~cos(n*phi) or ~sin(n*phi) instead of exp(i*n*phi)
+
 indx = find(gew.displComp == "ux");     % index to extract axial displacements
 indphi = find(gew.displComp == "uphi"); % index to extract angular displacements
 indr = find(gew.displComp == "ur");     % index to extract radial displacements
-if ~isempty(indx),   ux = ue(:,:,indx);     else ux = zeros(size(ue(:,:,1)));   end
+if ~isempty(indx),   ux   = ue(:,:,indx);   else ux   = zeros(size(ue(:,:,1))); end
 if ~isempty(indphi), uphi = ue(:,:,indphi); else uphi = zeros(size(ue(:,:,1))); end
-if ~isempty(indr),   ur = ue(:,:,indr);     else ur = zeros(size(ue(:,:,1)));   end
+if ~isempty(indr),   ur   = ue(:,:,indr);   else ur   = zeros(size(ue(:,:,1))); end
+
+% Convert to Cartesian coordinates: NOTE: This is important because ri + ur
+% might become negative. Cartesian coordinates avoid this issue. Moreover, 
+% this also avoids computing DeltaPhi = uphi./ri, which is singular at ri = 0. 
+% displacements:
+uX = ur.*cos(phi) + uphi.*sin(phi); % ex-ephi-er coordinate system -> eX-eY-eZ
+uY = ur.*sin(phi) - uphi.*cos(phi); % ex-ephi-er coordinate system -> eX-eY-eZ
+uZ = ux; 
+% coordinates:
+X = ri.*cos(phi); 
+Y = ri.*sin(phi); 
+Z = 0.*ones(size(X));
 
 % initial plot
 figure('Position', [100, 600, 600, 350]); 
-mPlot = mesh(NaN(2), NaN(2), NaN(2), 'EdgeColor','k'); % initialize
+mPlot = mesh((X+real(uX))/1e-3, (Y+real(uY))/1e-3, (Z+real(uZ))/1e-3, 'EdgeColor','k'); % initialize
 title(sprintf('rod: mode %d', nW));
-axis manual;  % do not re-scale
-axis equal;   % equal scale
-axis off;     % do not show
-view(-38,30); % camera view
+axis manual; axis equal; axis off; 
+% view(0,0);   % camera view
 
 % iterate over time
 T = 2*pi/w;     % period
 NT = 1;         % number of periods
 t = linspace(0, NT*T, NT*80); % time samples
 for i = 2:length(t)
-    rDeformed   = ri  + real(ur*exp(1i*w*t(i))); 
-    phiDeformed = phi + real(uphi./(ri+eps)*exp(1i*w*t(i))); 
-    mPlot.XData = rDeformed.*cos(-phiDeformed)/1e-3; % x-phi-r -> X-Y-Z (clock-wise angles)
-    mPlot.YData = rDeformed.*sin(-phiDeformed)/1e-3; % x-phi-r -> X-Y-Z (clock-wise angles)
-    mPlot.ZData = real(ux*exp(1i*w*t(i)))/1e-3;
-    zlim([-1 1]*1.05*scale/1e-3); xlim([-1 1]*1.15); ylim([-1 1]*1.15);
-    drawnow; pause(1/25);
+    mPlot.XData = ( X + real( uX*exp(1i*w*t(i)) ))/1e-3;
+    mPlot.YData = ( Y + real( uY*exp(1i*w*t(i)) ))/1e-3;
+    mPlot.ZData = ( Z + real( uZ*exp(1i*w*t(i)) ))/1e-3;
+    zlim([-1 1]*2*scale/1e-3); xlim([-1 1]*1.15); ylim([-1 1]*1.15);
+    drawnow; pause(1/20);
 end
 
 %% animate the displacement structure
