@@ -19,13 +19,12 @@
 > **v2.0 introduces the following backward-incompatibilities**:
 >
 > - directory structure updated: you will need to re-run `install.m` after updating to v2.0.
+> - postprocessing functions: now only require the `GEWdat` object returned by the solver, e.g., 
+>   `cex = energyVelAxial(dat);` instead of `cex = energyVelAxial(gew,dat);`
 > - `rotateEuler()` changed from extrinsic to intrinsic rotations! This only affects you if you do several rotations in a row. Reverse the order of the rotation sequence in your old scripts to get the same results as previously. See `help rotateEuler` for more information.
 > - changed coordinate system
 >   - plate: ex-ey-ez system: ex is propagation direction, _ez is normal_ to the plate surface (previously, this was ey)
 >   - cylinder: ex-ephi-er system: ex is propagation direction, er is the radial direction
-> - solver functions: return a `GEWdat` object instead of a `struct`
-> - postprocessing functions: now only require the `GEWdat` object returned by the solver, e.g., 
->   `cex = energyVelAxial(dat);` instead of `cex = energyVelAxial(gew,dat);`
 
 > [!NOTE]
 > **Coming soon**:
@@ -44,7 +43,7 @@ k = linspace(1e-2, 12, 100)/h;   % wavenumbers to solve for
 plate = Plate(mat, h, N);        % create waveguide description 
 gews = plate.LambSA; tic;        % choose S+A Lamb waves (assembles matrices)
 dat = computeW(gews, k, 4); toc; % solve and save 4 modes (argument optional)
-plot(dat); 											 % plot dispersion curves
+plot(dat); 						 % plot dispersion curves
 ```
 
 output:
@@ -58,7 +57,8 @@ Proceed by inspecting the laser-ultrasonic excitability of the waves computed ab
 k = linspace(1e-2, 12, 200)/h;          % use more wavenumbers
 gew = plate.Lamb;                       % choose all Lamb waves this time
 dat = computeW(gew, k, 7);              % compute
-exc = excitabilityLUS(dat, 'top'); % vx*uz at top surface (value of 1 at 100x median)
+exc = excitabilityLUS(dat, 'top');      % vx*uz at top surface 
+                                        % (value of 1 at 100x median)
 exc = 20*log10(exc);                    % in decibel
 scatter(dat.k(:)/1e3, dat.w(:)/2/pi/1e6, 15, exc(:), 'filled'), ylim([0, 6]);
 colormap(flipud(colormap)); cb = colorbar; caxis([-50, 0]);
@@ -127,10 +127,11 @@ If this code is useful to you, please cite it as (always indicating the DOI):
 
 Please also cite the related publication(s) as relevant, e.g., 
 
-> [1] D. A. Kiefer, S. Mezil, and C. Prada, “Beating resonance patterns and extreme power flux skewing in anisotropic elastic plates,” Science Advances, vol. 9, no. 51, p. eadk6846, Dec. 2023, doi: [10.1126/sciadv.adk6846](http://doi.org/10.1126/sciadv.adk6846). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_sciadv_beatingresonances/2023_SciAdv_BeatingResonances.pdf).  
-> [2] D. A. Kiefer, G. Watzl, K. Burgholzer, M. Ryzy, and C. Grünsteidl, “Electroelastic guided wave dispersion in piezoelectric plates: Spectral methods and laser-ultrasound experiments,” Journal of Applied Physics, vol. 137, no. 11, p. 114502, Mar. 2025, [10.1063/5.0250494](https://doi.org/10.1063/5.0250494). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2025_Kiefer_piezowaves/2025_Kiefer_piezowaves.pdf)  
-> [3] H. Gravenkamp, B. Plestenjak, and D. A. Kiefer, “Notes on osculations and mode tracing in semi-analytical waveguide modeling,” Ultrasonics, vol. 135, p. 107112, Jul. 2023, doi: [10.1016/j.ultras.2023.107112](http://doi.org/10.1016/j.ultras.2023.107112). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_gravenkamp_osculations/2023_Gravenkamp_Osculations.pdf).  
-> [4] D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_JASA_Computing_ZGV/2023_JASA_Computing_ZGV.pdf).
+> [1] D. A. Kiefer, S. Mezil, and C. Prada, “Beating resonance patterns and extreme power flux skewing in anisotropic elastic plates,” Science Advances, vol. 9, no. 51, p. eadk6846, Dec. 2023, doi: [10.1126/sciadv.adk6846](http://doi.org/10.1126/sciadv.adk6846). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_sciadv_beatingresonances/2023_SciAdv_BeatingResonances.pdf)  
+> [2] D. A. Kiefer, S. Mezil, and C. Prada, “Extreme wave skewing and dispersion spectra of anisotropic elastic plates,” Phys. Rev. Res., vol. 7, no. 1, p. L012043, Feb. 2025, doi: [10.1103/PhysRevResearch.7.L012043](http://doi.org/10.1103/PhysRevResearch.7.L012043). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2025_kiefer_extremeskewingdispersion/2025_Kiefer_ExtremeSkewingDispersion.pdf)   
+> [3] D. A. Kiefer, G. Watzl, K. Burgholzer, M. Ryzy, and C. Grünsteidl, “Electroelastic guided wave dispersion in piezoelectric plates: Spectral methods and laser-ultrasound experiments,” Journal of Applied Physics, vol. 137, no. 11, p. 114502, Mar. 2025, doi: [10.1063/5.0250494](https://doi.org/10.1063/5.0250494). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2025_Kiefer_piezowaves/2025_Kiefer_piezowaves.pdf)  
+> [4] H. Gravenkamp, B. Plestenjak, and D. A. Kiefer, “Notes on osculations and mode tracing in semi-analytical waveguide modeling,” Ultrasonics, vol. 135, p. 107112, Jul. 2023, doi: [10.1016/j.ultras.2023.107112](http://doi.org/10.1016/j.ultras.2023.107112). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_gravenkamp_osculations/2023_Gravenkamp_Osculations.pdf)  
+> [5] D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, “Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,” The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, doi: [10.1121/10.0017252](http://doi.org/10.1121/10.0017252). [![PDF](assets/icon_file-pdf.svg)](https://dakiefer.net/publication/2023_JASA_Computing_ZGV/2023_JASA_Computing_ZGV.pdf)
 
 ## Further literature 
 

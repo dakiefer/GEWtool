@@ -29,17 +29,11 @@
     ],
     "upload_type": "software",
     "license": "isc",
-    "related_identifiers": [
-        {
-            "relation": "isSupplementTo",
-            "scheme": "url",
-            "resource_type": "software",
-            "identifier": "https://github.com/dakiefer/GEWtool"
-        }
-    ],
     "references": [ 
         "D. A. Kiefer, S. Mezil, and C. Prada, \"Beating resonance patterns and extreme power flux skewing in anisotropic elastic plates,\" Science Advances, vol. 9, no. 51, p. eadk6846, Dec. 2023, http://doi.org/10.1126/sciadv.adk6846",
-        "D. A. Kiefer, G. Watzl, K. Burgholzer, M. Ryzy, and C. Grünsteidl, \"Electroelastic guided wave dispersion in piezoelectric plates: spectral methods and laser-ultrasound experiments,\" ArXiV, Nov. 2024. http://doi.org/10.48550/arXiv.2412.07389",
+        "D. A. Kiefer, S. Mezil, and C. Prada, \"Extreme wave skewing and dispersion spectra of anisotropic elastic plates,\" Phys. Rev. Res., vol. 7, no. 1, p. L012043, Feb. 2025, http://doi.org/10.1103/PhysRevResearch.7.L012043",
+        "D. A. Kiefer, G. Watzl, K. Burgholzer, M. Ryzy, and C. Grünsteidl, \"Electroelastic guided wave dispersion in piezoelectric plates: Spectral methods and laser-ultrasound experiments,\" Journal of Applied Physics, vol. 137, no. 11, p. 114502, Mar. 2025, doi: https://doi.org/10.1063/5.0250494",
+        "H. Gravenkamp, B. Plestenjak, and D. A. Kiefer, \"Notes on osculations and mode tracing in semi-analytical waveguide modeling,\" Ultrasonics, vol. 135, p. 107112, Jul. 2023, http://doi.org/10.1016/j.ultras.2023.107112",
         "D. A. Kiefer, B. Plestenjak, H. Gravenkamp, and C. Prada, \"Computing zero-group-velocity points in anisotropic elastic waveguides: Globally and locally convergent methods,\" The Journal of the Acoustical Society of America, vol. 153, no. 2, pp. 1386–1398, Feb. 2023, http://doi.org/10.1121/10.0017252",
         "D. A. Kiefer, Elastodynamic quasi-guided waves for transit-time ultrasonic flow metering. in FAU Forschungen, Reihe B, Medizin, Naturwissenschaft, Technik, no. 42. Erlangen: FAU University Press, 2022. http://doi.org/10.25593/978-3-96147-550-6"
     ],
