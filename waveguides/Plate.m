@@ -217,7 +217,8 @@ methods
         zItfList = zItfList - zItfList(1); % zero coordinate at center
         mats = cell(1,length(lays)); % allocate
         for i = 1:length(lays), mats{i} = lays{i}.mat; end % extract materials 
-        gew = Plate(mats, zItfList, Ns);
+        constructorFun = str2func(class(obj)); % instantiate of same class as obj
+        gew = constructorFun(mats, zItfList, Ns);
         gew.geom.symmetrized = true;
     end
 
