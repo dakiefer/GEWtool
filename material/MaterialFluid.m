@@ -71,6 +71,18 @@ methods
         et = null(ek.'); % svd to compute orthogonal vectors to ek
         eu = [ek, et];
     end
+
+    %% overload operators: 
+    function ret = eq(a, b)
+        % eq - Test if bulk modulus B and density rho are the same for materials a and b.
+        % Usage: 
+        % isEq = eq(a, b);
+        % isEq = a == b;
+        ret = a.B == b.B && a.rho == b.rho;
+    end
+    function ret = ne(a, b)
+        ret = ~eq(a, b);
+    end
 end
 
 end
