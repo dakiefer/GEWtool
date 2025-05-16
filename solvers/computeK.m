@@ -84,12 +84,11 @@ function dat = computeK(gews, w, nModes, opts)
         else
             solveAtW = @(wh) solveGEP(A + wh^2*AA, B, nModes, opti);
         end
-        geom = gew.geom; 
-        gdoffree = geom.gdofFree;
         whn = w*gew.np.h0/gew.np.fh0;
         kh = nan(nModes, length(whn));
         if opti.eigenvecs
-            u = zeros(nModes, length(whn), length(gdoffree)); % allocate
+            u = zeros(nModes, length(whn), size(gew.op.L0,1)); % allocate
+            geom = gew.geom; % extract before "parfor" (overhead due to broadcast) 
             parfor (j = 1:length(whn), opti.parallel)
                 [lbd, eVec] = solveAtW(whn(j));
                 [khj, uj] = retrieveKu(lbd, eVec, nModes, opti, geom);

@@ -56,11 +56,10 @@ function dat = computeW(gews, k, nModes, opts)
         else
             solveAtK = @(kh) solveGEP(kh^2*L2 - 1i*kh*L1 - L0, M, nModes, opti);
         end
-        gdoffree = gew.geom.gdofFree;
         kh = k*gew.np.h0;
         whn = nan(length(kh), nModes); % allocate
         if opti.eigenvecs
-            u = zeros(length(kh), nModes, length(gdoffree)); % allocate
+            u = zeros(length(kh), nModes, size(gew.op.L0,1)); % allocate
             parfor (j = 1:length(kh), opti.parallel)
                 [lbd, eVec] = solveAtK(kh(j));
                 [whnj, uj] = retrieveWu(lbd, eVec, nModes, opti); 
