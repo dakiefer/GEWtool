@@ -14,7 +14,7 @@ classdef PlateLeaky < Plate
 % 2025 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 properties
-    exteriorMat = cell(1,2) % TODO field "loading" as a array of struct with load.mat and load.at = "top"/"bottom"
+    halfSpaces = [] % TODO field "loading" as a array of struct with load.mat and load.at = "top"/"bottom"
     % TODO expand "loading" struct array in terms of wave velocities (2 for solid loading) 
 end
 
@@ -23,70 +23,52 @@ methods
         if ~iscell(mats)
             mats = num2cell(mats);
         end
-        ind = find(isinf(zs)); 
-        if length(ind) > 2
-            error('GEWTOOL:PlateLeaky','The plate cannot be loaded with more than two halfspaces.');
-        end
-        extMat = mats(ind); 
+        halfSpaces = PlateLeaky.parseLoading(mats,zs);
         mats = mats{~isinf(zs)}; zs = zs(~isinf(zs)); % crop to finite layers
         obj = obj@Plate(mats, zs, Ns);
-        if length(extMat) == 2
-            obj.exteriorMat = extMat; 
-        elseif isscalar(extMat) % avoid error when extMat is empty
-            if ind(1) == 1
-                obj.exteriorMat(1) = extMat; 
-            else
-                obj.exteriorMat(2) = extMat; 
-            end
-        end
-        % if ind(1) == 1
-        %     ext = parseExterior(extMat(1),"bot",obj.geom);
-        % else
-        %     ext = parseExterior(extMat(1),"top",obj.geom);
-        % end
-        % if length(ind) == 2
-        %     ext(2) = parseExterior(extMat(2),"top",obj.geom);
-        %     if all(ext(2).dofU == ext(1).dofU, 'all')
-        %         error('GEWTOOL:PlateLeaky','Two halfspaces are coupled to the same displacement degree of freedom of the plate.');
-        %     end
-        % end
-        % obj.exteriorMat = ext; 
+        obj.halfSpaces = halfSpaces;
     end
     function obj = assembleLayers(obj, udof, n)
         obj = assembleLayers@Waveguide(obj, udof, n);
-        for side = 1:length(obj.exteriorMat)
-            if isempty(obj.exteriorMat{side}), continue; end
-            extMat = obj.exteriorMat{side};
+        for i = 1:length(obj.halfSpaces)
+            loading = obj.halfSpaces(i);
             Ndof = size(obj.op.L0,1); % increases with every iteration
-            [dofA, dofU] = PlateLeaky.getCouplingDOFs(extMat,side,obj.geom,Ndof);
-            obj = incorporateFluidLoading(obj, extMat, dofA, dofU, side); 
+            [dofA, dofU] = PlateLeaky.getCouplingDOFs(loading,obj.geom,Ndof);
+            obj = incorporateLoading(obj, loading, dofA, dofU); 
         end
-        if ~isempty(obj.exteriorMat{1}) && ~isempty(obj.exteriorMat{2}) && obj.exteriorMat{1} == obj.exteriorMat{2}
-            obj.op.Rb = obj.op.Rb - obj.op.Ra; % top - bottom (waves radiated away from the plate)
-            obj.op = rmfield(obj.op,'Ra'); 
+        if length(obj.halfSpaces) == 2 && obj.halfSpaces(1).mat == obj.halfSpaces(2).mat
+            obj.op.Rtop = obj.op.Rtop - obj.op.Rbottom; % top - bottom (waves radiated away from the plate)
+            obj.op = rmfield(obj.op,'Rbottom'); 
         end
     end
-    function obj = incorporateFluidLoading(obj, extMat, dofA, dofU, side)
-        if side == 1, sig = -1; else, sig = 1; end % different signs at top and bottom
-        sides = {'a', 'b'}; % used for labeling the sides
+    function obj = incorporateLoading(obj, loading, dofA, dofU)
+        if loading.at == "top" % different signs at top and bottom
+            sig = 1; 
+        else
+            sig = -1; 
+        end
+        % sides = {'a', 'b'}; % used for labeling the sides
         op = obj.op;
         nDof = max(dofA); % new total number of DOFs
 
         % expand matrices: 
-        opName = fieldnames(op);
-        for i=1:length(opName)
-            op.(opName{i})(nDof,nDof) = 0; 
+        opNameList = fieldnames(op);
+        for i=1:length(opNameList)
+            op.(opNameList{i})(nDof,nDof) = 0; 
         end
-        R = zeros(nDof);  % radiation matrix (nonpolynomial terms)
+        R = zeros(nDof);  % radiation matrix (models nonpolynomial terms)
         
-        % continuity of normal displacements: ibeta*A - uz = 0
-        op.L0(dofA,dofU) = -1;
-        R(dofA,dofA)  = +1;
-
-        % balance of tractions: add the boundary term [v*tA] to the FE matrices. 
-        % the traction induced by the fluid is tA = -w^2*rhoA*ez*A
-        op.M(dofU,dofA) = sig*extMat.rho/obj.np.rho0; % normalized mass density
-        op.(['R' sides{side}]) = R; 
+        if isa(loading.mat,'MaterialFluid')
+            % continuity of normal displacements: ibeta*A - uz = 0
+            op.L0(dofA,dofU) = -1;
+            R(dofA,dofA)     = +1;
+            % balance of tractions: add the boundary term [v*tA] to the FE matrices. 
+            % the traction induced by the fluid is tA = -w^2*rhoA*ez*A
+            op.M(dofU,dofA) = sig*loading.mat.rho/obj.np.rho0; % normalized mass density
+            op.("R"+loading.at) = R; 
+        elseif isa(loading.mat,'MaterialIsotropic')
+            error('GEWTOOL:not implemented yet.') % TODO implement
+        end
         obj.op = op; 
     end
     function op = opExpandTerm(obj, opName, extMat)
@@ -143,17 +125,39 @@ methods
 end
 
 methods (Static)
-    function [dofA, dofU] = getCouplingDOFs(mat,side,geom,Ndof)
-        if side == 2 % top-side coupling
-            lay = geom.nLay;
-        elseif side == 1 % bottom-side coupling
-            lay = 1;
+    function [dofA, dofU] = getCouplingDOFs(halfspace,geom,Ndof)
+        if halfspace.at == "top"
+            lay = geom.nLay; side = 2;
+        elseif halfspace.at == "bottom" 
+            lay = 1; side = 1;
         end
-        if isa(mat,'MaterialFluid') % is a fluid
+        if isa(halfspace.mat,'MaterialFluid') % is a fluid
             dofU = geom.gdofBC{lay}(end,side); % end -> last displacement component is always normal to the plate
             dofA = Ndof + 1; 
-        elseif isa(mat,'Material')
-            error('Not yet implemented.');
+        elseif isa(halfspace.mat,'MaterialIsotropic')
+            dofU = geom.gdofBC{lay}(:,side);
+            dofA = Ndof + (1:length(dofU)); % same number of additional unknows as number of displacement components
+        end
+    end
+    function halfSpaces = parseLoading(matList,zs)
+        ind = sort(find(isinf(zs))); 
+        if length(ind) > 2
+            error('GEWTOOL:PlateLeaky','The plate cannot be loaded with more than two halfspaces.');
+        elseif isempty(ind)
+            error('GEWTOOL:PlateLeaky','Provide at least one loading halfspace or use the Plate class for nonleaky waves.');
+        end
+        for i = 1:length(ind)
+            mati = matList{ind(i)};
+            if ~isa(mati,'MaterialIsotropic') && ~isa(mati,'MaterialFluid') % only these are supported for now
+                warning('GEWTOOL:parseLoading','Trying to convert loading Material to class "MaterialIsotropic". To hide this warning, load your material with "MaterialIsotropic". Loading with anisotropic materials is not supported.');
+                mati = MaterialIsotropic(mati); % convert from "Material" to "MaterialIsotropic"
+            end
+            halfSpaces(i).mat = mati;
+            if ind(i) == 1
+                halfSpaces(i).at  = "bottom";
+            else
+                halfSpaces(i).at = "top";
+            end
         end
     end
 end

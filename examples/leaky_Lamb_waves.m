@@ -5,14 +5,15 @@
 
 mat = MaterialIsotropic('brass'); % load from database (or create your own)
 fa = MaterialFluid('water'); 
+fe = MaterialIsotropic('pmma');
 fb = fa; fb.cl = 1200; fb.rho = 800; 
 h = 1e-3;                         % thickness in m
 N = 20;                           % number of nodes (dictates accuracy)
 w = 2*pi*linspace(1e-3, 7, 500).'*1e6; % frequencies where to compute wavenumbers k
-plate = PlateLeaky({fa mat fb}, [inf h inf], N);         % create waveguide description 
+plate = PlateLeaky({fa mat }, [inf h ], N);         % create waveguide description 
 gew = plate.Lamb; tic;         % choose S+A Lamb waves (assembles matrices)
-gew.op = opExpandTerm(gew, 'Rb', gew.exteriorMat{2});
-gew.op = opExpandTerm(gew, 'Ra', gew.exteriorMat{1});
+% gew.op = opExpandTerm(gew, 'Rtop', gew.halfSpaces(2).mat);
+gew.op = opExpandTerm(gew, 'Rbottom', gew.halfSpaces(1).mat);
 % linearizeInK(gews);             % optional: this makes the computation faster
 dat = computeK(gew, w, 120); toc;     % solve 
 
