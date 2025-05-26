@@ -34,9 +34,13 @@ if (isempty(nModes) || isinf(nModes)) && opts.subspace % default for subspace
 elseif (isempty(nModes) || isinf(nModes)) && ~opts.subspace % default for QZ
     nModes = size(op.M,1); 
 end
-if nModes > size(op.M,1) % if the user explicitly provided nModes bigger than the matrix
-    warning('GEWTOOL:computeW:tooManyModes', 'More modes requested than available. Resetting nModes to the matrix size.')
+if isequal(opts.solver,@computeW) && nModes > size(op.M,1) % if the user explicitly provided nModes bigger than the matrix
+    warning('GEWTOOL:tooManyModes', 'More modes requested than available. Resetting nModes to the matrix size.')
     nModes = size(op.M,1);
+end
+if isequal(opts.solver,@computeK) && nModes > 2*size(op.M,1) % if the user explicitly provided nModes bigger than the available modes
+    warning('GEWTOOL:tooManyModes', 'More modes requested than available. Resetting nModes to twice the matrix size.')
+    nModes = 2*size(op.M,1);
 end
 if ~isfield(opts, 'parallel')  
     if ~canParallel() % check first if parallel computing toolbox is available

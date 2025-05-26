@@ -46,6 +46,7 @@ function dat = computeK(gews, w, nModes, opts)
     dat = repmat(GEWdat(gews(1),[],w,[]),1,length(gews));
     for i = 1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
+        opts.solver = @computeK;
         [opti, nModes] = parseSolverOpts(opts, gew.op, nModes); % opti will be modified in the iteration
         if isfield(opti,'target') & isnumeric(opti.target)
             opti.target = opti.target*gew.np.h0; % normalize to match gew.op

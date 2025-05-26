@@ -40,6 +40,7 @@ function dat = computeW(gews, k, nModes, opts)
     dat = repmat(GEWdat(gews(1),k,[],[]),1,length(gews));
     for i=1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
+        opts.solver = @computeW;
         [opti, nModes] = parseSolverOpts(opts, gew.op, nModes); % opti might be modified in the iteration
         if isfield(opti,'target') & isnumeric(opti.target)
             opti.target = (opti.target*gew.np.h0/gew.np.fh0)^2; % we are computing w^2 
