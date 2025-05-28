@@ -34,14 +34,14 @@ methods
             loading = obj.halfSpaces(i);
             Ndof = size(obj.op.L0,1); % increases with every iteration
             [dofA, dofU] = PlateLeaky.getCouplingDOFs(loading,obj.geom,Ndof);
-            obj = incorporateLoading(obj, loading, dofA, dofU); 
+            obj = incorporateLoading(obj, loading, dofA, dofU, udof); 
         end
         if length(obj.halfSpaces) == 2 && obj.halfSpaces(1).mat == obj.halfSpaces(2).mat
             obj.op.Rtop = obj.op.Rtop - obj.op.Rbottom; % top - bottom (waves radiated away from the plate)
             obj.op = rmfield(obj.op,'Rbottom'); 
         end
     end
-    function obj = incorporateLoading(obj, loading, dofA, dofU)
+    function obj = incorporateLoading(obj, loading, dofA, dofU, udof)
         if loading.at == "top" % different signs at top and bottom
             sig = 1; 
         else
@@ -67,8 +67,35 @@ methods
             op.M(dofU,dofA) = sig*loading.mat.rho/obj.np.rho0; % normalized mass density
             op.("R"+loading.at) = R; 
         elseif isa(loading.mat,'MaterialIsotropic')
-            error('GEWTOOL:not implemented yet.') % TODO implement
+            Rkg = zeros(nDof);
+            Rke = zeros(nDof);
+            
+            % setup some unit vectors and some matrices according to the current polarization udof:
+            ex = [1;0;0]; ey = [0;1;0]; ez = [0;0;1]; 
+            Rkg_elem = [  ez,  0*ex, 0*ex]; Rkg_elem = Rkg_elem(udof,udof);
+            Rke_elem = [0*ex,  0*ex,  -ex]; Rke_elem = Rke_elem(udof,udof);
+            ex = logical(ex(udof)); ey = logical(ey(udof)); ez = logical(ez(udof));
+            Iu = eye(length(ex));
+
+            % continuity of displacements ik*u - ik*ua = 0: 
+            op.L1(dofA,dofU) = -Iu;     % plate displacements times ik
+            op.L2(dofA,dofA) = +Iu;      % in (i*k)^2
+            Rkg(dofA,dofA) = Rkg_elem;  % in (i*k*i*beta)
+            Rke(dofA,dofA) = Rke_elem;  % in (i*k*i*eta)
+            
+            % balance of tractions:
+            a = loading.mat.c/obj.np.c0;
+            azx = sig*squeeze(a(3,udof,udof,1));
+            azz = sig*squeeze(a(3,udof,udof,3));
+            al = 1/loading.mat.cl^2; 
+            at = 1/loading.mat.ct^2; 
+            op.L2(dofU,dofA) = op.L2(dofU,dofA) + [azx(:,ex) - azz(:,ez), azx(:,ey), azx(:,ez) + azz(:,ex)]; % in (i*k)^2
+            op.M(dofU,dofA) = op.M(dofU,dofA) + al*[-azz(:,ez), 0*Iu(:,ey), 0*Iu(:,ex)]; % in (i*kappal)^2
+            op.M(dofU,dofA) = op.M(dofU,dofA) + at*[0*Iu(:,ex), 0*Iu(:,ey), azz(:,ex)];  % in (i*kappat)^2
+            Rkg(dofU,dofA) = Rkg(dofU,dofA) + [azx(:,ez) + azz(:,ex), 0*Iu(:,ey), 0*Iu(:,ex)]; % in (i*k*i*gamma)
+            Rke(dofU,dofA) = Rke(dofU,dofA) + [0*Iu(:,ex), azz(:,ey), azz(:,ez) - azx(:,ex)]; % in (i*k*i*eta)
         end
+        op.Rkg = Rkg; op.Rke = Rke;
         obj.op = op; 
     end
     function op = opExpandTerm(obj, opName, extMat)
