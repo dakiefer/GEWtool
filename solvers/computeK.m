@@ -158,7 +158,16 @@ end
 
 function [A, B, AA] = linearizePolyEig(L2, L1, L0, M)
     % linearizePolyEig - companion linearization of polynomial eigenvalue problem.
-    % (ik^2*L2 + ik*L1 + L0 + w^2*M)*u = 0    ->    A*x = ik*B*x
+    % (ik^2*L2 + ik*L1 + L0 + w^2*M)*u = 0    ->    [A + w^2*AA]*x = ik*B*x
+    % where the new vectors are    x = [  u   ]
+    %                                  [ ik*u ]
+    % and the matrices are given by
+    % 
+    % A = [  0    I  ]      ,     AA = [  0   0 ]
+    %     [ -L0  -L1 ]                 [ -M   0 ]
+    % 
+    % B = [ I   0  ]   (is diagonal and regular -> important for eigs, etc.)
+    %     [ 0   L2 ]
     % 
     % See also polyeig.
     % 
