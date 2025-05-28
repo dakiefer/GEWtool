@@ -56,9 +56,10 @@ methods
         for i=1:length(opNameList)
             op.(opNameList{i})(nDof,nDof) = 0; 
         end
-        R = zeros(nDof);  % radiation matrix (models nonpolynomial terms)
         
         if isa(loading.mat,'MaterialFluid')
+            % allocate new matrix:
+            R = zeros(nDof);  % radiation matrix (models nonpolynomial terms)
             % continuity of normal displacements: ibeta*A - uz = 0
             op.L0(dofA,dofU) = -1;
             R(dofA,dofA)     = +1;
@@ -67,35 +68,46 @@ methods
             op.M(dofU,dofA) = sig*loading.mat.rho/obj.np.rho0; % normalized mass density
             op.("R"+loading.at) = R; 
         elseif isa(loading.mat,'MaterialIsotropic')
-            Rkg = zeros(nDof);
-            Rke = zeros(nDof);
+            warning("Test if coupling to the top and bottom surface are correct.")
+            % allocate new matrices:
+            Rkg = zeros(nDof); % in ik*igamma
+            Rke = zeros(nDof); % in ik*ieta
+            Rg  = zeros(nDof); % in igamma
+            Re  = zeros(nDof); % in ieta
+
+            % stiffness tensor and wave velocities
+            a = loading.mat.c/obj.np.c0; % stiffness in normalized units 
+            azx = sig*squeeze(a(3,:,:,1));
+            azz = sig*squeeze(a(3,:,:,3));
+            cl = loading.mat.cl/obj.np.fh0; % longitudinal velocity in normalized units 
+            ct = loading.mat.ct/obj.np.fh0; % transverse velocity in normalized units
+            al = 1/cl^2; % w^2 ~ kappal^2 ~ 1/cl^2
+            at = 1/ct^2; % w^2 ~ kappat^2 ~ 1/ct^2
             
-            % setup some unit vectors and some matrices according to the current polarization udof:
-            ex = [1;0;0]; ey = [0;1;0]; ez = [0;0;1]; 
-            Rkg_elem = [  ez,  0*ex, 0*ex]; Rkg_elem = Rkg_elem(udof,udof);
-            Rke_elem = [0*ex,  0*ex,  -ex]; Rke_elem = Rke_elem(udof,udof);
-            ex = logical(ex(udof)); ey = logical(ey(udof)); ez = logical(ez(udof));
-            Iu = eye(length(ex));
+            % coupling matrices (to be reduced to polarization "udof")
+            Iu  = eye(3);
+            Z   = zeros(3);
+            T2  = [azx(:,1) - azz(:,3), azx(:,2), azx(:,3) + azz(:,1)]; 
+            Tkg = [azx(:,3) + azz(:,1), Z(:,1), Z(:,1)];
+            Tke = [Z(:,1), azz(:,2), -azx(:,1) + azz(:,3)];
+            Tw  = [-al*azz(:,3), Z(:,1), at*azz(:,1)];
+            Uk  = Iu; 
+            Ug  = [0, 0, 0 ; 0, 0, 0; 1, 0, 0]; 
+            Ue  = [0, 0, -1; 0, 0, 0; 0, 0, 0]; 
 
             % continuity of displacements ik*u - ik*ua = 0: 
-            op.L1(dofA,dofU) = -Iu;     % plate displacements times ik
-            op.L2(dofA,dofA) = +Iu;      % in (i*k)^2
-            Rkg(dofA,dofA) = Rkg_elem;  % in (i*k*i*beta)
-            Rke(dofA,dofA) = Rke_elem;  % in (i*k*i*eta)
+            op.L0(dofA,dofU) = -Iu(udof,udof);  % plate displacements 
+            op.L1(dofA,dofA) = +Uk(udof,udof);  % in (i*k)
+            Rg(dofA,dofA) = Ug(udof,udof);      % in (i*gamma)
+            Re(dofA,dofA) = Ue(udof,udof);      % in (i*eta)
             
             % balance of tractions:
-            a = loading.mat.c/obj.np.c0;
-            azx = sig*squeeze(a(3,udof,udof,1));
-            azz = sig*squeeze(a(3,udof,udof,3));
-            al = 1/loading.mat.cl^2; 
-            at = 1/loading.mat.ct^2; 
-            op.L2(dofU,dofA) = op.L2(dofU,dofA) + [azx(:,ex) - azz(:,ez), azx(:,ey), azx(:,ez) + azz(:,ex)]; % in (i*k)^2
-            op.M(dofU,dofA) = op.M(dofU,dofA) + al*[-azz(:,ez), 0*Iu(:,ey), 0*Iu(:,ex)]; % in (i*kappal)^2
-            op.M(dofU,dofA) = op.M(dofU,dofA) + at*[0*Iu(:,ex), 0*Iu(:,ey), azz(:,ex)];  % in (i*kappat)^2
-            Rkg(dofU,dofA) = Rkg(dofU,dofA) + [azx(:,ez) + azz(:,ex), 0*Iu(:,ey), 0*Iu(:,ex)]; % in (i*k*i*gamma)
-            Rke(dofU,dofA) = Rke(dofU,dofA) + [0*Iu(:,ex), azz(:,ey), azz(:,ez) - azx(:,ex)]; % in (i*k*i*eta)
+            op.L2(dofU,dofA) = op.L2(dofU,dofA) + T2(udof,udof); % in (i*k)^2
+            op.M(dofU,dofA) = op.M(dofU,dofA) + Tw(udof,udof);   % in w^2
+            Rkg(dofU,dofA) = Rkg(dofU,dofA) + Tkg(udof,udof);    % in (i*k*i*gamma)
+            Rke(dofU,dofA) = Rke(dofU,dofA) + Tke(udof,udof);    % in (i*k*i*eta)
+            op.Rkg = Rkg; op.Rke = Rke; op.Rg = Rg; op.Re = Re; 
         end
-        op.Rkg = Rkg; op.Rke = Rke;
         obj.op = op; 
     end
     function op = opExpandTerm(obj, opName, extMat)
