@@ -75,38 +75,24 @@ methods
             Rg  = zeros(nDof); % in igamma
             Re  = zeros(nDof); % in ieta
 
-            % stiffness tensor and wave velocities
-            a = loading.mat.c/obj.np.c0; % stiffness in normalized units 
-            azx = sig*squeeze(a(3,:,:,1));
-            azz = sig*squeeze(a(3,:,:,3));
-            cl = loading.mat.cl/obj.np.fh0; % longitudinal velocity in normalized units 
-            ct = loading.mat.ct/obj.np.fh0; % transverse velocity in normalized units
-            al = 1/cl^2; % w^2 ~ kappal^2 ~ 1/cl^2
-            at = 1/ct^2; % w^2 ~ kappat^2 ~ 1/ct^2
-            
-            % coupling matrices (to be reduced to polarization "udof")
-            Iu  = eye(3);
-            Z   = zeros(3);
-            T2  = [azx(:,1) - azz(:,3), azx(:,2), azx(:,3) + azz(:,1)]; 
-            Tkg = [azx(:,3) + azz(:,1), Z(:,1), Z(:,1)];
-            Tke = [Z(:,1), azz(:,2), -azx(:,1) + azz(:,3)];
-            Tw  = [-al*azz(:,3), Z(:,1), at*azz(:,1)];
-            Uk  = Iu; 
-            Ug  = [0, 0, 0 ; 0, 0, 0; 1, 0, 0]; 
-            Ue  = [0, 0, -1; 0, 0, 0; 0, 0, 0]; 
+            coupl = PlateLeaky.couplingMatricesSolid(loading.mat,obj.np,sig);
+            Iu = eye(3);
 
             % continuity of displacements ik*u - ik*ua = 0: 
             op.L0(dofA,dofU) = -Iu(udof,udof);  % plate displacements 
-            op.L1(dofA,dofA) = +Uk(udof,udof);  % in (i*k)
-            Rg(dofA,dofA) = Ug(udof,udof);      % in (i*gamma)
-            Re(dofA,dofA) = Ue(udof,udof);      % in (i*eta)
+            op.L1(dofA,dofA) = +coupl.Uk(udof,udof);  % in (i*k)
+            Rg(dofA,dofA) = coupl.Ug(udof,udof);      % in (i*gamma)
+            Re(dofA,dofA) = coupl.Ue(udof,udof);      % in (i*eta)
             
             % balance of tractions:
-            op.L2(dofU,dofA) = op.L2(dofU,dofA) + T2(udof,udof); % in (i*k)^2
-            op.M(dofU,dofA) = op.M(dofU,dofA) + Tw(udof,udof);   % in w^2
-            Rkg(dofU,dofA) = Rkg(dofU,dofA) + Tkg(udof,udof);    % in (i*k*i*gamma)
-            Rke(dofU,dofA) = Rke(dofU,dofA) + Tke(udof,udof);    % in (i*k*i*eta)
-            op.Rkg = Rkg; op.Rke = Rke; op.Rg = Rg; op.Re = Re; 
+            op.L2(dofU,dofA) = op.L2(dofU,dofA) + coupl.Tk2(udof,udof); % in (i*k)^2
+            op.M(dofU,dofA) = op.M(dofU,dofA) + coupl.Tw2(udof,udof);   % in w^2
+            Rkg(dofU,dofA) = Rkg(dofU,dofA) + coupl.Tkg(udof,udof);    % in (i*k*i*gamma)
+            Rke(dofU,dofA) = Rke(dofU,dofA) + coupl.Tke(udof,udof);    % in (i*k*i*eta)
+            op.("Rkg"+loading.at) = Rkg;
+            op.("Rke"+loading.at) = Rke;
+            op.("Rg"+loading.at) = Rg;
+            op.("Re"+loading.at) = Re;
         end
         obj.op = op; 
     end
@@ -198,6 +184,28 @@ methods (Static)
                 halfSpaces(i).at = "top";
             end
         end
+    end
+    function op = couplingMatricesSolid(matA,np,sig)
+        % stiffness tensor and wave velocities
+        a = matA.c/np.c0; % stiffness in normalized units 
+        azx = sig*squeeze(a(3,:,:,1));
+        azz = sig*squeeze(a(3,:,:,3));
+        cl = matA.cl/np.fh0; % longitudinal velocity in normalized units 
+        ct = matA.ct/np.fh0; % transverse velocity in normalized units
+        al = 1/cl^2; % w^2 ~ kappal^2 ~ 1/cl^2
+        at = 1/ct^2; % w^2 ~ kappat^2 ~ 1/ct^2
+        
+        % coupling matrices (to be reduced to polarization "udof")
+        Iu  = eye(3);
+        Z   = zeros(3);
+        op.Tk2  = [azx(:,1) - azz(:,3), azx(:,2), azx(:,3) + azz(:,1)]; 
+        op.Tkg = [azx(:,3) + azz(:,1), Z(:,1), Z(:,1)];
+        op.Tke = [Z(:,1), azz(:,2), -azx(:,1) + azz(:,3)];
+        op.Tw2  = [-al*azz(:,3), Z(:,1), at*azz(:,1)];
+        warning("in line above: replace by rho.")
+        op.Uk  = Iu; 
+        op.Ug  = [0, 0, 0 ; 0, 0, 0; 1, 0, 0]; 
+        op.Ue  = [0, 0, -1; 0, 0, 0; 0, 0, 0]; 
     end
 end
 
