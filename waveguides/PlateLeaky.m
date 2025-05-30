@@ -32,16 +32,162 @@ methods
         obj = assembleLayers@Waveguide(obj, udof, n);
         for i = 1:length(obj.halfSpaces)
             loading = obj.halfSpaces(i);
-            Ndof = size(obj.op.L0,1); % increases with every iteration
-            [dofA, dofU] = PlateLeaky.getCouplingDOFs(loading,obj.geom,Ndof);
-            obj = incorporateLoading(obj, loading, dofA, dofU, udof); 
+            obj = incorporateLoading(obj, loading, udof);
         end
-        if length(obj.halfSpaces) == 2 && obj.halfSpaces(1).mat == obj.halfSpaces(2).mat
-            obj.op.Rtop = obj.op.Rtop - obj.op.Rbottom; % top - bottom (waves radiated away from the plate)
-            obj.op = rmfield(obj.op,'Rbottom'); 
+        % if length(obj.halfSpaces) == 2 && obj.halfSpaces(1).mat == obj.halfSpaces(2).mat
+        %     obj.op.Rtop = obj.op.Rtop - obj.op.Rbottom; % top - bottom (waves radiated away from the plate)
+        %     obj.op = rmfield(obj.op,'Rbottom'); 
+        % end
+    end
+    function obj = incorporateLoading(obj, loading, udof)
+        if loading.at == "top" % different signs at top and bottom
+            sig = 1; 
+        else
+            sig = -1; 
+        end
+        n = size(obj.op.L0,2); % changes on every call!
+        [~, dofBC] = PlateLeaky.getCouplingDOFs(loading,obj.geom,n);
+        if isa(loading.mat,'MaterialFluid')
+            coupl = PlateLeaky.couplingMatricesFluid(loading.mat,obj.np,sig); % TODO move sig into this function?
+            obj = incorporateFluidLoading(obj, coupl, dofBC);
+        elseif isa(loading.mat,'MaterialIsotropic')
+            coupl = PlateLeaky.couplingMatricesSolid(loading.mat,obj.np,sig); % TODO move sig into this function
+            obj = incorporateSolidLoading(obj, coupl, dofBC, udof);
         end
     end
-    function obj = incorporateLoading(obj, loading, dofA, dofU, udof)
+    function obj = incorporateFluidLoading(obj, coupl, dofBC)
+        op = obj.op;
+        n = size(op.L0,2); % changes on every call!
+        p = 2; % number of state equations 
+        dofU   = 0*n + dofBC; 
+        dofgU  = 1*n + dofBC; 
+        dofA   = 2*n + 1; 
+        dofgA  = 2*n + 2; 
+        nDof   = 2*n + 2; 
+        al = coupl.al;
+
+        % expand matrices for [psi, igamma*psi]
+        Iexpand = eye(p); % we need psi, gamma*psi
+        LL0 = kron(Iexpand,op.L0);
+        LL1 = kron(Iexpand,op.L1);
+        LL2 = kron(Iexpand,op.L2);
+         MM = kron(Iexpand,op.M);
+        LL2(nDof,nDof) = 0; LL1(nDof,nDof) = 0; LL0(nDof,nDof) = 0; MM(nDof,nDof) = 0;
+
+        % couple to exterior bulk modes:
+        % continuity of normal displacements: -uz|Boundary + igamma*A = 0
+        LL0(dofA,dofU) = -1; 
+        LL0(dofA,dofgA) = 1; 
+        % continuity of igamma x normal displacements: -igamma*uz|Boundary + i^2(kappaf^2 - k^2)*A = 0
+        LL0(dofgA,dofgU) = -1; 
+         MM(dofgA,dofA)  = -al;
+        LL2(dofgA,dofA)  = -1; 
+        % balance of tractions: add the boundary term [vz*taz] = w^2*[vz*Tw2*A] to the FE matrices. 
+        % the traction induced by the fluid is Tw2 = -rhof
+        MM(dofU,dofA)   = coupl.Tw2; 
+        MM(dofgU,dofgA) = coupl.Tw2;
+
+        % assign return value
+        op.L2 = LL2; op.L1 = LL1; op.L0 = LL0; op.M = MM; 
+        obj.op = op; 
+    end
+
+    function obj = incorporateSolidLoading(obj, coupl, dofBC, udof)
+        op = obj.op;
+        n = size(op.L0,2); % changes on every call!
+        p = 4; % number of state equations 
+        dofU   = 0*n + dofBC; 
+        dofgU  = 1*n + dofBC; 
+        dofeU  = 2*n + dofBC; 
+        dofgeU = 3*n + dofBC; 
+        dofA   = 4*n + 0*2 + (1:2);
+        dofgA  = 4*n + 1*2 + (1:2);
+        dofeA  = 4*n + 2*2 + (1:2);
+        dofgeA = 4*n + 3*2 + (1:2);
+        dofka  = 4*n + 4*2 + (1);   
+        dofkb  = 4*n + 4*2 + (2); 
+        dofkgb = 4*n + 4*2 + (3); 
+        dofkea = 4*n + 4*2 + (4); 
+        dofk   = [dofka, dofkb, dofkgb, dofkea];
+        dofNotK = [dofA(1), dofA(2), dofgA(2), dofeA(1)];
+        nDof = max(dofk);
+        warning("above needs to be adapted for sh-wave radiation.")
+        Iu = eye(3); 
+        al = coupl.al; at = coupl.at;
+
+        % expand matrices for psi = [u, A, B]: 
+        Iexpand = eye(p); % we need psi, gamma*psi, eta*psi, gamma*eta*psi
+        % expand matrices for [psi, gamma*psi, eta*psi, gamma*eta*psi]
+        LL0 = kron(Iexpand,op.L0);
+        LL1 = kron(Iexpand,op.L1);
+        LL2 = kron(Iexpand,op.L2);
+         MM = kron(Iexpand,op.M);
+        LL2(nDof,nDof) = 0; LL1(nDof,nDof) = 0; LL0(nDof,nDof) = 0; MM(nDof,nDof) = 0;
+        
+        % couple to exterior bulk modes
+        % displacement continuity: 
+        LL0(dofA,dofU) = -Iu(udof,udof); 
+        LL1(dofA,dofA) = coupl.Uk(udof,udof); 
+        LL0(dofA,dofgA) = coupl.Ug(udof,udof); 
+        LL0(dofA,dofeA) = coupl.Ue(udof,udof); 
+        
+        LL0(dofgA,dofgU) = -Iu(udof,udof); 
+        LL1(dofgA,dofgA) = coupl.Uk(udof,udof);
+         MM(dofgA,dofA) = -al*coupl.Ug(udof,udof);
+        LL2(dofgA,dofA) = -coupl.Ug(udof,udof); 
+        LL0(dofgA,dofgeA) = coupl.Ue(udof,udof); 
+        
+        LL0(dofeA,dofeU) = -Iu(udof,udof); 
+        LL1(dofeA,dofeA) = coupl.Uk(udof,udof);
+        LL0(dofeA,dofgeA) = coupl.Ug(udof,udof);
+         MM(dofeA,dofA) = -at*coupl.Ue(udof,udof);
+        LL2(dofeA,dofA) = -coupl.Ue(udof,udof); 
+        
+        LL0(dofgeA,dofgeU) = -Iu(udof,udof); 
+        LL1(dofgeA,dofgeA) = coupl.Uk(udof,udof);
+         MM(dofgeA,dofeA) = -al*coupl.Ug(udof,udof);
+        LL2(dofgeA,dofeA) = -coupl.Ug(udof,udof); 
+         MM(dofgeA,dofgA) = -at*coupl.Ue(udof,udof); 
+        LL2(dofgeA,dofgA) = -coupl.Ue(udof,udof);
+        
+        % tractions on plate: 
+        LL2(dofU,dofA)  = coupl.Tk2(udof,udof); 
+        LL1(dofU,dofgA) = coupl.Tkg(udof,udof);
+        LL1(dofU,dofeA) = coupl.Tke(udof,udof); 
+         MM(dofU,dofA)  = coupl.Tw2(udof,udof); 
+        
+        LL2(dofgU,dofgA)  = coupl.Tk2(udof,udof); 
+         MM(dofgU,dofka)  = -al*coupl.Tkg(udof,1); % the only nonzero column
+        LL2(dofgU,dofka)  = -coupl.Tkg(udof,1);    % the only nonzero column
+        warning("Adapt for sh-radiation")
+        LL1(dofgU,dofgeA) = coupl.Tke(udof,udof); 
+         MM(dofgU,dofgA)  = coupl.Tw2(udof,udof); 
+        
+        LL2(dofeU,dofeA)  = coupl.Tk2(udof,udof); 
+        LL1(dofeU,dofgeA) = coupl.Tkg(udof,udof); 
+         MM(dofeU,dofkb)  = -at*coupl.Tke(udof,3); % the only nonzero column
+        LL2(dofeU,dofkb)  = -coupl.Tke(udof,3);    % the only nonzero column
+        warning("Adapt for sh-radiation")
+         MM(dofeU,dofeA)  = coupl.Tw2(udof,udof); 
+        
+        LL2(dofgeU,dofgeA)  = coupl.Tk2(udof,udof); 
+         MM(dofgeU,dofkea) = -al*coupl.Tkg(udof,1); % the only nonzero column
+        LL2(dofgeU,dofkea) = -coupl.Tkg(udof,1);    % the only nonzero column
+        warning("Adapt for sh-radiation")
+         MM(dofgeU,dofkgb)  = -at*coupl.Tke(udof,3); % the only nonzero column
+        LL2(dofgeU,dofkgb)  = -coupl.Tke(udof,3);    % the only nonzero column
+        warning("Adapt for sh-radiation")
+         MM(dofgeU,dofgeA)  = coupl.Tw2(udof,udof); 
+        
+        % state-space linearization of the third-order term: 
+        LL1(dofk,dofNotK) = -eye(length(dofk));   
+        LL0(dofk,dofk)    =  eye(length(dofk)); 
+
+        % assign return value
+        op.L2 = LL2; op.L1 = LL1; op.L0 = LL0; op.M = MM; 
+        obj.op = op; 
+    end
+    function obj = incorporateLoading_old(obj, loading, dofA, dofU, udof)
         if loading.at == "top" % different signs at top and bottom
             sig = 1; 
         else
@@ -206,6 +352,19 @@ methods (Static)
         op.Uk  = Iu; 
         op.Ug  = [0, 0, 0 ; 0, 0, 0; 1, 0, 0]; 
         op.Ue  = [0, 0, -1; 0, 0, 0; 0, 0, 0]; 
+        op.al = al; 
+        op.at = at;
+    end
+    function op = couplingMatricesFluid(matA,np,sig)
+        % initialize quantities
+        rhof = matA.rho/np.rho0;  % density in normalized units
+        cl = matA.cl/np.fh0; % longitudinal velocity in normalized units 
+        al = 1/cl^2; % w^2 ~ kappal^2 ~ 1/cl^2
+        
+        % coupling matrices (to be reduced to polarization "udof")
+        op.Tw2 = -sig*rhof;
+        op.Ug  = 1;
+        op.al = al;
     end
 end
 
