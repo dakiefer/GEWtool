@@ -206,6 +206,19 @@ methods (Static)
         op.Uk  = Iu; 
         op.Ug  = [0, 0, 0 ; 0, 0, 0; 1, 0, 0]; 
         op.Ue  = [0, 0, -1; 0, 0, 0; 0, 0, 0]; 
+        op.al = al; 
+        op.at = at;
+    end
+    function op = couplingMatricesFluid(matA,np,sig)
+        % initialize quantities
+        rhof = matA.rho/np.rho0;  % density in normalized units
+        cl = matA.cl/np.fh0; % longitudinal velocity in normalized units 
+        al = 1/cl^2; % w^2 ~ kappal^2 ~ 1/cl^2
+        
+        % coupling matrices (to be reduced to polarization "udof")
+        op.Tw2 = -sig*rhof;
+        op.Ug  = 1;
+        op.al = al;
     end
 end
 
