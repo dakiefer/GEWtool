@@ -49,8 +49,9 @@ methods
         % state space: 
         op = obj.opNonlin; 
         for i = 1:length(obj.halfSpaces)
-            op = getPolynomialFormFluid(obj, op, obj.halfSpaces(i));
+            op = getPolynomialForm(obj, op, obj.halfSpaces(i));
         end
+        op = PlateLeaky.reduceToQuadratic(op); 
         obj.op = op;
     end
     function obj = incorporateLoading(obj, loading, dofA, dofU, udof)
@@ -125,7 +126,85 @@ methods
         opN.("Re"+loading.at) = Re;
         obj.opNonlin = opN;
     end
-    function op = getPolynomialFormFluid(obj, op, loading)
+    function op = getPolynomialForm(obj, op, loading)
+        side = loading.at; 
+        extMat = loading.mat; 
+
+        % solid media needs also L3 and M1: 
+        if ~isfield(op,'L3') && ~hasSolidLoading(obj) 
+            op.L3 = []; op.M1 = [];                % initialize if not yet done 
+        elseif ~isfield(op,'L3') && hasSolidLoading(obj) 
+            op.L3 = zeros(size(op.L0)); op.M1 = zeros(size(op.L0));  % initialize if not yet done 
+        end
+
+        L3 = op.L3; L2 = op.L2; L1 = op.L1; L0 = op.L0; M = op.M; M1 = op.M1;
+        op = rmfield(op, {'L3','L2','L1','L0','M','M1'}); 
+        Z = zeros(size(L0));
+
+        if isa(loading.mat,"MaterialFluid")
+            opName = "R"+side; 
+            R = op.(opName);
+            op = rmfield(op, char(opName)); 
+            cf = extMat.cl/obj.np.fh0; % normalized wave speed
+            Iexp = eye(2); % used to expand the remaining matrices later on 
+
+            LL3 = kron(Iexp,L3);
+            LL2 = [L2  ,   -R   ;
+                   Z   ,   L2    ];
+            LL1 = kron(Iexp, L1);
+            LL0 = [L0  ,   Z    ; 
+                   R   ,   L0   ];
+            MM  = [M   ,   -1/cf^2*R  ; 
+                   Z   ,      M       ];
+            MM1 = kron(Iexp,M1);
+        elseif isa(loading.mat,'MaterialIsotropic')
+            opNames = {char("Rkg"+side), char("Rke"+side), char("Rg"+side), char("Re"+side)};
+            Rkg = op.(opNames{1});
+            Rke = op.(opNames{2});
+            Rg  = op.(opNames{3});
+            Re  = op.(opNames{4});
+            op = rmfield(op, opNames); 
+            cl = extMat.cl/obj.np.fh0; ct = extMat.ct/obj.np.fh0; % normalized wave speed
+            al = 1/cl^2; at = 1/ct^2;
+            Iexp = eye(4); % used to expand the remaining matrices later on 
+
+            LL3 = [ L3, -Rkg,  -Rke,  Z  ; 
+                    Z,   L3,     Z,  -Rke; 
+                    Z,    Z,    L3,  -Rkg; 
+                    Z,    Z,     Z,   L3 ];
+            LL2 = [ L2, -Rg,   -Re,   Z  ; 
+                    Z,   L2,    Z,    -Re; 
+                    Z,    Z,   L2,    -Rg; 
+                    Z,    Z,    Z,    L2]; 
+            LL1 = [ L1,   Z,    Z,    Z  ; 
+                    Rkg,  L1,   Z,    Z  ; 
+                    Rke,  Z,    L1,   Z  ; 
+                    Z,    Rke,  Rkg,  L1];
+            LL0 = [ L0,   Z,    Z,    Z  ; 
+                    Rg,   L0,   Z,    Z  ; 
+                    Re,   Z,    L0,   Z  ; 
+                    Z,    Re,   Rg,   L0];
+            MM  = [  M,   -al*Rg, -at*Re,   Z  ; 
+                     Z,    M,      Z,   -at*Re ;
+                     Z,    Z,      M,   -al*Rg ; 
+                     Z,    Z,      Z,     M   ];
+            MM1 = [ M1,   -al*Rkg,   -at*Rke,   Z     ;
+                    Z,       M1,        Z,    -at*Rke ;
+                    Z,       Z,         M1,   -al*Rkg ; 
+                    Z,       Z,         Z,      M1    ];
+        else
+            error('GEWTOOL:getPolynomialForm','External halfspaces need to be fluids or isotropic solids.');
+        end
+
+        % expand remaining R-matrices: 
+        opList = fieldnames(op);
+        for i=1:length(opList)
+            Ri = op.(opList{i});
+            op.(opList{i}) = kron(Iexp, Ri); % expand
+        end
+        op.L3 = LL3; op.L2 = LL2; op.L1 = LL1; op.L0 = LL0; op.M = MM; op.M1 = MM1;
+    end
+    function op = getPolynomialFormSolid(obj, op, loading)
         side = loading.at; 
         opName = "R"+side; 
         extMat = loading.mat; 
@@ -177,6 +256,16 @@ methods
         bothSides = ~isempty(obj.exteriorMat{1}) && ~isempty(obj.exteriorMat{2});
         bothSame = bothSides && obj.exteriorMat{1} == obj.exteriorMat{2}; % short circuit to avoid error for empty entries
         decoupl = bothSame && decouplesSA@Plate(obj,verb);
+    end
+    function hasSolid = hasSolidLoading(obj)
+        hasSolid = false; 
+        for i = 1:length(obj.halfSpaces)
+            mat = obj.halfSpaces(i).mat; 
+            if isa(mat,'MaterialIsotropic')
+                hasSolid = true; 
+                return; 
+            end
+        end
     end
 end
 
@@ -262,6 +351,49 @@ methods (Static)
         op.Tw2 = -sig*rhof;
         op.Ug  = 1;
         op.al = al;
+    end
+    function op = reduceToQuadratic(op)
+        % prepare:
+        if isfield(op,'L3') && isempty(op.L3)
+            op = rmfield(op,'L3');
+        end
+        if isfield(op,'M1') && isempty(op.M1)
+            op = rmfield(op,'M1');
+        end
+        if ~isfield(op,'L3') && ~isfield(op,'M1')
+            return; 
+        end
+
+        % extract matrices and find DOFs to add: 
+        L3 = op.L3; L2 = op.L2; L1 = op.L1; L0 = op.L0; M = op.M; M1 = op.M1;
+        [oldRows,oldCols] = find(L3); 
+        newDof = size(L3,2) + (1:length(unique(oldCols))).';  % new variables to add 
+        newCols = mapOldToNew(oldCols, newDof);
+
+        % extend all matrices:
+        L3(newDof,newDof) = 0; L2(newDof,newDof) = 0; L1(newDof,newDof) = 0; L0(newDof,newDof) = 0; M(newDof,newDof) = 0; M1(newDof,newDof) = 0; 
+        
+        % state-space linearization:
+        ind = @(r,c) sub2ind(size(L3),r,c); % find indices after expanding matrices!
+        L2(ind(oldRows,newCols)) = L3(ind(oldRows,oldCols)); % linear indexing! -> not a block
+         M(ind(oldRows,newCols)) = M1(ind(oldRows,oldCols)); % linear indexing! -> not a block
+        L1(ind(newCols,oldCols)) = 1;  % linear indexing! -> not a block
+        L0(ind(newCols,newCols)) = -1; % linear indexing! -> not a block
+        % L2(ind(newCols,oldCols)) = 1;  % alternatively: reduces rank deficiency but does not regularize LL2
+        % L1(ind(newCols,newCols)) = -1; % alternatively: reduces rank deficiency but does not regularize LL2
+        
+        % return "op":
+        op = rmfield(op,{'L3','M1'});
+        op.L2 = L2; op.L1 = L1; op.L0 = L0; op.M = M; 
+
+        % local helper function:
+        function newCols = mapOldToNew(oldCols, newDof)
+            uc = unique(oldCols); 
+            newCols = nan(size(oldCols)); 
+            for i = 1:length(uc)
+                newCols(oldCols == uc(i)) = newDof(i);
+            end
+        end
     end
 end
 
