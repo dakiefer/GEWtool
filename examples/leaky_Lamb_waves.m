@@ -11,12 +11,18 @@ matA = MaterialIsotropic('soft', 2.6785e9, 0.6655e9, 2.2e3); % teflon
 % fb = fa; fb.cl = 1200; fb.rho = 800; 
 h = 1e-3;                         % thickness in m
 N = 14;                           % number of nodes (dictates accuracy)
-w = 2*pi*linspace(1e-3, 7, 200).'*1e6; % frequencies where to compute wavenumbers k
-plate = PlateLeaky({ mat matA}, [ h inf], N);         % create waveguide description 
+% w = 2*pi*(0:25e3:7e6).'; % as in the paper
+w = 2*pi*linspace(1e-3, 7, 100).'*1e6; % frequencies where to compute wavenumbers k
+plate = PlateLeaky({ matA mat matA}, [ inf h inf], N);         % create waveguide description 
 % plate.np.c0 = 1; plate.np.rho0 = 1; plate.np.fh0 = 1; 
-gew = plate.fullyCoupled; tic;         % choose S+A Lamb waves (assembles matrices)
-opts.subspace = false; 
-dat = computeK(gew, w, inf, opts); toc;     % solve 
+gew = plate.Lamb;         % choose S+A Lamb waves (assembles matrices)
+opts.subspace = true; 
+opts.show = true;
+opts.standardEVP = false; % NOT WORKING
+tic;
+dat = computeK(gew, w, 260, opts); 
+time = toc;     % solve 
+fprintf("time per frequency is %gs\n",time/length(w));
 
 
 %% compare to previous
