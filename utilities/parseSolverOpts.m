@@ -24,14 +24,14 @@ else
     end
 end
 if ~isfield(opts, 'sparse'), opts.sparse = opts.subspace; end % default: sparse when subspace methods are used
-if (isempty(nModes) || isinf(nModes)) && opts.subspace % default for subspace
+if isempty(nModes) && opts.subspace % default for subspace
     if size(op.M,1) <= 20
         nModes = size(op.M,1);
     else 
         nModes = 20; 
         warning('GEWTOOL:missingNModes', 'You should provide the number of modes you need, e.g., computeW(gew, k, nModes). I will be computing %d modes per default.', nModes);
     end
-elseif (isempty(nModes) || isinf(nModes)) && ~opts.subspace % default for QZ
+elseif isempty(nModes) && ~opts.subspace % default for QZ
     nModes = size(op.M,1); 
 end
 if isequal(opts.solver,@computeW) && nModes > size(op.M,1) % if the user explicitly provided nModes bigger than the matrix
