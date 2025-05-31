@@ -15,6 +15,7 @@ classdef PlateLeaky < Plate
 
 properties
     halfSpaces = [] % TODO field "loading" as a array of struct with load.mat and load.at = "top"/"bottom"
+    opNonlin = [] % matrices of the nonlinear eigenvalue problem
     % TODO expand "loading" struct array in terms of wave velocities (2 for solid loading) 
 end
 
@@ -30,74 +31,104 @@ methods
     end
     function obj = assembleLayers(obj, udof, n)
         obj = assembleLayers@Waveguide(obj, udof, n);
+        obj.opNonlin = obj.op;
+        % setup radiation matrices of the nonlinear eigenvalue problem:
         for i = 1:length(obj.halfSpaces)
             loading = obj.halfSpaces(i);
-            Ndof = size(obj.op.L0,1); % increases with every iteration
-            [dofA, dofU] = PlateLeaky.getCouplingDOFs(loading,obj.geom,Ndof);
+            Ndof = size(obj.opNonlin.L0,1); % increases with every iteration
+            [dofA, dofU] = PlateLeaky.getCouplingDOFs(loading, obj.geom, Ndof);
             obj = incorporateLoading(obj, loading, dofA, dofU, udof); 
+        end 
+        % simplify to leaky-only when the halfspaces on both sides are equal: 
+        % if length(obj.halfSpaces) == 2 && obj.halfSpaces(1).mat == obj.halfSpaces(2).mat
+        %     obj.opNonlin.Rtop = obj.opNonlin.Rtop - obj.opNonlin.Rbottom; % top - bottom (waves radiated away from the plate)
+        %     obj.opNonlin = rmfield(obj.opNonlin,'Rbottom'); 
+        %     obj.halfSpaces = obj.halfSpaces(2); 
+        % end
+        % transform into a polynomial eigenvalue problem in a higher-dimensional
+        % state space: 
+        op = obj.opNonlin; 
+        for i = 1:length(obj.halfSpaces)
+            op = getPolynomialFormFluid(obj, op, obj.halfSpaces(i));
         end
-        if length(obj.halfSpaces) == 2 && obj.halfSpaces(1).mat == obj.halfSpaces(2).mat
-            obj.op.Rtop = obj.op.Rtop - obj.op.Rbottom; % top - bottom (waves radiated away from the plate)
-            obj.op = rmfield(obj.op,'Rbottom'); 
-        end
+        obj.op = op;
     end
     function obj = incorporateLoading(obj, loading, dofA, dofU, udof)
-        if loading.at == "top" % different signs at top and bottom
-            sig = 1; 
-        else
-            sig = -1; 
-        end
         % sides = {'a', 'b'}; % used for labeling the sides
-        op = obj.op;
         nDof = max(dofA); % new total number of DOFs
 
         % expand matrices: 
-        opNameList = fieldnames(op);
+        opNameList = fieldnames(obj.opNonlin);
         for i=1:length(opNameList)
-            op.(opNameList{i})(nDof,nDof) = 0; 
+            obj.opNonlin.(opNameList{i})(nDof,nDof) = 0; 
         end
         
+        % build radiation matrices:
         if isa(loading.mat,'MaterialFluid')
-            % allocate new matrix:
-            R = zeros(nDof);  % radiation matrix (models nonpolynomial terms)
-            % continuity of normal displacements: ibeta*A - uz = 0
-            op.L0(dofA,dofU) = -1;
-            R(dofA,dofA)     = +1;
-            % balance of tractions: add the boundary term [v*tA] to the FE matrices. 
-            % the traction induced by the fluid is tA = -w^2*rhoA*ez*A
-            op.M(dofU,dofA) = sig*loading.mat.rho/obj.np.rho0; % normalized mass density
-            op.("R"+loading.at) = R; 
+            obj = incorporateFluidLoading(obj, loading, dofA, dofU);
         elseif isa(loading.mat,'MaterialIsotropic')
-            warning("Test if coupling to the top and bottom surface are correct.")
-            % allocate new matrices:
-            Rkg = zeros(nDof); % in ik*igamma
-            Rke = zeros(nDof); % in ik*ieta
-            Rg  = zeros(nDof); % in igamma
-            Re  = zeros(nDof); % in ieta
-
-            coupl = PlateLeaky.couplingMatricesSolid(loading.mat,obj.np,sig);
-            Iu = eye(3);
-
-            % continuity of displacements ik*u - ik*ua = 0: 
-            op.L0(dofA,dofU) = -Iu(udof,udof);  % plate displacements 
-            op.L1(dofA,dofA) = +coupl.Uk(udof,udof);  % in (i*k)
-            Rg(dofA,dofA) = coupl.Ug(udof,udof);      % in (i*gamma)
-            Re(dofA,dofA) = coupl.Ue(udof,udof);      % in (i*eta)
-            
-            % balance of tractions:
-            op.L2(dofU,dofA) = op.L2(dofU,dofA) + coupl.Tk2(udof,udof); % in (i*k)^2
-            op.M(dofU,dofA) = op.M(dofU,dofA) + coupl.Tw2(udof,udof);   % in w^2
-            Rkg(dofU,dofA) = Rkg(dofU,dofA) + coupl.Tkg(udof,udof);    % in (i*k*i*gamma)
-            Rke(dofU,dofA) = Rke(dofU,dofA) + coupl.Tke(udof,udof);    % in (i*k*i*eta)
-            op.("Rkg"+loading.at) = Rkg;
-            op.("Rke"+loading.at) = Rke;
-            op.("Rg"+loading.at) = Rg;
-            op.("Re"+loading.at) = Re;
+            obj = incorporateSolidLoading(obj, loading, dofA, dofU, udof); 
         end
-        obj.op = op; 
     end
-    function op = opExpandTerm(obj, opName, extMat)
-        op = obj.op;
+    function obj = incorporateFluidLoading(obj, loading, dofA, dofU)
+        % given degrees of freedom (dofA: additional for halfspace, dofU: displacements at boundary)
+        opN = obj.opNonlin;
+        nDof = size(opN.M,1);
+        % allocate new matrix:
+        R = zeros(nDof);  % radiation matrix (models nonpolynomial terms)
+        % get coupling matrices: 
+        coupl = PlateLeaky.couplingMatricesFluid(loading,obj.np);
+
+        % continuity of normal displacements: ibeta*A - uz = 0
+        opN.L0(dofA,dofU) = -1;
+        R(dofA,dofA)      = coupl.Ug; % = 1
+        
+        % balance of tractions: add the boundary term [v*tA] to the FE matrices. 
+        % the traction induced by the fluid is tA = -w^2*rhoA*ez*A
+        opN.M(dofU,dofA) = coupl.Tw2;  % normalized mass density
+        warning('verify sign of Tw2')
+        
+        % assign final radiation matrix
+        opN.("R"+loading.at) = R;
+        obj.opNonlin = opN;
+    end
+    function obj = incorporateSolidLoading(obj, loading, dofA, dofU, udof)
+        % given degrees of freedom (dofA: additional for halfspace, dofU: displacements at boundary)
+        warning("Test if coupling to the top and bottom surface are correct.")
+        opN = obj.opNonlin;
+        nDof = size(opN.M,1);
+        % allocate new matrices:
+        Rkg = zeros(nDof); % in ik*igamma
+        Rke = zeros(nDof); % in ik*ieta
+        Rg  = zeros(nDof); % in igamma
+        Re  = zeros(nDof); % in ieta
+        % get coupling matrices: 
+        coupl = PlateLeaky.couplingMatricesSolid(loading,obj.np);
+        Iu = eye(3);
+
+        % continuity of displacements ik*u - ik*ua = 0: 
+        opN.L0(dofA,dofU) = -Iu(udof,udof);  % plate displacements 
+        opN.L1(dofA,dofA) = +coupl.Uk(udof,udof);  % in (i*k)
+        Rg(dofA,dofA) = coupl.Ug(udof,udof);      % in (i*gamma)
+        Re(dofA,dofA) = coupl.Ue(udof,udof);      % in (i*eta)
+        
+        % balance of tractions:
+        opN.L2(dofU,dofA) = opN.L2(dofU,dofA) + coupl.Tk2(udof,udof); % in (i*k)^2
+        opN.M(dofU,dofA)  = opN.M(dofU,dofA)  + coupl.Tw2(udof,udof); % in w^2
+        Rkg(dofU,dofA) = Rkg(dofU,dofA) + coupl.Tkg(udof,udof);    % in (i*k*i*gamma)
+        Rke(dofU,dofA) = Rke(dofU,dofA) + coupl.Tke(udof,udof);    % in (i*k*i*eta)
+
+        % assign final radiation matrix
+        opN.("Rkg"+loading.at) = Rkg;
+        opN.("Rke"+loading.at) = Rke;
+        opN.("Rg"+loading.at) = Rg;
+        opN.("Re"+loading.at) = Re;
+        obj.opNonlin = opN;
+    end
+    function op = getPolynomialFormFluid(obj, op, loading)
+        side = loading.at; 
+        opName = "R"+side; 
+        extMat = loading.mat; 
         L2 = op.L2; L1 = op.L1; L0 = op.L0; M = op.M; R = op.(opName);
         op = rmfield(op, {'L2','L1','L0','M',char(opName)}); 
         Z = zeros(size(L0));
@@ -185,7 +216,13 @@ methods (Static)
             end
         end
     end
-    function op = couplingMatricesSolid(matA,np,sig)
+    function op = couplingMatricesSolid(loading,np)
+        matA = loading.mat; % material of loading half-space
+        if loading.at == "top" % different signs at top and bottom
+            sig = 1; % sign
+        else
+            sig = -1; 
+        end
         % stiffness tensor and wave velocities
         a = matA.c/np.c0; % stiffness in normalized units 
         azx = sig*squeeze(a(3,:,:,1));
@@ -209,7 +246,13 @@ methods (Static)
         op.al = al; 
         op.at = at;
     end
-    function op = couplingMatricesFluid(matA,np,sig)
+    function op = couplingMatricesFluid(loading,np)
+        matA = loading.mat; % material of loading half-space
+        if loading.at == "top" % different signs at top and bottom
+            sig = 1; % sign
+        else
+            sig = -1; 
+        end
         % initialize quantities
         rhof = matA.rho/np.rho0;  % density in normalized units
         cl = matA.cl/np.fh0; % longitudinal velocity in normalized units 
