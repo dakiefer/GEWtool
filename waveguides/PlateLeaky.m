@@ -87,7 +87,6 @@ methods
         % balance of tractions: add the boundary term [v*tA] to the FE matrices. 
         % the traction induced by the fluid is tA = -w^2*rhoA*ez*A
         opN.M(dofU,dofA) = coupl.Tw2;  % normalized mass density
-        warning('verify sign of Tw2')
         
         % assign final radiation matrix
         opN.("R"+loading.at) = R;
@@ -95,7 +94,6 @@ methods
     end
     function obj = incorporateSolidLoading(obj, loading, dofA, dofU, udof)
         % given degrees of freedom (dofA: additional for halfspace, dofU: displacements at boundary)
-        warning("Test if coupling to the top and bottom surface are correct.")
         opN = obj.opNonlin;
         nDof = size(opN.M,1);
         % allocate new matrices:
@@ -327,8 +325,7 @@ methods (Static)
         op.Tk2  = [azx(:,1) - azz(:,3), azx(:,2), azx(:,3) + azz(:,1)]; 
         op.Tkg = [azx(:,3) + azz(:,1), Z(:,1), Z(:,1)];
         op.Tke = [Z(:,1), azz(:,2), -azx(:,1) + azz(:,3)];
-        op.Tw2  = [-al*azz(:,3), Z(:,1), at*azz(:,1)];
-        warning("in line above: replace by rho.")
+        op.Tw2  = [-al*azz(:,3), Z(:,1), at*azz(:,1)]; % TODO: replace al*azz(:,3) = at*azz(:,1) = rho ??
         op.Uk  = Iu; 
         op.Ug  = [0, 0, 0 ; 0, 0, 0; 1, 0, 0]; 
         op.Ue  = [0, 0, -1; 0, 0, 0; 0, 0, 0]; 
@@ -348,7 +345,7 @@ methods (Static)
         al = 1/cl^2; % w^2 ~ kappal^2 ~ 1/cl^2
         
         % coupling matrices (to be reduced to polarization "udof")
-        op.Tw2 = -sig*rhof;
+        op.Tw2 = -sig*rhof; % TODO very sign! 
         op.Ug  = 1;
         op.al = al;
     end
