@@ -25,7 +25,7 @@ methods
             mats = num2cell(mats);
         end
         halfSpaces = PlateLeaky.parseLoading(mats,zs);
-        mats = mats{~isinf(zs)}; zs = zs(~isinf(zs)); % crop to finite layers
+        mats = mats(~isinf(zs)); zs = zs(~isinf(zs)); % crop to finite layers
         obj = obj@Plate(mats, zs, Ns);
         obj.halfSpaces = halfSpaces;
     end
