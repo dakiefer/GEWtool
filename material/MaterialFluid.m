@@ -37,6 +37,12 @@ methods
                 error('GEWTOOL:MaterialFluid','Incorrect format of JSON file. The data should contain the fields "name" (descriptive name), "B" (bulk modulus) and "rho" (mass density).');
             end
             varargin = {data.name, data.B, data.rho}; % convert to cell array
+        elseif nargin == 1 && isstruct(varargin{1})
+            data = varargin{1};
+            if ~(isfield(data,'name') && isfield(data,'B') && isfield(data,'rho'))
+                error('GEWTOOL:MaterialFluid','To create a MaterialFluid, the passed struct should have fields "name" (string), "B" (double, bulk modulus) and "rho" (double, mass density).');
+            end
+            varargin = {data.name, data.B, data.rho}; % convert to cell array
         end
         name = varargin{1}; 
         B = varargin{2}; 
