@@ -8,6 +8,7 @@
 
 % % load pre-computed fields:
 load('data/Lamb_ref_fields.mat')
+mat = MaterialIsotropic(mat); 
 warnStat = warning; warning off; % save state and turn off
 
 % % current implementation:

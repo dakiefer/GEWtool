@@ -20,12 +20,7 @@ properties
 end
 
 methods
-	function obj = PlateLeaky(mats, zs, Ns)
-        if ~iscell(mats)
-            mats = num2cell(mats);
-        end
-        halfSpaces = PlateLeaky.parseLoading(mats,zs);
-        mats = mats(~isinf(zs)); zs = zs(~isinf(zs)); % crop to finite layers
+	function obj = PlateLeaky(mats, zs, Ns, halfSpaces)
         obj = obj@PlateClosed(mats, zs, Ns);
         obj.halfSpaces = halfSpaces;
     end
@@ -286,9 +281,8 @@ methods (Static)
         ind = sort(find(isinf(zs))); 
         if length(ind) > 2
             error('GEWTOOL:PlateLeaky','The plate cannot be loaded with more than two halfspaces.');
-        elseif isempty(ind)
-            error('GEWTOOL:PlateLeaky','Provide at least one loading halfspace or use the PlateClosed class for nonleaky waves.');
         end
+        halfSpaces = struct([]); 
         for i = 1:length(ind)
             mati = matList{ind(i)};
             if ~isa(mati,'MaterialIsotropic') && ~isa(mati,'MaterialFluid') % only these are supported for now

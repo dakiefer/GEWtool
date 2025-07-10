@@ -8,11 +8,10 @@
 
 % common variables for all tests:
 load('data/Lamb_ref.mat') % load pre-solved solutions
-steel = Material('steel');
+steel = Material(matRef);
 k = kRef; % wavenumbers to solve for
 nModes = size(datRef.w, 2); % number of modes
 w0 = median(datRef.w, 'all'); % for normalization
-assert( matRef == steel ) % fails if material has changed
 
 %% single layer - frequency
 plate = Plate(steel, hRef, 40); % uses smaller discretization

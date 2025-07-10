@@ -29,18 +29,6 @@ methods
         % N = 20; % discretization (number of nodal points)
         % plate = PlateClosed(mat, h, N); % create waveguide description
         % 
-        if isscalar(zs) && length(mats) > 1 % use same thickness for all layers
-            zs = zs*ones(size(mats)); % expand into a vector of thicknesses
-        end
-        if length(mats) == length(zs) % thicknesses have been provided
-            if isscalar(zs)
-                zs = zs*[-1/2, 1/2]; % single layer has centered coordinate 
-            else
-                zs = [0, cumsum(zs)]; % coordinates of interfaces starting from 0
-            end
-        elseif length(zs) ~= length(mats)+1
-            error('GEWTOOL:PlateClosed:wrongArguments','Provide either a thickness for each layer or the coordinates of the interfaces.');
-        end
 		obj = obj@Waveguide(mats, zs, Ns); % converts mats 
 		for ii = 1:length(obj.mat)
             if isa(obj.mat{ii}, 'MaterialPiezoelectric') % subclass first! 
