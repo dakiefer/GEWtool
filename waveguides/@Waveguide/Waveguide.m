@@ -49,15 +49,13 @@ methods
         end
         obj.geom = Geometry(rs, Ns, Nudof);
         % convert mats to Material class:
-        if isstruct(mats) % convert from struct to objects of Material class
-            matsObj = Material.empty(0, length(mats)); % initialize
-            for i = 1:length(mats)
-                matsObj(i) = Material(mats(i));
-            end
-            mats = matsObj;
-        end
         if ~iscell(mats)
             mats = num2cell(mats);
+        end
+        for i = 1:length(mats) 
+            if isstruct(mats{i})
+                mats{i} = Material(mats{i}); % replace struct with object of class Material
+            end
         end
 		obj.mat = mats; % protected property is later used in constructor of subclass
         % choose normalization parameters (physical units for the calculation):

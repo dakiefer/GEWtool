@@ -35,6 +35,10 @@ methods
                 obj.lay{ii} = LayerPlatePiezo(obj.mat{ii}, obj.geom.zItf(ii,:), obj.geom.N(ii));
             elseif isa(obj.mat{ii}, 'Material') % subclasses are also Material objects
 			    obj.lay{ii} = LayerPlate(obj.mat{ii}, obj.geom.zItf(ii,:), obj.geom.N(ii));
+            else 
+                error('GEWtool:PlateClosed', ['The material type "%s" is not ' ...
+                    'known. It should be of class "Material", "MaterialPiezoelectric" ' ...
+                    'or a subclass thereof.'],class(obj.mat{ii}) );
             end
 		end
     end
