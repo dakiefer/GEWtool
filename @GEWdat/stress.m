@@ -24,7 +24,7 @@ if ~isscalar(dat) % compute recursively for every waveguide problem in the vecto
     return;
 end
 
-if isa(dat.gew, 'Plate')
+if isa(dat.gew, 'PlateClosed') || isa(dat.gew, 'PlateLeaky')
     udof = dat.gew.udof; % polarization (which of the ux, uy, uz components are represented)
 else
     udof = 1:3; % Cylinder always has all stresses

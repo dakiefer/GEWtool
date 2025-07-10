@@ -2,7 +2,7 @@ classdef Waveguide < matlab.mixin.Copyable
 % Waveguide - Represents guided waves in plates or cylinders.
 % Waveguide objects are handle objects, i.e., they are passed by reference.
 % Usually, you do not need to use this class directly. For simpler interfacing, use 
-% the derived classes "Plate" or "Cylinder" instead.
+% "Plate" or "Cylinder" instead.
 % 
 % See also Plate, Cylinder.
 % 

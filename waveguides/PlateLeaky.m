@@ -1,4 +1,4 @@
-classdef PlateLeaky < Plate
+classdef PlateLeaky < PlateClosed
 % PlateLeaky - Represents quasi-guided waves in a plate loaded by a half-space.
 % Displacement ansatz: u(x,y,z,t) = u(z)*exp(i k x - i w t)
 % 
@@ -9,7 +9,7 @@ classdef PlateLeaky < Plate
 % N = 20; % discretization (number of nodal points)
 % plate = PlateLeaky({mat fluid}, [h inf], N); % create waveguide description
 % 
-% See also Plate.Plate, Cylinder, Waveguide.
+% See also PlateLeaky.PlateLeaky, Cylinder, Waveguide.
 % 
 % 2025 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
@@ -26,7 +26,7 @@ methods
         end
         halfSpaces = PlateLeaky.parseLoading(mats,zs);
         mats = mats(~isinf(zs)); zs = zs(~isinf(zs)); % crop to finite layers
-        obj = obj@Plate(mats, zs, Ns);
+        obj = obj@PlateClosed(mats, zs, Ns);
         obj.halfSpaces = halfSpaces;
     end
     function obj = assembleLayers(obj, udof, n)
@@ -227,15 +227,15 @@ methods
     end
     function gew = symmetrizeGeometry(obj)
         % symmetrizeGeometry - upper symmetric half of the original plate.
-        % Creates a new Plate object describing only the upper symmetric half 
-        % of the original Plate object. 
+        % Creates a new PlateLeaky object describing only the upper symmetric half 
+        % of the original object. 
         % Throws a warning if the plate is not symmetric in geometry and materials. 
         % This function is used by LambS, LambA, LambSA, etc., and you will 
         % usually not need to call it explicitly.
         if ~obj.decouplesSA('v')
             error('GEWTOOL:symmetrizeGeometry','The setup is not symmetric. I cannot symmetrize the geometry.'); 
         end
-        gew = symmetrizeGeometry@Plate(obj);
+        gew = symmetrizeGeometry@PlateClosed(obj);
         gew.exteriorMat = obj.exteriorMat;
         gew.exteriorMat{1} = []; % loading only at top side
     end
@@ -253,7 +253,7 @@ methods
         end
         bothSides = ~isempty(obj.exteriorMat{1}) && ~isempty(obj.exteriorMat{2});
         bothSame = bothSides && obj.exteriorMat{1} == obj.exteriorMat{2}; % short circuit to avoid error for empty entries
-        decoupl = bothSame && decouplesSA@Plate(obj,verb);
+        decoupl = bothSame && decouplesSA@PlateClosed(obj,verb);
     end
     function hasSolid = hasSolidLoading(obj)
         hasSolid = false; 
@@ -287,7 +287,7 @@ methods (Static)
         if length(ind) > 2
             error('GEWTOOL:PlateLeaky','The plate cannot be loaded with more than two halfspaces.');
         elseif isempty(ind)
-            error('GEWTOOL:PlateLeaky','Provide at least one loading halfspace or use the Plate class for nonleaky waves.');
+            error('GEWTOOL:PlateLeaky','Provide at least one loading halfspace or use the PlateClosed class for nonleaky waves.');
         end
         for i = 1:length(ind)
             mati = matList{ind(i)};

@@ -1,20 +1,20 @@
-classdef Plate < Waveguide
-% Plate - Represents guided waves in Plates.
+classdef PlateClosed < Waveguide
+% PlateClosed - Represents guided waves in Plates.
 % Displacement ansatz: u(x,y,z,t) = u(z)*exp(i k x - i w t)
 % 
 % Example:
 % mat = Material('steel'); % load material data
 % h = 1e-3; % thickness in m
 % N = 20; % discretization (number of nodal points)
-% plate = Plate(mat, h, N); % create waveguide description
+% plate = PlateClosed(mat, h, N); % create waveguide description
 % 
-% See also Plate.Plate, Cylinder, Waveguide.
+% See also PlateClosed.PlateClosed, Cylinder, Waveguide.
 % 
 % 2022 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 methods 
-	function obj = Plate(mats, zs, Ns)
-        % Plate - Create a plate waveguide (propagation in x-direction)
+	function obj = PlateClosed(mats, zs, Ns)
+        % PlateClosed - Create a plate waveguide (propagation in x-direction)
         % Arguments: 
         % - mats:  materials [1 x Nlay], either of class "Material" or a struct
         %          needs to support mats.rho (scalar) and mats.c (3x3x3x3).
@@ -27,7 +27,7 @@ methods
         % mat = Material('steel'); % load material data
         % h = 1e-3; % thickness in m
         % N = 20; % discretization (number of nodal points)
-        % plate = Plate(mat, h, N); % create waveguide description
+        % plate = PlateClosed(mat, h, N); % create waveguide description
         % 
         if isscalar(zs) && length(mats) > 1 % use same thickness for all layers
             zs = zs*ones(size(mats)); % expand into a vector of thicknesses
@@ -39,7 +39,7 @@ methods
                 zs = [0, cumsum(zs)]; % coordinates of interfaces starting from 0
             end
         elseif length(zs) ~= length(mats)+1
-            error('GEWTOOL:Plate:wrongArguments','Provide either a thickness for each layer or the coordinates of the interfaces.');
+            error('GEWTOOL:PlateClosed:wrongArguments','Provide either a thickness for each layer or the coordinates of the interfaces.');
         end
 		obj = obj@Waveguide(mats, zs, Ns); % converts mats 
 		for ii = 1:length(obj.mat)
@@ -59,7 +59,7 @@ methods
 
     function gew = fullyCoupledA(obj)
         % fullyCoupledA - Assemble operators for the anti-symmetric waves.
-        % If your plate is not symmetric, use Plate.fullyCoupled instead.
+        % If your plate is not symmetric, use PlateClosed.fullyCoupled instead.
         % 
         % See also: fullyCoupled, fullyCoupledS.
         
@@ -74,7 +74,7 @@ methods
 
     function gew = fullyCoupledS(obj)
         % fullyCoupledS - Assemble operators for the symmetric waves.
-        % If your plate is not symmetric, use Plate.fullyCoupled instead.
+        % If your plate is not symmetric, use PlateClosed.fullyCoupled instead.
         % 
         % See also: fullyCoupled, fullyCoupledA.
         
@@ -90,9 +90,9 @@ methods
     function gews = fullyCoupledSA(obj)
         % fullyCoupledSA - Assemble operators for the symmetric and the anti-symmetric waves.
         % The operators for symmetric (S) and anti-symmetric (A) waves are assembled separately.
-        % If your plate is not symmetric, use Plate.fullyCoupled instead.
+        % If your plate is not symmetric, use PlateClosed.fullyCoupled instead.
         % Return value:
-        % gews: [1 x 2] array of Plate objects. 
+        % gews: [1 x 2] array of PlateClosed objects. 
         %       - gews(1) describes the symmetric waves
         %       - gews(2) describes the anti-symmetric waves
         % 
@@ -110,7 +110,7 @@ methods
     
     function gew = LambS(obj)
         % LambS - Assemble operators for the symmetric Lamb polarized waves.
-        % If your plate is not symmetric, use Plate.Lamb instead.
+        % If your plate is not symmetric, use PlateClosed.Lamb instead.
         % 
         % See also: LambA, LambSA, Lamb, sh, fullyCoupled.
 
@@ -125,7 +125,7 @@ methods
     
     function gew = LambA(obj)
         % LambA - Assemble operators for the anti-symmetric Lamb polarized waves.
-        % If your plate is not symmetric, use Plate.Lamb instead.
+        % If your plate is not symmetric, use PlateClosed.Lamb instead.
         % 
         % See also: LambS, LambSA, Lamb, sh, fullyCoupled.
         
@@ -141,9 +141,9 @@ methods
     function gews = LambSA(obj)
         % LambSA - Assemble operators for the symmetric and the anti-symmetric Lamb polarized waves.
         % The operators for symmetric (S) and anti-symmetric (A) waves are assembled separately.
-        % If your plate is not symmetric, use Plate.Lamb instead.
+        % If your plate is not symmetric, use PlateClosed.Lamb instead.
         % Return value:
-        % gews: [1 x 2] array of Plate objects. 
+        % gews: [1 x 2] array of PlateClosed objects. 
         %       - gews(1) describes the symmetric waves
         %       - gews(2) describes the anti-symmetric waves
         % 
@@ -190,8 +190,8 @@ methods
     
     function gew = symmetrizeGeometry(obj)
         % symmetrizeGeometry - upper symmetric half of the original plate.
-        % Creates a new Plate object describing only the upper symmetric half 
-        % of the original Plate object. 
+        % Creates a new PlateClosed object describing only the upper symmetric half 
+        % of the original PlateClosed object. 
         % Throws a warning if the plate is not symmetric in geometry and materials. 
         % This function is used by LambS, LambA, LambSA, etc., and you will 
         % usually not need to call it explicitly.
