@@ -1,14 +1,69 @@
 classdef PlateLeaky < PlateClosed
 % PlateLeaky - Represents quasi-guided waves in a plate loaded by a half-space.
-% Displacement ansatz: u(x,y,z,t) = u(z)*exp(i k x - i w t)
 % 
-% Example:
-% mat = Material('steel'); % load material data
-% fluid.c = 1500; fluid.rho = 1000;
+% Quasi-guided waves encompass "leaky waves" and "trapped waves" (= surface
+% waves or quasi-Scholte waves). 
+% 
+% Usage:
+% -----------------------------------------------
+% mat = Material('steel');          % load material data
+% fluid.c = 1500; fluid.rho = 1000; % wave speed and density
 % h = 1e-3; % thickness in m
-% N = 20; % discretization (number of nodal points)
-% plate = PlateLeaky({mat fluid}, [h inf], N); % create waveguide description
+% N = 20;   % discretization (number of nodal points)
+% plate = Plate({mat fluid}, [h inf], N); % waveguide description
+% -----------------------------------------------
 % 
+% The displacement ansatz for quasi-guided waves in the plate is
+% 
+% u(x,y,z,t) = u(z)*exp(i k x - i w t)
+% 
+% and in the exterior half-spaces: 
+% 
+% u(x,y,z,t) = ∑j Aj exp(i betaj z - i w t).
+% 
+% Quasi-guided waves are governed by the following EVP that is nonlinear in the
+% eigenvalue ik: 
+% 
+% [ (ik)^2*L2 + ik*L1 + L0 + w^2*M + ∑j ibetaj*Rj ]*q = 0,
+% 
+% where q:       eigenvector containing the displacements in the plate and the "nA"
+%                bulk wave amplitudes "Aj".
+%       ik:      eigenvalue -> horizontal wavenumber (times i)  
+%       ibetaj:  vertical wavenumber (times i) of the jth bulk wave
+%       w:       angular frequency (parameter) 
+%       Li,M,Rj: n x n-matrices stored in "obj.gew.opNonlin".
+% 
+% The above problem is nonlinear in ik because the vertical wavenumbers satisfy
+% dispersion relations of the form 
+% 
+% ik^2 + ibeta^2 = (iw/cj)^2 with bulk wave velocities "cj". 
+% 
+% The nonlinear eigenvalue problem is transformed to a polynomial one by
+% introducing the new eigenvectors:
+% 
+% Psi = [ ibetaj q ]
+%       [    q     ] 
+% 
+% The above is applied recursively for each bulk wave j, i.e., with 2 bulk waves
+% the eigenvector has four blocks: 
+% 
+% Psi = [ ibeta1 ibeta2 q ]  <- block 1
+%       [    ibeta2 q     ]  <- block 2
+%       [    ibeta1 q     ]  <- block 3
+%       [        q        ]  <- block 4
+% 
+% For radiation into fluid media, the above transformation leads to a quadratic
+% eigenvalue problem while radiation into solids leads to a cubic eigenvalue
+% problem. In the latter case, GEWtool applies a partial companion linearization
+% to reduce the problem to a quadratic one. In both cases, GEWtool finaly solves
+% an eigenvalue problem of the form
+% 
+% [ (ik)^2*L2 + ik*L1 + L0 + w^2*M ]*Psi = 0
+% 
+% with Psi: eigenvector stored in "obj.Psi"
+%      ik: eigenvalue (as before) stored in "obj.k"
+%      Li,M: matrices stored in "obj.gew.op"
+%
 % See also PlateLeaky.PlateLeaky, Cylinder, Waveguide.
 % 
 % 2025 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France

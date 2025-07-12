@@ -43,7 +43,6 @@ function dat = computeK(gews, w, nModes, opts)
     
     if ~isvector(w), error('Angular frequencies should be a [Nx1] array.'); end
     w = w(:).'; % row vector
-    dat = repmat(GEWdat(gews(1),[],w,[]),1,length(gews));
     for i = 1:length(gews) % solve for a list of waveguide objects
         gew = gews(i);
         opts.solver = @computeK;
@@ -117,7 +116,12 @@ function dat = computeK(gews, w, nModes, opts)
         end
 
         k = kh/gew.np.h0;
-        dat(i) = GEWdat(gew,k,w,u); % save in an object of class 'GEWdat' 
+
+        if isa(gew,'PlateLeaky')
+            dat(i) = GEWdatLeaky(gew,k,w,u); % save in an object of class 'GEWdatLeaky' 
+        else
+            dat(i) = GEWdat(gew,k,w,u); % save in an object of class 'GEWdat' 
+        end
     end
 end
 
