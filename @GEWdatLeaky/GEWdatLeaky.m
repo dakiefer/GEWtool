@@ -51,9 +51,11 @@ properties
 end
 
 properties (Dependent)
-    A     % [Nk x Nw x nA] bulk wave amplitudes in the exterior half spaces
-    beta  % [Nk x Nw x nA] vertical wavenumbers in the exterior half spaces
-    q     % [Nk x Nw x n]  eigenvectors of the nonlinear eigenvalue problem
+    A      % [Nk x Nw x nA] bulk wave amplitudes in the exterior half spaces
+    beta   % [Nk x Nw x nA] vertical wavenumbers in the exterior half spaces
+    q      % [Nk x Nw x n]  eigenvectors of the nonlinear eigenvalue problem
+    pTop   % [Nk x Nw] outward power flux density through the top surface
+    pBot   % [Nk x Nw] outward power flux density through the bottom surface
 end
 
 methods
@@ -86,9 +88,67 @@ methods
             blockInd_ibq = getBlockIndexOfBetai(obj,i); % which one of the 2^nA blocks to chose
             ibq = obj.getBlock(blockInd_ibq);
             betaih = -1i*sum(conj(obj.q).*ibq,3)./qHq;
-            beta(:,:,i) = betaih/obj.gew.np.h0; % horizontal wavenumbers for the ith bulk wave
+            beta(:,:,i) = betaih/obj.gew.np.h0; % vertical wavenumbers for the ith bulk wave
         end
     end
+    function pTop = get.pTop(obj)
+        pTop = obj.powerFluxThroughSurf("top"); 
+    end
+    function pBot = get.pBot(obj)
+        pBot = obj.powerFluxThroughSurf("bottom"); 
+    end
+
+    function beta = getBetasAt(obj,surf)
+        warning('temporary implementation')
+        if surf == "bottom"
+            ind = 1; 
+        else 
+            ind = 2; 
+        end
+        beta = obj.beta(:,:,ind);
+    end
+
+    function pOut = powerFluxThroughSurf(obj,surf)
+        loading = obj.getLoadingAt(surf); 
+        if isempty(loading)
+            pOut = 0; 
+            return; 
+        end
+        Asurf = getBulkWaveAmplitudeAt(obj,surf);
+        uSurf = obj.q(:,:,loading.dofU); 
+        vSurf = -1i*obj.w.*uSurf; 
+        if isa(loading.mat,'MaterialFluid')
+            rhof = loading.mat.rho; 
+            tSurf = -rhof*obj.w.^2.*Asurf; % assume top surface for now
+            pOut = -1/2*real( conj(vSurf).*tSurf ); 
+        elseif isa(loading.mat,'MaterialIsotropic')
+            warning('Not implemented.')
+        else
+            error('GEWdatLeaky:powerFluxThroughSurf','Unknown loading type at %s. It should be of type MaterialFluid or MaterialIsotropic.',surf); 
+        end
+        if surf == "bottom"
+            pOut = -pOut; % correct sign
+        end
+    end
+
+    function Asurf = getBulkWaveAmplitudeAt(obj,surf)
+        loading = obj.getLoadingAt(surf); 
+        A0 = obj.q(:,:,loading.dofA); 
+        beta = getBetasAt(obj,surf);
+        if loading.at == "top"
+            zItf = obj.gew.geom.zItf(end); 
+        else
+            zItf = obj.gew.geom.zItf(1); 
+        end
+        Asurf = A0; %.*exp(-1i*beta*zItf);
+    end
+
+    function loading = getLoadingAt(obj,surf)
+        isAtSurf = {obj.gew.halfSpaces.at}; % collect into a cell array
+        ind = cellfun(@(x)x==surf, isAtSurf); % compare each of the entries
+        loading = obj.gew.halfSpaces(ind); 
+    end
+
     function block = getBlock(obj,j)
         n = size(obj.gew.opNonlin.L0,2); % size of each block 
         if j > 2^obj.nA
@@ -100,6 +160,7 @@ methods
         ind_block_j = (1:n) + (j-1)*n; 
         block = obj.Psi(:,:,ind_block_j);
     end
+
     function indBetaBlock = getBlockIndexOfBetai(obj,i)
         j = obj.nA:-1:i; 
         indBetaBlock = sum((2.^j)/2); 
