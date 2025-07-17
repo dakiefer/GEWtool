@@ -87,6 +87,8 @@ methods
             loading = obj.halfSpaces(i);
             Ndof = size(obj.opNonlin.L0,1); % increases with every iteration
             [dofA, dofU] = PlateLeaky.getCouplingDOFs(loading, obj.geom, Ndof);
+            obj.halfSpaces(i).dofA = dofA; % save for postprocessing purposes 
+            obj.halfSpaces(i).dofU = dofU; % save for postprocessing purposes 
             obj = incorporateLoading(obj, loading, dofA, dofU, udof); 
         end 
         % simplify to leaky-only when the halfspaces on both sides are equal: 
