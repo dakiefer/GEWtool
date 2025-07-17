@@ -22,7 +22,7 @@ if ~isscalar(dat) % compute recursively for every waveguide problem in the vecto
 end
 
 Psi = zeros(dat.Nk, dat.Nw, dat.gew.geom.Ndof); % allocate with zeros
-Psi(:,:,dat.gew.geom.gdofFree) = dat.Psi;       % expand Psi with Dirichlet-BC nodes
+Psi(:,:,dat.gew.geom.gdofFree) = dat.Psi(:,:,1:dat.gew.geom.Ndof); % expand Psi with Dirichlet-BC nodes (for leaky waves, Psi is larger than Ndof)
 
 u = cell(dat.gew.geom.nLay, 1); % allocate 
 for l = 1:dat.gew.geom.nLay    
