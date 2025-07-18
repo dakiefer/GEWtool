@@ -77,6 +77,9 @@ end
 methods
 	function obj = PlateLeaky(mats, zs, Ns, halfSpaces)
         obj = obj@PlateClosed(mats, zs, Ns);
+        for i = 1:length(halfSpaces) 
+            halfSpaces(i).eliminated = false; % augument this field to remember if the half space has already been eliminated
+        end
         obj.halfSpaces = halfSpaces;
     end
     function obj = assembleLayers(obj, udof, n)
@@ -92,11 +95,11 @@ methods
             obj = incorporateLoading(obj, loading, dofA, dofU, udof); 
         end 
         % simplify to leaky-only when the halfspaces on both sides are equal: 
-        % if length(obj.halfSpaces) == 2 && obj.halfSpaces(1).mat == obj.halfSpaces(2).mat
-        %     obj.opNonlin.Rtop = obj.opNonlin.Rtop - obj.opNonlin.Rbottom; % top - bottom (waves radiated away from the plate)
-        %     obj.opNonlin = rmfield(obj.opNonlin,'Rbottom'); 
-        %     obj.halfSpaces = obj.halfSpaces(2); 
-        % end
+        if length(obj.halfSpaces) == 2 && obj.halfSpaces(1).mat == obj.halfSpaces(2).mat
+            obj.opNonlin.Rtop = obj.opNonlin.Rtop - obj.opNonlin.Rbottom; % top - bottom (waves radiated away from the plate)
+            obj.opNonlin = rmfield(obj.opNonlin,'Rbottom'); 
+            obj.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
+        end
         % transform into a polynomial eigenvalue problem in a higher-dimensional
         % state space: 
         op = obj.opNonlin; 
@@ -177,6 +180,10 @@ methods
         obj.opNonlin = opN;
     end
     function op = getPolynomialForm(obj, op, loading)
+        if loading.eliminated % eliminated because beta_a = beta_b (same loading on both sides)
+            return; 
+        end
+
         side = loading.at; 
         extMat = loading.mat; 
 
