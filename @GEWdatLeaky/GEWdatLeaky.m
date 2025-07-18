@@ -47,7 +47,8 @@ classdef GEWdatLeaky < GEWdat
 % 2025 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 properties 
-    nA % (scalar integer) number of bulk waves in the exterior half spaces
+    nA    % (scalar integer) number of bulk waves in the exterior half spaces
+    nBeta % (scalar integer) number of *different* vertical wave numbers
 end
 
 properties (Dependent)
@@ -71,20 +72,24 @@ methods
         end
         obj = obj@GEWdat(gew,k,w,Psi);
         obj.nA = size(gew.opNonlin.L0,2) - numel(gew.geom.gdofFree); % number of bulk waves
+        r = size(gew.op.L0,2)/size(gew.opNonlin.L0,2);
+        if mod(r,1) % test if division was an integer 
+            error('GEWtool:GEWdatLeaky', 'Unexpected size of operators.'); 
+        end
+        obj.nBeta = log2(r); % size of matrices increases ~ 2^nBeta
     end
     function q = get.q(obj)
-        blockInd_q = 2^obj.nA;
+        blockInd_q = 2^obj.nBeta;
         q = obj.getBlock(blockInd_q);
     end
     function A = get.A(obj)
-        n = size(obj.gew.opNonlin.L0,2);
-        indA = (n-obj.nA+1):n;
+        indA = obj.gew.halfSpaces.dofA; 
         A = obj.q(:,:,indA);
     end
     function beta = get.beta(obj)
-        beta = nan([size(obj.k) obj.nA]); % allocate
+        beta = nan([size(obj.k) obj.nBeta]); % allocate
         qHq = sum(conj(obj.q).*obj.q,3);
-        for i = 1:obj.nA
+        for i = 1:obj.nBeta
             blockInd_ibq = getBlockIndexOfBetai(obj,i); % which one of the 2^nA blocks to chose
             ibq = obj.getBlock(blockInd_ibq);
             betaih = -1i*sum(conj(obj.q).*ibq,3)./qHq;
@@ -133,14 +138,7 @@ methods
 
     function Asurf = getBulkWaveAmplitudeAt(obj,surf)
         loading = obj.getLoadingAt(surf); 
-        A0 = obj.q(:,:,loading.dofA); 
-        beta = getBetasAt(obj,surf);
-        if loading.at == "top"
-            zItf = obj.gew.geom.zItf(end); 
-        else
-            zItf = obj.gew.geom.zItf(1); 
-        end
-        Asurf = A0; %.*exp(-1i*beta*zItf);
+        Asurf = obj.q(:,:,loading.dofA); %.*exp(-1i*beta*zItf);
     end
 
     function loading = getLoadingAt(obj,surf)
@@ -151,18 +149,18 @@ methods
 
     function block = getBlock(obj,j)
         n = size(obj.gew.opNonlin.L0,2); % size of each block 
-        if j > 2^obj.nA
-            error('GEWdatLeaky:getBlock', 'Index out of range. There exist only %d blocks.', obj.nA + 1); 
+        if j > 2^obj.nBeta
+            error('GEWdatLeaky:getBlock', 'Index out of range. There exist only %d blocks.', obj.nBeta + 1); 
         end
-        if n*(2^obj.nA) ~= size(obj.Psi,3)
-            error('GEWdatLeaky:getBlock', 'Size inconsistency. I expected %d blocks.', n*(obj.nA+1));
+        if n*(2^obj.nBeta) ~= size(obj.Psi,3)
+            error('GEWdatLeaky:getBlock', 'Size inconsistency. I expected %d blocks.', n*(obj.nBeta+1));
         end
         ind_block_j = (1:n) + (j-1)*n; 
         block = obj.Psi(:,:,ind_block_j);
     end
 
     function indBetaBlock = getBlockIndexOfBetai(obj,i)
-        j = obj.nA:-1:i; 
+        j = obj.nBeta:-1:i; 
         indBetaBlock = sum((2.^j)/2); 
     end
 end
