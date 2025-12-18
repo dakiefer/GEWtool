@@ -2,6 +2,7 @@
 % The displacements on an arbitrary cross-section are visualized for one selected mode.
 % 
 % 2024-2025 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+%             Matt Clark, Optics and Photonics, University of Nottingham
 
 mat = MaterialIsotropic('aluminum');
 N = 20;         % number of nodes on radius

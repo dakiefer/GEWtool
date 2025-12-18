@@ -65,12 +65,14 @@ function dat = computeK(gews, w, nModes, opts)
         if opti.standardEVP
             [H, HH, T] = transformToStandardEVP(A, B, AA);
             solveAtW = @(wh) solveEVP(H + wh^2*HH, nModes, opti);
-            switch opti.linearization 
-                case 'companion'
-                    secondBlockInd = (n+1):2*n;
-                    opti.T = T(secondBlockInd,:); % eigenvector is [ik*u, u]
-                case 'k2'
-                    opti.T = T;
+            if opti.eigenvecs % T not needed if only eigenvalues are computed
+                switch opti.linearization
+                    case 'companion'
+                        secondBlockInd = (n+1):2*n;
+                        opti.T = T(secondBlockInd,:); % eigenvector is [ik*u, u]
+                    case 'k2'
+                        opti.T = T;
+                end
             end
         else
             solveAtW = @(wh) solveGEP(A + wh^2*AA, B, nModes, opti);
@@ -144,6 +146,11 @@ function [A, B, AA] = linearizePolyEig(L2, L1, L0, M)
     % 
     % 2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
     %        Malte Röntgen, LAUM, Le Mans Université, France
+
+    if isempty(L2) % already linear
+        A = -L0; AA = -M; B = L1; 
+        return; 
+    end
 
     % % companion matrix linearization
     p = 2; % polynomial order (only two for now)

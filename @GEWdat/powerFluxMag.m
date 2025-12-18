@@ -2,7 +2,7 @@ function [Pmag] = powerFluxMag(dat)
 % powerFluxMag - Power flux magnitude.
 %
 % Computes the magnitude of the power flux vectors P. In a plate, the power flux
-% vector P might ly in any direction within the plane of the plate.
+% vector P might lie in any direction within the plane of the plate.
 % 
 % Usage: 
 % > Pmag = powerFluxMag(dat);
