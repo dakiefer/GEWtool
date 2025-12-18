@@ -42,4 +42,11 @@ end
 
 datRed = GEWdat(dat.gew, dat.k(indk,indw), dat.w(indk,indw), dat.Psi(indk,indw,:)); 
 
+if isa(dat,'GEWdatLeaky')
+    datRed = GEWdatLeaky(dat.gew, dat.k(indk,indw), dat.w(indk,indw), dat.Psi(indk,indw,:)); 
+else
+    datRed = GEWdat(dat.gew, dat.k(indk,indw), dat.w(indk,indw), dat.Psi(indk,indw,:)); 
+end
+
+
 end
