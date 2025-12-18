@@ -124,7 +124,17 @@ methods
             tSurf = -rhof*obj.w.^2.*Asurf; % assume top surface for now
             pOut = -1/2*real( conj(vSurf).*tSurf ); 
         elseif isa(loading.mat,'MaterialIsotropic')
-            warning('Not implemented.')
+            coupl = obj.gew.couplingMatricesSolid(loading,obj.gew.np);
+            udof = obj.gew.udof;
+            k = obj.k; g = obj.beta(:,:,1); e = obj.beta(:,:,2); w = obj.w;
+            % en = obj.gew.dofOutofplane(udof);
+            Tk2 = shiftdim(coupl.Tk2(udof,udof),-2);
+            Tkg = shiftdim(coupl.Tkg(udof,udof),-2);
+            Tke = shiftdim(coupl.Tke(udof,udof),-2);
+            Tw2 = shiftdim(coupl.Tw2(udof,udof),-2);
+            dotA = @(T) sum( T.*permute(Asurf,[1 2 4 3]), 4 ); % contraction of T with Asurf: = T.Asurf
+            tauz = k.^2.*dotA(Tk2) + k.*g.*dotA(Tkg) + k.*e.*dotA(Tke) - w.^2.*dotA(Tw2); 
+            pOut = -1/2*real(sum( conj(vSurf).*tauz,3 ));
         else
             error('GEWdatLeaky:powerFluxThroughSurf','Unknown loading type at %s. It should be of type MaterialFluid or MaterialIsotropic.',surf); 
         end

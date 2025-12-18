@@ -19,7 +19,7 @@ classdef PlateLeaky < PlateClosed
 % 
 % and in the exterior half-spaces: 
 % 
-% u(x,y,z,t) = ∑j Aj exp(i betaj z - i w t).
+% u(x,y,z,t) = ∑j Aj exp(i betaj z)*exp(i k x - i w t).
 % 
 % Quasi-guided waves are governed by the following EVP that is nonlinear in the
 % eigenvalue ik: 
@@ -33,10 +33,9 @@ classdef PlateLeaky < PlateClosed
 %       w:       angular frequency (parameter) 
 %       Li,M,Rj: n x n-matrices stored in "obj.gew.opNonlin".
 % 
-% The above problem is nonlinear in ik because the vertical wavenumbers satisfy
-% dispersion relations of the form 
+% The above problem is nonlinear in ik because the ibetaj are related to ik by
 % 
-% ik^2 + ibeta^2 = (iw/cj)^2 with bulk wave velocities "cj". 
+% ik^2 + ibetaj^2 = (iw/cj)^2 with bulk wave velocities "cj". 
 % 
 % The nonlinear eigenvalue problem is transformed to a polynomial one by
 % introducing the new eigenvectors:
