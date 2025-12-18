@@ -72,10 +72,7 @@ methods
         end
         obj = obj@GEWdat(gew,k,w,Psi);
         obj.nA = size(gew.opNonlin.L0,2) - numel(gew.geom.gdofFree); % number of bulk waves
-        r = size(gew.op.L0,2)/size(gew.opNonlin.L0,2);
-        if mod(r,1) % test if division was an integer 
-            error('GEWtool:GEWdatLeaky', 'Unexpected size of operators.'); 
-        end
+        r = floor( size(gew.op.L0,2)/size(gew.opNonlin.L0,2) ); % not integer for solid loading (reduction of cubic EVP)
         obj.nBeta = log2(r); % size of matrices increases ~ 2^nBeta
     end
     function q = get.q(obj)
@@ -151,9 +148,6 @@ methods
         n = size(obj.gew.opNonlin.L0,2); % size of each block 
         if j > 2^obj.nBeta
             error('GEWdatLeaky:getBlock', 'Index out of range. There exist only %d blocks.', obj.nBeta + 1); 
-        end
-        if n*(2^obj.nBeta) ~= size(obj.Psi,3)
-            error('GEWdatLeaky:getBlock', 'Size inconsistency. I expected %d blocks.', n*(obj.nBeta+1));
         end
         ind_block_j = (1:n) + (j-1)*n; 
         block = obj.Psi(:,:,ind_block_j);
