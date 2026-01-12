@@ -84,6 +84,7 @@ methods
 
     function h = get.h(obj)
         h = sum( cellfun(@(l)l.h, obj.lay) );
+        if obj.geom.symmetrized, h = 2*h; end
     end
 
     function obj = polarization(obj, udof, n)
