@@ -236,10 +236,4 @@ methods
 
 end % methods
 
-methods (Static)
-    function uNames = displacementNames()
-        uNames = ["ux", "uy", "uz"];
-    end
-end
-
 end % class

@@ -17,7 +17,7 @@ properties (Access = public)
 end
 
 methods 
-	function obj = Cylinder(mats, rs, Ns)
+    function obj = Cylinder(mats, rs, Ns)
         % Cylinder - Create a cylindrical waveguide (axial propagation).
         % Arguments: 
         % - mats:  materials [1 x Nlay], either of class "Material" or a struct
@@ -35,10 +35,11 @@ methods
         if isscalar(rs) || ( isvector(rs) && length(mats) ~= length(rs)-1 )
             error('GEWTOOL:Cylinder', 'Second argument should be a 2-vector containing the inner radius and outer radius as well as interfaces between the layers, all in ascending order.');
         end
-		obj = obj@Waveguide(mats, rs, Ns);% converts mats 
-		for ii = 1:length(obj.mat)
-			obj.lay{ii} = LayerCylindrical(obj.mat{ii}, rs(ii:ii+1), obj.geom.N(ii));
-		end
+        obj = obj@Waveguide(mats, rs, Ns);% converts mats 
+        obj.coordNames = ["x", "φ", "r"]; 
+        for ii = 1:length(obj.mat)
+            obj.lay{ii} = LayerCylindrical(obj.mat{ii}, rs(ii:ii+1), obj.geom.N(ii));
+        end
     end
 
     function gew = longitudinal(obj)
@@ -130,10 +131,6 @@ methods
 end % methods
 
 methods (Static)
-    function uNames = displacementNames()
-        uNames = ["ux", "uphi", "ur"];
-    end
-
     function A = AphiDerivative()
         % AphiDerivative - Additinal part of the ∂/∂phi-operator needed for curvilinear coordinates.
         % Defined as: A = ephi er - er ephi

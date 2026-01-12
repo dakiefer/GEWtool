@@ -30,7 +30,7 @@ ue = ue/max(abs(ue(:)))*scale;
 % ue = 1/2*( ue + conj(ue) );  % if you want to get modes in ~cos(n*phi) or ~sin(n*phi) instead of exp(i*n*phi)
 
 indx = find(gew.displComp == "ux");     % index to extract axial displacements
-indphi = find(gew.displComp == "uphi"); % index to extract angular displacements
+indphi = find(gew.displComp == "uφ"); % index to extract angular displacements
 indr = find(gew.displComp == "ur");     % index to extract radial displacements
 if ~isempty(indx),   ux   = ue(:,:,indx);   else ux   = zeros(size(ue(:,:,1))); end
 if ~isempty(indphi), uphi = ue(:,:,indphi); else uphi = zeros(size(ue(:,:,1))); end

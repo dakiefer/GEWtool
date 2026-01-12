@@ -12,8 +12,8 @@ properties (Access = public)
 	geom = []   % geometry object describing the discretized, multilayered structure
 	lay         % layers as {1 x Nlay} cell array
 	op = [] 	% operators describing the wave propagation
+    coordNames = ["x", "y", "z"]; % name strings for the orthonormal coordinates
     udof = []   % polarization: displacement components accounted for
-    displComp = [] % names of mechanical polarization components
 	np  		% normalization parameters (material parameters, geometry)
     family = '' % family of waves, e.g., Lamb/SH/Lamb symmetric/etc...
 end % properties
@@ -23,7 +23,8 @@ properties (Access = protected)
 end
 
 properties (Dependent)
-    h           % total thickness
+    h          % total thickness
+    displComp  % names of mechanical polarization components
 end % properties Dependent
 
 
@@ -87,6 +88,10 @@ methods
         if obj.geom.symmetrized, h = 2*h; end
     end
 
+    function displComp = get.displComp(obj)
+        displComp = "u"+obj.coordNames(obj.udof); 
+    end
+
     function obj = polarization(obj, udof, n)
         % POLARIZATION - Assemble wave operators for given polarization and order.
         % Argument:
@@ -96,10 +101,9 @@ methods
         %           ignore if not needed. default: 0.
         % 
         % See also: Lamb, sh, decouplesLambvsSH.
-        displNames = obj.displacementNames;
-        polarizationNames = displNames(udof); % will be saved in obj.displComp
-        if ~obj.decouplesPolarization(udof,n)
-            printNames = polarizationNames(1); % initialize
+        polarizationNames = "u"+obj.coordNames(udof); % NOTE: udof ≠ obj.udof
+        if ~obj.decouplesPolarization(udof,n)  % print a warning 
+            printNames = polarizationNames(1); % initialize for parsing a nice string to use in the warning
             for astr = polarizationNames(2:end), printNames = strcat(printNames, ", ", astr); end
             warning('GEWTOOL:Waveguide:donotdecouple', 'You are doing bêtises! The [%s]-displacements do not decouple from the remaining ones. I will proceed anyways.', printNames);
         end
@@ -114,7 +118,6 @@ methods
         end
 		obj.assembleLayers(udof, n);
         obj.udof = udof;  % remember polarization
-        obj.displComp = polarizationNames; 
         polStr = strjoin(polarizationNames,'-')+"-polarized"; 
         if n ~= 0, polStr = polStr+sprintf(", n = %d",n); end
         obj.family = char(polStr);
@@ -336,10 +339,6 @@ end
 
 methods (Abstract)
     F = displGrad(obj, dat)  % to be implemented by subclasses
-end
-
-methods (Static,Abstract)
-    uNames = displacementNames() % returns the names of displacment components, e.g., "ux", "uy"...
 end
 
 end % class
