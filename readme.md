@@ -43,7 +43,7 @@ k = linspace(1e-2, 12, 100)/h;   % wavenumbers to solve for
 plate = Plate(mat, h, N);        % create waveguide description 
 gews = plate.LambSA; tic;        % choose S+A Lamb waves (assembles matrices)
 dat = computeW(gews, k, 4); toc; % solve and save 4 modes (argument optional)
-plot(dat); 						 % plot dispersion curves
+plot(dat);                       % plot dispersion curves
 ```
 
 output:
@@ -165,7 +165,7 @@ Hauke Gravenkamp, Pierre Chantelot, Claire Prada and Michael Ponschab
 
 ## Author
 
-2022–2025 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris, Université PSL.
+2022–2026 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris, Université PSL.
 
 I have several years of experience in waveguide modeling and numerical implementations thereof. In January 2022 I decided to create a new modular and versatile code from scratch. The result is GEWtool. My hope is that it be a valuable research tool and at the same time a helpful educational resource for those interested in numerical methods and elastic waves.
 
