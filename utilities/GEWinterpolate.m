@@ -72,15 +72,23 @@ s = size(u{1}); s(1) = length(zi); % size of data structure after interpolation
 ui = zeros(s); % allocate
 nComp = prod(s(2:end)); % number of components of the field (3 for displ, 9 for stress...)
 
+% % expand parity if a scalar was provided
+if nargin >= 4 && isscalar(parity)
+    parity = parity.*ones(1,nComp);
+end
+
 % % guess parity of functions: 
 if nargin < 4 && gew.geom.symmetrized 
     if gew.geom.gdofDBC(1) == 1 % anti-symmetric waves
-        parity = +1;  % this depends on the phase convention of eig vecs in Matlab
+        parity = [-1 -1 1]; parity = parity(gew.udof);
+        % parity = +1;  % this depends on the phase convention of eig vecs in Matlab
     else % symmetric waves
-        parity = -1;  % this depends on the phase convention of eig vecs in Matlab
+        parity = [1 1 -1]; parity = parity(gew.udof);
+        % parity = -1;  % this depends on the phase convention of eig vecs in Matlab
     end
     if nComp >= 4 % strain and stress have the opposit parity to the displacements
-        parity = -1*parity; 
+        deltaParity = [1; 1; -1]; 
+        parity = deltaParity(gew.udof)*parity; 
     end
 end
 
@@ -95,10 +103,10 @@ for l = 1:gew.geom.nLay
             indb = zi >= -zl(end) & zi <= -zl(1); % indices of interpolation points on symmetric range [-zl(1) -zl(end)]
             if all(-flip(zi(indb)) == zi(indl)) % interpolation points on positive and negative range are the same: we can use the last interpolation
                 indRev = flip(find(indl));
-                ui(indb,n) =  parity*conj(ui(indRev,n));
+                ui(indb,n) =  parity(n)*(ui(indRev,n));
             else % we need to interpolate the negative section separately
                 uTmp = barylag(datal, -flip(zi(indb))); % interpolate onto corresponding zi
-                ui(indb,n) =  parity*conj(flip(uTmp));
+                ui(indb,n) =  parity(n)*(flip(uTmp));
             end
         end
     end
