@@ -11,7 +11,7 @@
 
 mat = MaterialIsotropic('steel'); % load from database (or create your own)
 h = 1e-3;                        % thickness in m
-N = 12;                          % number of nodes (dictates accuracy)
+N = 22;                          % number of nodes (dictates accuracy)
 k = linspace(1e-2, 15, 100)/h;   % wavenumbers to solve for
 plate = Plate(mat, h, N);        % create waveguide description 
 gew = plate.LambSA; tic;         % choose S+A Lamb waves (assembles matrices)
@@ -37,3 +37,6 @@ xlim([0, 1]*dat(1).w(end,1)/2/pi/1e6);
 xlabel('frequency f in MHz'), ylabel('energy velocity ce in mm/us')
 legend(legendUnq, 'Location', 'southeast')
 title(sprintf('%s, %g mm thick', mat.name, h/1e-3))
+
+% % ineractive inspection of the result: 
+GEWinspector(dat)
