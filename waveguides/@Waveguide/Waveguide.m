@@ -339,6 +339,7 @@ end
 
 methods (Abstract)
     F = displGrad(obj, dat)  % to be implemented by subclasses
+    % G = potentialGrad(obj, dat) % to be implemented by subclasses
 end
 
 end % class

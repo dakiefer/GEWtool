@@ -236,6 +236,27 @@ methods
         end 
     end
 
+    function G = potentialGrad(obj, dat)
+        % potentialGrad - Gradient of electric potential provided in "dat"
+        % G = grad(phi) = ex ik phi + ez ∂z phi
+        G = cell(obj.geom.nLay, 1); % allocate for each layer
+        phi = potential(dat);       % extract potentials (zero if no piezoelectricity)
+        Nudof = length(obj.udof);   % number of displacement components
+        xDim = 1;                  % index of x-components
+        zDim = obj.dofOutofplane(obj.udof); % index of z-components (2 or 3, depending on polarization)
+        for l = 1:obj.geom.nLay
+            sizeG = [size(dat.w), obj.geom.N(l), Nudof]; % same size as displacement vectors (depends on polarization)
+            Gi = zeros(sizeG); % allocate for this layer
+            lay = obj.lay{l};
+            Dz = 1/lay.h*lay.D1; % differentiation matrix
+            pphi = permute(phi{l}, [1, 2, 4, 3]); % additional dimension for mult. with diff. mat.
+            dzPhi = sum(shiftdim(Dz, -2).*pphi, 4); % ez.F = ∂u/∂z, dimension 4 is singleton
+            Gi(:,:,:,xDim,:) = 1i*dat.k.*phi{l};  % assign components ex.F
+            Gi(:,:,:,zDim,:) = dzPhi;  % assign components ez.F
+            G{l} = Gi; 
+        end 
+    end
+
 end % methods
 
 end % class
