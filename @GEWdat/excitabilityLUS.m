@@ -55,8 +55,9 @@ switch at
 end
 
 dat = normalizeReal(dat);
-ux = dat.u{l}(:,:,n,dat.gew.udof == dat.gew.udofAxial);
-uz = dat.u{l}(:,:,n,dat.gew.udof == 3); % udof = 3 is always normal/radial to the plate/cylinder
+u = displacement(dat);
+ux = u{l}(:,:,n,dat.gew.udof == dat.gew.udofAxial);
+uz = u{l}(:,:,n,dat.gew.udof == 3); % udof = 3 is always normal/radial to the plate/cylinder
 exc = abs(dat.k).*abs(ux).*abs(uz); % excitability ~vx, detectability ~ uy
 excUnit = median(exc(isfinite(exc)))*1e2;
 exc = exc./excUnit; % normalized excitability (don't use max as there might be singularities where cg->0)

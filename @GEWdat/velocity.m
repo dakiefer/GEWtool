@@ -14,7 +14,7 @@ if ~isscalar(dat) % compute recursively for every waveguide problem in the vecto
 end
 
 w = dat.w;
-u = dat.u;
+u = displacement(dat);
 v = cell(size(u));
 for i = 1:length(v) % for every layer
     v{i} = -1i*w.*u{i};

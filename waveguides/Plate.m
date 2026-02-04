@@ -218,18 +218,20 @@ methods
     end
 
     function F = displGrad(obj, dat)
-        % displGrad - Displacement gradient of the provided field "dat.u".
+        % displGrad - Displacement gradient of the provided field.
         F = cell(obj.geom.nLay, 1); % allocate for each layer
+        u = displacement(dat); % extract displacements (piezoelec. plate also has potentials)
         for l = 1:obj.geom.nLay
-            sizeF = [size(dat.w), obj.geom.N(l), obj.geom.Nudof(l), obj.geom.Nudof(l)]; % size of F = grad u
+            NudofL = size(u{l},4);
+            sizeF = [size(dat.w), obj.geom.N(l), NudofL, NudofL]; % size of F = grad u
             Fi = zeros(sizeF); % allocate for displacement gradient F = grad u
             lay = obj.lay{l};
             Dz = 1/lay.h*lay.D1; % differentiation matrix
-            iku = 1i*dat.k.*dat.u{l}; % ex.F = ik*u
-            uu = permute(dat.u{l}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.
+            iku = 1i*dat.k.*u{l}; % ex.F = ik*u
+            uu = permute(u{l}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.
             dzu = sum(shiftdim(Dz, -2).*uu, 4); % ez.F = ∂u/∂z, dimension 4 is singleton
             Fi(:,:,:,1,:) = iku;  % assign components ex.F
-            Fi(:,:,:,obj.geom.Nudof(l),:) = dzu;  % assign components ez.F
+            Fi(:,:,:,NudofL,:) = dzu;  % assign components ez.F
             F{l} = Fi; 
         end 
     end

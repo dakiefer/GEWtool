@@ -86,13 +86,14 @@ methods
     end
 
     function F = displGrad(obj, dat)
-        % displGrad - Displacement gradient of the provided field "dat.u".
+        % displGrad - Displacement gradient of the provided field.
         udof = obj.udof;
         F = cell(obj.geom.nLay, 1); % allocate for each layer
         A = Cylinder.AphiDerivative; % differetiation in curvilinear coordinate 
         n = dat.k*obj.geom.zItf(end); % k times outer radius ro
         inIpA = 1i*n.*shiftdim(eye(3),-3) + shiftdim(A,-3); % n = dat.k/r (circumferential)
         inIpA = inIpA(:,:,:,:,udof); % reduce according to polarization
+        u = displacement(dat); % extract displacements (piezoelec. plate also has potentials)
         for l = 1:obj.geom.nLay
             sizeF = [dat.Nk, dat.Nw, obj.geom.N(l), 3, 3]; % size of F = grad u 
             Fi = zeros(sizeF); % allocate for displacement gradient F = grad u
@@ -103,10 +104,10 @@ methods
                 r(1) = r(1) + max(r)*(100*eps); % lazyly avoid singularity
             end
             r = shiftdim(r,-2);           % radial coordinates in SI units
-            % iku = 1i*dat.n.*dat.u{l}; % ex.F = ik*u (k = dat.n == 0, circumferential waves)
-            uu = permute(dat.u{l}, [1, 2, 5, 3, 4]); % [k,w,*,r,u] additional dimension for mult. with diff. mat.
+            % iku = 1i*dat.n.*u{l}; % ex.F = ik*u (k = dat.n == 0, circumferential waves)
+            uu = permute(u{l}, [1, 2, 5, 3, 4]); % [k,w,*,r,u] additional dimension for mult. with diff. mat.
             dru = sum(shiftdim(Dr, -2).*uu, 4); % er.F = ∂u/∂r, dimension 4 is singleton
-            uu = permute(dat.u{l}, [1, 2, 3, 5, 4]); % [k,w,r,*,u] additional dimension * for mult. with (in*I + A)
+            uu = permute(u{l}, [1, 2, 3, 5, 4]); % [k,w,r,*,u] additional dimension * for mult. with (in*I + A)
             Au = sum(1./r.*inIpA.*uu,5); % k = n/r
             % Fi(:,:,:,1,udof) = 0;  % ex.F = 0
             Fi(:,:,:,2,:) = Au;      % assign components ephi.F (always has 3 components thanks to inIpA))

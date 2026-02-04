@@ -2,7 +2,7 @@ function psi = eigenVecs(gew, u)
 % EIGENVEC - Convert displacement array to eigenvector. 
 % 
 % This function is used for postprocessing, e.g., in groupVel(). The eigenvector
-% psi is a re-arrangement of the displacement array dat.u. Furthermore, the
+% psi is a re-arrangement of the array of unknowns dat.u. Furthermore, the
 % degrees of freedom fixed by Dirichlet boundary conditions are removed.
 % 
 % Arguments: 

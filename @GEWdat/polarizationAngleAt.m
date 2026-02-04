@@ -50,7 +50,8 @@ elseif ischar(at)
     end
 end
 
-u = dat.u{l}(:,:,n,:);
+uu = displacement(dat); % displacements of all modes
+u = uu{l}(:,:,n,:);     % displacement at surface of mode n
 eyDotU = abs( u(:,:,:,dat.gew.udofSH) );  % abs(ey.u) (ey is SH-component)
 Unorm = vecnorm(u,2,4); % 2-norm along 4th-dimension
 gamma = real(acos(eyDotU./Unorm)); % complex due to numerical inpresition

@@ -99,12 +99,13 @@ methods
     end
 
     function F = displGrad(obj, dat)
-        % displGrad - Displacement gradient of the provided field "dat.u".
+        % displGrad - Displacement gradient of the provided field.
         udof = obj.udof;
         F = cell(obj.geom.nLay, 1); % allocate for each layer
         A = Cylinder.AphiDerivative; % differetiation in curvilinear coordinate 
         inIpA = 1i*obj.n*eye(3) + A;
         inIpA = inIpA(:,udof); % reduce according to polarization
+        u = displacement(dat); % extract displacements (piezoelec. plate also has potentials)
         for l = 1:obj.geom.nLay
             sizeF = [size(dat.w), obj.geom.N(l), 3, 3]; % size of F = grad u 
             Fi = zeros(sizeF); % allocate for displacement gradient F = grad u
@@ -115,10 +116,10 @@ methods
                 r(1) = r(1) + max(r)*(100*eps); % lazyly avoid singularity
             end
             r = shiftdim(r,-2);           % radial coordinates in SI units
-            iku = 1i*dat.k.*dat.u{l}; % ex.F = ik*u
-            uu = permute(dat.u{l}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.
+            iku = 1i*dat.k.*u{l}; % ex.F = ik*u
+            uu = permute(u{l}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.
             dru = sum(shiftdim(Dr, -2).*uu, 4); % er.F = ∂u/∂r, dimension 4 is singleton
-            uu = permute(dat.u{l}, [1, 2, 3, 5, 4]); % additional dimension for mult. with (in*I + A)
+            uu = permute(u{l}, [1, 2, 3, 5, 4]); % additional dimension for mult. with (in*I + A)
             Ad = shiftdim(inIpA, -3);
             Au = sum(1./r.*Ad.*uu,5);
             Fi(:,:,:,1,udof) = iku;  % assign components ex.F
