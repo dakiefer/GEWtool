@@ -75,6 +75,9 @@ methods
             ce = energyVelVec(obj); 
         end
     end
+    function ret = isreal(obj)
+        ret = isreal(obj.k) && isreal(obj.w); 
+    end
     function ind = isPropagative(obj,reltol)
         if nargin < 2, reltol = 1e-5; end
         ind = cell(size(obj));
