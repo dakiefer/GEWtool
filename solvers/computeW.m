@@ -31,8 +31,9 @@ function dat = computeW(gews, k, nModes, opts)
     % 
     % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-    if nargin < 4, opts = []; end
+    if nargin < 4, opts = struct(); end
     if nargin < 3, nModes = []; end
+    opts.compute = "w";
     
     if ~isvector(k), error('Wavenumbers should be a [1xN] array.'); end
     k = k(:); % column vector

@@ -7,10 +7,21 @@ function [opts, nModes] = parseSolverOpts(opts, op, nModes)
 % 2022-2023 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 if ~isfield(opts, 'show'),     opts.show = false;      end
-if ~isfield(opts, 'subspace') && size(op.M,1) > 60 % 60 was determined empirically
-    opts.subspace = true;  % default for big matrices
-elseif ~isfield(opts, 'subspace') 
-    opts.subspace = false; % default for small matrices
+if opts.compute == "k" 
+    isSingular = rcond(op.L0 + op.M) < 1e2*eps; % k from -[L0 + w^2*M]*u = [ (ik)^2*L2 + ik*L1 ]*u, test at w = 1
+elseif opts.compute == "w"
+    isSingular = rcond(op.L2 + op.L1 + op.L0) < 1e2*eps; % w from: -[(ik)^2*L2 + ik*L1 + L0]*u = w^2*M*u, test at k = 1
+end
+if ~isfield(opts, 'subspace') % guess best algorithm to use
+    if ~isSingular && size(op.M,1) > 60 % 60 was determined empirically
+        opts.subspace = true;  % default for big matrices
+    else
+        opts.subspace = false; % default for small matrices
+    end
+else
+    if opts.subspace && isSingular && ( ~isfield(opts, 'target') || ~isnumeric(opts.target) )
+        warning('GEWTOOL:singular', 'The eigenvalue problem is singular or close to singular. If you encounter stability issues, switch to the QZ-algorithm by providing opts.subspace = false to computeK(), computeW(). Alternatively, try providing a target in opts.target. I will proceed anyways.');
+    end
 end
 if ~isfield(opts, 'sparse'), opts.sparse = opts.subspace; end % default: sparse when subspace methods are used
 if (isempty(nModes) || isinf(nModes)) && opts.subspace % default for subspace

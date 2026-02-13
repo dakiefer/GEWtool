@@ -31,8 +31,9 @@ function dat = computeK(gews, w, nModes, opts)
     % 
     % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
-    if nargin < 4, opts = []; end
+    if nargin < 4, opts = struct(); end
     if nargin < 3, nModes = []; end
+    opts.compute = "k";
     
     if ~isvector(w), error('Angular frequencies should be a [Nx1] array.'); end
     w = w(:).'; % row vector
