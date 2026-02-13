@@ -268,6 +268,16 @@ methods
         obj.geom.gdofDBC = gdof(:).'; 
     end
 
+    function ret = isPiezoelectric(obj)
+        ret = false; 
+        for l = obj.lay 
+            if isa(l{1}, "LayerPlatePiezo")
+                ret = true; 
+                return;
+            end
+        end
+    end
+
     function wc = cutoffFreq(obj, wmax, includeZeroFreq)
         if isempty(obj.op)
             error('GEWTOOL:cutoffFreq:chooseWaves', 'First choose the waves you want to compute: Lamb(), sh(), fullyCoupled().');
