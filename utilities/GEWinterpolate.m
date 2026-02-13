@@ -66,8 +66,10 @@ for l = 1:gew.geom.nLay
     end
 end
 
+% normalize coordinates for accuracy: 
+zi = zi(:)/gew.np.h0;
+
 % initialize:
-zi = zi(:); % barylag needs a column vector
 s = size(u{1}); s(1) = length(zi); % size of data structure after interpolation
 ui = zeros(s); % allocate
 nComp = prod(s(2:end)); % number of components of the field (3 for displ, 9 for stress...)
@@ -95,7 +97,7 @@ end
 % interpolate+extrapolate on every layer and every field component:
 for l = 1:gew.geom.nLay 
     for n = 1:nComp % loop over all component of the data 
-        zl = gew.geom.z{l};  % nodal points
+        zl = gew.geom.z{l}/gew.np.h0;  % normalized nodal points
         datal = [zl, u{l}(:,n)];               % initial data
         indl = zi >= zl(1) & zi <= zl(end);    % indices of interpolated data for this layer
         ui(indl,n) = barylag(datal, zi(indl)); % interpolate onto corresponding zi
@@ -111,5 +113,7 @@ for l = 1:gew.geom.nLay
         end
     end
 end
+
+zi = zi*gew.np.h0; % back to SI units
 
 end
