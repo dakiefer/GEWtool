@@ -20,7 +20,7 @@ end
 
 P = powerFlux(dat);   % for a plate: vector in the plane of the plate
 H = energyTotal(dat);
-ce = P./H;
+ce = P./H*dat.gew.np.fh0;
 
 % NOTE: this function depends on many of the field calculation functions:
 % - GEWintegrate

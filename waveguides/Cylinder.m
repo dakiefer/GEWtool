@@ -110,13 +110,13 @@ methods
             sizeF = [size(dat.w), obj.geom.N(l), 3, 3]; % size of F = grad u 
             Fi = zeros(sizeF); % allocate for displacement gradient F = grad u
             lay = obj.lay{l};
-            Dr = 1/lay.h*lay.D1; % differentiation matrix
-            r = lay.r(:); 
+            Dr = 1/lay.h*lay.D1*obj.np.h0; % differentiation matrix, normalized
+            r = lay.r(:)/obj.np.h0; 
             if r(1) == 0
                 r(1) = r(1) + max(r)*(100*eps); % lazyly avoid singularity
             end
-            r = shiftdim(r,-2);           % radial coordinates in SI units
-            iku = 1i*dat.k.*u{l}; % ex.F = ik*u
+            r = shiftdim(r,-2);           % radial coordinates, normalized
+            iku = 1i*dat.k.*u{l}*obj.np.h0; % ex.F = ik*u, normalized
             uu = permute(u{l}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.
             dru = sum(shiftdim(Dr, -2).*uu, 4); % er.F = ∂u/∂r, dimension 4 is singleton
             uu = permute(u{l}, [1, 2, 3, 5, 4]); % additional dimension for mult. with (in*I + A)

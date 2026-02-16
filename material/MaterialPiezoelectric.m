@@ -252,7 +252,7 @@ methods
         lastF   = length(dimsF); 
         beforeF = length(dimsF)-1;
         lastG   = length(dimsG);
-        D = sum(sum( e.*F , lastF), beforeF) +  sum( eps.*G , lastG);
+        D = sum(sum( e.*F , lastF), beforeF) -  sum( eps.*G , lastG);
     end
 
     % maye the following should also be specialized for piezoelectric media: 

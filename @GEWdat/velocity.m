@@ -13,8 +13,8 @@ if ~isscalar(dat) % compute recursively for every waveguide problem in the vecto
     return;
 end
 
-w = dat.w;
-u = displacement(dat);
+w = dat.w/dat.gew.np.fh0*dat.gew.np.h0; % normalized frequency
+u = displacement(dat); % is already normalized
 v = cell(size(u));
 for i = 1:length(v) % for every layer
     v{i} = -1i*w.*u{i};

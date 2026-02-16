@@ -90,7 +90,7 @@ methods
         udof = obj.udof;
         F = cell(obj.geom.nLay, 1); % allocate for each layer
         A = Cylinder.AphiDerivative; % differetiation in curvilinear coordinate 
-        n = dat.k*obj.geom.zItf(end); % k times outer radius ro
+        n = dat.k*obj.geom.zItf(end)/obj.np.h0; % k times normalized outer radius ro
         inIpA = 1i*n.*shiftdim(eye(3),-3) + shiftdim(A,-3); % n = dat.k/r (circumferential)
         inIpA = inIpA(:,:,:,:,udof); % reduce according to polarization
         u = displacement(dat); % extract displacements (piezoelec. plate also has potentials)
@@ -98,12 +98,12 @@ methods
             sizeF = [dat.Nk, dat.Nw, obj.geom.N(l), 3, 3]; % size of F = grad u 
             Fi = zeros(sizeF); % allocate for displacement gradient F = grad u
             lay = obj.lay{l};
-            Dr = 1/lay.h*lay.D1; % differentiation matrix
-            r = lay.r(:); 
+            Dr = 1/lay.h*lay.D1*obj.np.h0; % differentiation matrix, normalized
+            r = lay.r(:)/obj.np.h0; 
             if r(1) == 0
                 r(1) = r(1) + max(r)*(100*eps); % lazyly avoid singularity
             end
-            r = shiftdim(r,-2);           % radial coordinates in SI units
+            r = shiftdim(r,-2);           % radial coordinates, normalized
             % iku = 1i*dat.n.*u{l}; % ex.F = ik*u (k = dat.n == 0, circumferential waves)
             uu = permute(u{l}, [1, 2, 5, 3, 4]); % [k,w,*,r,u] additional dimension for mult. with diff. mat.
             dru = sum(shiftdim(Dr, -2).*uu, 4); % er.F = ∂u/∂r, dimension 4 is singleton

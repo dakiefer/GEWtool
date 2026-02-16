@@ -226,8 +226,8 @@ methods
             sizeF = [size(dat.w), obj.geom.N(l), NudofL, NudofL]; % size of F = grad u
             Fi = zeros(sizeF); % allocate for displacement gradient F = grad u
             lay = obj.lay{l};
-            Dz = 1/lay.h*lay.D1; % differentiation matrix
-            iku = 1i*dat.k.*u{l}; % ex.F = ik*u
+            Dz = 1/lay.h*lay.D1*obj.np.h0;  % differentiation matrix, normalized
+            iku = 1i*dat.k.*u{l}*obj.np.h0; % ex.F = ik*u, normalized
             uu = permute(u{l}, [1, 2, 5, 3, 4]); % additional dimension for mult. with diff. mat.
             dzu = sum(shiftdim(Dz, -2).*uu, 4); % ez.F = ∂u/∂z, dimension 4 is singleton
             Fi(:,:,:,1,:) = iku;  % assign components ex.F
@@ -248,11 +248,11 @@ methods
             sizeG = [size(dat.w), obj.geom.N(l), Nudof]; % same size as displacement vectors (depends on polarization)
             Gi = zeros(sizeG); % allocate for this layer
             lay = obj.lay{l};
-            Dz = 1/lay.h*lay.D1; % differentiation matrix
+            Dz = 1/lay.h*lay.D1*obj.np.h0; % differentiation matrix, normalized
             pphi = permute(phi{l}, [1, 2, 4, 3]); % additional dimension for mult. with diff. mat.
             dzPhi = sum(shiftdim(Dz, -2).*pphi, 4); % ez.F = ∂u/∂z, dimension 4 is singleton
-            Gi(:,:,:,xDim,:) = 1i*dat.k.*phi{l};  % assign components ex.F
-            Gi(:,:,:,zDim,:) = dzPhi;  % assign components ez.F
+            Gi(:,:,:,xDim,:) = 1i*(dat.k*obj.np.h0).*phi{l};  % assign components ex.F, normalized
+            Gi(:,:,:,zDim,:) = dzPhi;  % assign components ez.F, already normalized
             G{l} = Gi; 
         end 
     end

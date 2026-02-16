@@ -18,7 +18,7 @@ if ~isscalar(dat) % compute recursively for every waveguide problem in the vecto
     return;
 end
 
-G = potentialGrad(dat.gew,dat); 
+G = potentialGrad(dat.gew,dat); % = 0 if the waveguide is not piezoelectric
 
 E = cell(dat.gew.geom.nLay, 1); % allocate for each layer
 for l = 1:dat.gew.geom.nLay

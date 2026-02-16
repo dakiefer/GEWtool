@@ -38,7 +38,7 @@ end
 
 %% particle velocity:
 v= velocity(dat);
-v = abs(v{1});
+v = abs(v{1}*dat.gew.np.fh0/dat.gew.np.h0); % displacements are already noramlized
 v = v(:,:,1,1);
 err = (abs(v(:) - vRef(:)))./vRef(:);
 assert( all(err < relTol) )
@@ -51,7 +51,7 @@ end
 
 %% strain: 
 S = strain(dat);
-S = abs(S{1});
+S = abs(S{1}/dat.gew.np.h0);
 S = S(:,:,1,1,1);
 err = (abs(S(:) - SRef(:)))./SRef(:);
 assert( all(err < relTol) )
@@ -66,7 +66,7 @@ end
 T0 = 1; % mean(TRef(:));
 TRefN = TRef/T0;
 T = stress(dat);
-T = abs(T{1}(:,:,1,1,1))/T0; % complex-valued, Txx at top is generally non-zero
+T = abs(T{1}(:,:,1,1,1)*dat.gew.np.c0/dat.gew.np.h0)/T0; % complex-valued, Txx at top is generally non-zero
 err = (abs(T(:) - TRefN(:)))./TRefN(:);
 assert( all(err < relTol) )
 
@@ -85,7 +85,7 @@ indRef = real(datRef.k) > 0;
 ind =    real(dat.k) > 0;
 pRefPos = pRef(indRef); % only with real(k) > 0
 p = poyntingVec(dat);
-p = p{1}(:,:,1,1);
+p = p{1}(:,:,1,1)*dat.gew.np.fh0/dat.gew.np.h0^2*dat.gew.np.c0;
 p = p(ind); % only with real(k) > 0
 err = abs(p - pRefPos)./pRefPos; % relative error
 assert( all(err < relTol) )
@@ -97,7 +97,7 @@ if exist('show', 'var') && show
 end
 
 %% kinetik energy 
-Ek = energyKinetic(dat);
+Ek = energyKinetic(dat)*dat.gew.np.c0/dat.gew.np.h0^2;
 err = (abs(Ek(:) - EkRef(:)))./EkRef(:);
 assert( all(err < relTol) )
 
@@ -108,7 +108,7 @@ if exist('show', 'var') && show
 end
 
 %% elastic energy:
-Es = energyElastic(dat);
+Es = energyElastic(dat)*dat.gew.np.c0/dat.gew.np.h0^2;
 err = (abs(Es(:) - EsRef(:)))./EsRef(:);
 assert( all(err < relTol) )
 
@@ -126,7 +126,7 @@ end
 indRef = real(datRef.k) > 0;
 ind =    real(dat.k) > 0;
 PRefPos = PRef(indRef);
-P = powerFlux(dat);
+P = powerFlux(dat)*dat.gew.np.fh0/dat.gew.np.h0^2*dat.gew.np.c0;
 PPos = P(ind);
 err = (abs(PPos - PRefPos))/mean(abs(PRefPos)); % absolute normalized error
 assert( all(err < relTol) )

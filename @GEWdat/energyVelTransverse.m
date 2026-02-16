@@ -21,7 +21,7 @@ end
 
 Py = powerFluxTransverse(dat); % orthogonal to k and plate's normal
 H = energyTotal(dat);
-cey = Py./H;
+cey = Py./H*dat.gew.np.fh0;
 
 % NOTE: this function depends on basically all field calculation functions:
 % - GEWintegrate

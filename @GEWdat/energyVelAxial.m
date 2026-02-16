@@ -21,7 +21,7 @@ end
 
 Px = powerFluxAxial(dat); % component aligned with k-vector
 H = energyTotal(dat);
-cex = Px./H;
+cex = Px./H*dat.gew.np.fh0;
 
 % NOTE: this function depends on many of the field calculation functions:
 % - GEWintegrate
