@@ -168,6 +168,93 @@ methods
         save@Material(obj,path);
     end
 
+    function T = stress(obj, F, G, np, udof)
+        % stress - for given displacement gradient F and potential gradient G
+        % The last two dimensions of F and the last one of G are interpreted as the 
+        % relevant tensor dimensions, other dimensions are ignored. Only the degrees 
+        % of freedom "udof" are considered.
+        % 
+        % T = c : F + G . e
+        %
+        % Arguments:
+        % - obj:   Material object 
+        % - F:     displacement gradient F = grad(u): [Nudof x Nudof] with possibly preceeding dimensions
+        % - G:     potential gradient G = grad(phi):  [Nudof x Nudof] with possibly preceeding dimensions
+        % - np:    (struct) normalization parameters, i.e., SI value to interpret as unit values
+        % - udof:  [Nudof x 1] indicating which components of the tensors to use
+        %
+        % Return values:
+        % - T:     (same size as F) stress tensor
+        % 
+        % 2026 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris | PSL, CNRS, France
+
+        if nargin < 5, udof = [1;2;3]; end
+        if ndims(G) >= 2 && ndims(F) ~= ndims(G) + 1
+            error('GEWTOOL:MaterialPiezoelectric', 'The displacement gradient F should have one more dimension than the potential gradient G.');
+        end
+        
+        % prepare variables (arrangement of dimensions, normalization):
+        dimsF = 1:ndims(F)+2; % new dimensions
+        dimsF = [dimsF(1:end-4) dimsF(end-1:end) flip(dimsF(end-3:end-2))]; % e.g. [1 2 3 6 7 5 4], where 6 and 7 are new dimensions
+        %          ↑ leading     ↑ new            ↑ transpose of F-dimensions
+        c = shiftdim( obj.c(udof,udof,udof,udof), -(length(dimsF)-4))/np.c0; % norm. stiffness: shift to correct dimension
+        F = permute(F, dimsF); % arrange so that dimensions of F and c overlap that are to be contracted
+        e = shiftdim( obj.e(udof,udof,udof), -(length(dimsF)-4))/np.e0; % norm. piezo-stress: shift to SAME dimension
+
+        % contractions: T = c : F + G . e:
+        lastF   = length(dimsF); 
+        beforeF = length(dimsF)-1;
+        firstG  = ndims(G);
+        permGe = [1:firstG-1 firstG+1:ndims(e) firstG]; 
+        T = sum(sum( c.*F , lastF), beforeF) +  permute(sum( G.*e , firstG), permGe); % permute: remove singleton dimension in G*e
+    end
+
+    function D = electricFluxDensity(obj, F, G, np, udof)
+        % electricFluxDensity - for given displacement gradient F and potential gradient G
+        % The last two dimensions of F and the last one of G are interpreted as the 
+        % relevant tensor dimensions, other dimensions are ignored. Only the degrees 
+        % of freedom "udof" are considered.
+        % 
+        % D = e:F - eps.G = e:grad(u) - eps.grad(phi)
+        %
+        % Arguments:
+        % - obj:   Material object 
+        % - F:     displacement gradient F = grad(u): [Nudof x Nudof] with possibly preceeding dimensions
+        % - G:     potential gradient G = grad(phi):  [Nudof x Nudof] with possibly preceeding dimensions
+        % - np:    (struct) normalization parameters, i.e., SI value to interpret as unit values
+        % - udof:  [Nudof x 1] indicating which components of the tensors to use
+        %
+        % Return values:
+        % - D:     (same size as G) electric flux density vectors
+        % 
+        % 2026 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris | PSL, CNRS, France
+
+        if nargin < 5, udof = [1;2;3]; end
+        if ndims(G) >= 2 && ndims(F) ~= ndims(G) + 1
+            error('GEWTOOL:MaterialPiezoelectric', 'The displacement gradient F should have one more dimension than the potential gradient G.');
+        end
+
+        % prepare variables (arrangement of dimensions, normalization):
+        dimsF = 1:ndims(F)+1; % new dimensions
+        dimsF = [dimsF(1:end-3) dimsF(end) flip(dimsF(end-2:end-1))]; % e.g. [1 2 3 6 5 4], where 6 is a new dimension
+        %          ↑ leading     ↑ new       ↑ transpose of F-dimensions
+        F = permute(F, dimsF); % arrange so that dimensions of F and c overlap that are to be contracted
+
+        dimsG = 1:ndims(G)+1; % new dimensions
+        dimsG = [dimsG(1:end-2) dimsG(end) dimsG(end-1)]; % e.g. [1 2 3 6 5 4], where 6 is a new dimension
+        %          ↑ leading     ↑ new       ↑ G-dimension
+        G = permute(G, dimsG); 
+
+        eps = shiftdim( obj.epsilon(udof,udof), -(length(dimsF)-3))/np.eps0; % norm. stiffness: shift to correct dimension
+        e   = shiftdim( obj.e(udof,udof,udof), -(length(dimsF)-3))/np.e0; % norm. piezo-stress: shift to SAME dimension
+
+        % contractions:
+        lastF   = length(dimsF); 
+        beforeF = length(dimsF)-1;
+        lastG   = length(dimsG);
+        D = sum(sum( e.*F , lastF), beforeF) +  sum( eps.*G , lastG);
+    end
+
     % maye the following should also be specialized for piezoelectric media: 
     % [s, e0] = slownessCurve(obj, alpha, ek)
     % [cs, eu] = wavespeeds(obj, ek)

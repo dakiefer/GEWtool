@@ -289,6 +289,9 @@ methods
         cmax = 1/min(s(:));
     end
 
+    T = stress(obj, F, np, udof)
+    p = momentum(obj, v, np, udof)
+
     [s, e0] = slownessCurve(obj, alpha, ek)
     [cs, eu] = wavespeeds(obj, ek)
     [ce] = energyVel(obj, ek)
