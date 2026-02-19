@@ -11,6 +11,9 @@ function [ui, zi] = GEWinterpolate(gew, u, zi, parity)
 %               equidistant grid on [gew.geom.zItf(1), gew.geom.zItf(end)].
 %             - zi (vector): the coordinates on which to interpolate (should be 
 %               in the domain of the provided data (i.e. the waveguide cross-section).
+% - parity:   (scalar | same size as field) Used for symmetrized waveguides only. 
+%             Specifies whether the field u is extrapolated on z < 0 as symmetric 
+%             or antisymmetric. 
 % 
 % Return values: 
 % - ui:    (array) data interpolated to coordinates zi
@@ -40,9 +43,6 @@ if ~iscell(u) && gew.geom.nLay ~= 1  % for multilayered waveguide we need a cell
     error('GEWTOOL:GEWinterpolate:incorrectDataStructure', 'The waveguide has multiple layers but the data structure is not a cell array.');
 elseif ~iscell(u) && gew.geom.nLay == 1
     uu{1} = u; u = uu; % wrap into cell for consistency
-end
-if nargin >= 4 && ~(parity == 1 || parity == -1)
-    error('GEWTOOL:GEWinterpolate','The forth arguement "parity" should be 1 or -1.')
 end
 
 % convert from number of nodes Ni to nodes zi, if necessary:
