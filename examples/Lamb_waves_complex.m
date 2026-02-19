@@ -7,7 +7,7 @@
 
 mat = MaterialIsotropic('steel'); % load from database (or create your own)
 h = 1e-3;                         % thickness in m
-N = 15;                           % number of nodes (dictates accuracy)
+N = 20;                           % number of nodes (dictates accuracy)
 w = 2*pi*linspace(1e-2, 7, 1000).'*1e6; % frequencies where to compute wavenumbers k
 plate = Plate(mat, h, N);         % create waveguide description 
 gews = plate.LambSA; tic;         % choose S+A Lamb waves (assembles matrices)
@@ -15,8 +15,8 @@ gews = plate.LambSA; tic;         % choose S+A Lamb waves (assembles matrices)
 dat = computeK(gews, w); toc;     % solve 
 
 figure(1); clf; hold on
-plot3(real(dat(1).k(:))/1e3, imag(dat(1).k(:))/1e3, dat(1).w(:)/2/pi/1e6, '.', 'SeriesIndex',1,'DisplayName','S'); 
-plot3(real(dat(2).k(:))/1e3, imag(dat(2).k(:))/1e3, dat(2).w(:)/2/pi/1e6, '.', 'SeriesIndex',2,'DisplayName','A'); 
+plot3(real(dat(1).k.')/1e3, imag(dat(1).k.')/1e3, dat(1).w.'/2/pi/1e6, '-', 'SeriesIndex',1,'DisplayName','S'); 
+plot3(real(dat(2).k.')/1e3, imag(dat(2).k.')/1e3, dat(2).w.'/2/pi/1e6, '-', 'SeriesIndex',2,'DisplayName','A'); 
 xlim([0, 12]), ylim([-10.5, 10.5]), view(22, 18)
 xlabel('Re(k) in rad/mm'), ylabel('Im(k) in rad/mm'), zlabel('f in MHz')
 legend(legendUnq, 'Location', 'southeast')
