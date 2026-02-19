@@ -19,6 +19,7 @@ clear opts;
 opts.parallel = false;
 opts.subspace = false;
 opts.sparse = false;
+opts.trace = false;
 dat = computeK(gew, 2*pi*freq, Nmodes, opts); % freq and Nmodes from Lamb_ref_fields.mat
 [y, wInt] = Layer.nodes(N); wInt = wInt*h; y = (y-0.5)*h;
 dat.u{1} = normalizeL2(dat.u{1}, wInt); % % normalize to ∫ conj(u).u dy = 1

@@ -63,6 +63,8 @@ if ~isempty(nModes) && ~isinf(nModes) && ( ~isscalar(nModes) || nModes ~= round(
 end
 if ~isfield(opts, 'eigenvecs'), opts.eigenvecs = true; end % default: compute eigenvectors
 if ~isfield(opts, 'standardEVP'), opts.standardEVP = isdiag(op.M) && rcond(op.M) >= 1e-4; end % default value
+if ~isfield(opts, 'trace'), opts.trace = true; end % default: reorder modes so that they are properly sorted (grouped)
+
 if opts.show, disp(opts); end % display options for debugging
 
 end

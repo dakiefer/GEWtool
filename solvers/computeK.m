@@ -97,8 +97,20 @@ function dat = computeK(gews, w, nModes, opts)
             end
             u = [];
         end
+
+        if opti.trace % trace modes: re-arrange such that dat.k
+            ww = w.*ones(size(kh)); % expand to same size (will be shuffled)
+            [kh, ind] = reorderByProximity(kh); % matches the modes such that the wavenumbers change as little as possible with frequency
+            for n = 1:size(ww,2), ww(:,n) = ww(ind(:,n),n); end % same ordering as wavenumbers
+            if ~isempty(u)
+                for n = 1:size(ww,2), u(:,n,:) = u(ind(:,n),n,:); end % same ordering 
+            end
+        else
+            ww = w; % avoid modifying w directly, as it will be reused in the next i-iteration
+        end
+
         k = kh/gew.np.h0;
-        dat(i) = GEWdat(gew,k,w,u); % save in an object of class 'GEWdat' 
+        dat(i) = GEWdat(gew,k,ww,u); % save in an object of class 'GEWdat' 
     end
 end
 
@@ -112,8 +124,7 @@ function khn = retrieveK(lbd, nModes, opti)
     end
     khnRounded = round(khn*sortAccuracy)/sortAccuracy; % sort on digits with sufficient presition only
     [~, ind] = sort(khnRounded,'ComparisonMethod','abs'); % sort by real part, 
-    khn = khn(ind); 
-    khn = khn(1:nModes); % sort and save kh(:,n) = 
+    khn = khn(ind(1:nModes)); % sort and save kh(:,n)
 end
 
 function [khn, un] = retrieveKu(lbd, eVec, nModes, opti, geom)
@@ -128,8 +139,8 @@ function [khn, un] = retrieveKu(lbd, eVec, nModes, opti, geom)
     end
     khnRounded = round(khn*sortAccuracy)/sortAccuracy; % sort on digits with sufficient presition only
     [~, ind] = sort(khnRounded,'ComparisonMethod','abs'); % sort by real part, 
-    khn = khn(ind); khn = khn(1:nModes); % sort and crop
-    eVec = eVec(:,ind); eVec = eVec(:,1:nModes); % sort and crop
+    khn = khn(ind(1:nModes));
+    eVec = eVec(:,ind(1:nModes)); % sort and crop
     if     strcmp(opti.linearization,'companion') &&  opti.standardEVP 
         eVec = opti.T*eVec; % transform eigenvectors back 
     elseif strcmp(opti.linearization,'companion') && ~opti.standardEVP

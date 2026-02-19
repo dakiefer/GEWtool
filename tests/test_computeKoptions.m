@@ -13,7 +13,8 @@ plate = Plate(mat, h, N);
 gew = plate.LambS;
 nModes = 10;
 
-datDefault = computeK(gew, w, nModes);
+opts.trace = false; % avoid arbitrary mode ordering
+datDefault = computeK(gew, w, nModes, opts);
 
 if exist('show', 'var') && show
     figure(1); clf; hold on
@@ -29,6 +30,7 @@ for a = 0:2^4-1
     opts.eigenvecs = bitget(a,3);
     opts.subspace = bitget(a,2); 
     opts.sparse = bitget(a,1); 
+    opts.trace = false; % avoid arbitrary mode ordering
     
     if opts.sparse && ~opts.subspace
         continue; % sparse matrices only in combination with subspace method
