@@ -1,0 +1,8 @@
+{
+"name":		"platinum - Pt",
+"rho":		21450,
+"lambda":	1.6636e+11,
+"mu":		5.2536e+10,
+"symmetry":"isotropic",
+"source":"Berger et. al, doi: 10.1063/5.0226103"
+}

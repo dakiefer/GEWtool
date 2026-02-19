@@ -1,0 +1,8 @@
+{
+"name":"molybdenum - Mo",
+"rho":		10200,
+"lambda":	2.0177e+11,
+"mu":		1.2366e+11,
+"symmetry":"isotropic",
+"source":"Berger et. al, doi: 10.1063/5.0226103"
+}

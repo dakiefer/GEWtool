@@ -1,0 +1,8 @@
+{
+"name":"titanium - Ti",
+"rho":		4500,
+"lambda":	1.4346e+11,
+"mu":		6.1481e+10,
+"symmetry":"isotropic",
+"source":"Berger et. al, doi: 10.1063/5.0226103"
+}

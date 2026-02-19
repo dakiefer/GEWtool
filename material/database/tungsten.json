@@ -1,0 +1,9 @@
+{
+"name":"tungsten - W",
+"rho":		19300,
+"lambda":	2.0533e+11,
+"mu":		1.6133e+11,
+"symmetry":"isotropic",
+"note":"Also called wolfram.",
+"source":"Berger et. al, doi: 10.1063/5.0226103"
+}

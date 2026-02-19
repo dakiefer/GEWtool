@@ -1,0 +1,9 @@
+{
+"name":"silicon dioxide - SiO2",
+"rho":		2200,
+"lambda":	1.5411e+10,
+"mu":		2.9915e+10,
+"symmetry":"isotropic",
+"note":"Parameters can largely vary.",
+"source":"Berger et. al, doi: 10.1063/5.0226103"
+}

@@ -1,0 +1,9 @@
+{
+"name":"aluminum nitrate - AlN",
+"rho":		3260,
+"lambda":	1.2480e+11,
+"mu":		1.2480e+11,
+"symmetry":"isotropic",
+"note":"AlN is usually piezoelectric and anisotropic. This is to compare simulations found in literature.",
+"source":"Berger et. al, doi: 10.1063/5.0226103"
+}
