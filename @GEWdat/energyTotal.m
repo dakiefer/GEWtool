@@ -30,7 +30,11 @@ end
 if ~dat.gew.isDissipative && isreal(dat.k)
     Etot = 2*energyKinetic(dat); % exploit equipartition of energy
 else
-    Etot = energyKinetic(dat) + energyElastic(dat);
+    if isPiezoelectric(dat.gew)
+        Etot = energyKinetic(dat) + energyElastic(dat) + energyElectric(dat);
+    else
+        Etot = energyKinetic(dat) + energyElastic(dat);
+    end
 end
 
 end

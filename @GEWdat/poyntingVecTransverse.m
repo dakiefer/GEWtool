@@ -24,14 +24,23 @@ end
 v = velocity(dat);
 T = stress(dat);     % inefficient: we compute components that we don't need
 y = dat.gew.udofTransverse; % 2 for Plate and Cylinder, 1 for Circumferential
+udof = dat.gew.udof;
+if size(v{1},4) == size(T{1},4) % reduced plain strain, i.e., [ux, uz] -> indices [1 2] instead of [1 3]
+    udof = 1:length(udof);
+end
+
+if isPiezoelectric(dat.gew)
+    phi = potential(dat); 
+    D   = electricFluxDensity(dat); 
+    w   = dat.w/dat.gew.np.fh0*dat.gew.np.h0; % normalized as fields (phi, v, etc) 
+end
 
 py = cell(dat.gew.geom.nLay,1);
 for l = 1:dat.gew.geom.nLay
-    if size(v{l},4) == size(T{l},4)
-        py{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,:,y)), 4); % reduce T to components that yield py
-    else
-        dof = dat.gew.udof; 
-        py{l} = -1/2*sum(real(conj(v{l}).*T{l}(:,:,:,dof,y)), 4); % except for dof, v = 0
+    py{l} = -1/2*sum(real( conj(v{l}).*T{l}(:,:,:,udof,y) ), 4); % except for dof, v = 0
+    if isPiezoelectric(dat.gew)
+        plElec =  1/2*real( phi{l}.*conj(-1i*w.*D{l}(:,:,:,y)) ) ;
+        py{l} = py{l} + plElec;
     end
 end
 

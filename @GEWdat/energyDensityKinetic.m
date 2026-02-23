@@ -16,9 +16,9 @@ end
 v = velocity(dat); 
 
 ekin = cell(dat.gew.geom.nLay,1);
-for i = 1:dat.gew.geom.nLay
-    rho = dat.gew.lay{i}.mat.rho/dat.gew.np.rho0;
-    ekin{i} = 1/4*rho*real(sum(conj(v{i}).*v{i}, 4));
+for l = 1:dat.gew.geom.nLay
+    rho = dat.gew.lay{l}.mat.rho/dat.gew.np.rho0;
+    ekin{l} = 1/4*rho*real(sum(conj(v{l}).*v{l}, 4));
 end
 
 end
