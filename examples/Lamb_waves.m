@@ -37,6 +37,7 @@ xlim([0, 1]*dat(1).w(end,1)/2/pi/1e6);
 xlabel('frequency f in MHz'), ylabel('energy velocity ce in mm/us')
 legend(legendUnq, 'Location', 'southeast')
 title(sprintf('%s, %g mm thick', mat.name, h/1e-3))
+drawnow;
 
 % % ineractive inspection of the result: 
 GEWinspector(dat)
