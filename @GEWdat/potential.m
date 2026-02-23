@@ -26,9 +26,9 @@ if isa(dat.gew.lay{1}, 'LayerPlatePiezo') % extract potentials
         phi{i} = field{i}(:,:,:,dofPhi);
     end
 else % no potentials -> set to zero
-    s = size(dat.u{1}(:,:,:));
+    s = size(field{1});
     for i = 1:length(phi)
-        phi{i} = zeros(s); % initialize potential to zero for layers without piezoelectric properties
+        phi{i} = zeros(s(1:3)); % initialize potential to zero for layers without piezoelectric properties
     end
 end
 

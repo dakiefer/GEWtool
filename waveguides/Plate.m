@@ -247,12 +247,14 @@ methods
         for l = 1:obj.geom.nLay
             sizeG = [size(dat.w), obj.geom.N(l), Nudof]; % same size as displacement vectors (depends on polarization)
             Gi = zeros(sizeG); % allocate for this layer
-            lay = obj.lay{l};
-            Dz = 1/lay.h*lay.D1*obj.np.h0; % differentiation matrix, normalized
-            pphi = permute(phi{l}, [1, 2, 4, 3]); % additional dimension for mult. with diff. mat.
-            dzPhi = sum(shiftdim(Dz, -2).*pphi, 4); % ez.F = ∂u/∂z, dimension 4 is singleton
-            Gi(:,:,:,xDim,:) = 1i*(dat.k*obj.np.h0).*phi{l};  % assign components ex.F, normalized
-            Gi(:,:,:,zDim,:) = dzPhi;  % assign components ez.F, already normalized
+            if isPiezoelectric(dat.gew)
+                lay = obj.lay{l};
+                Dz = 1/lay.h*lay.D1*obj.np.h0; % differentiation matrix, normalized
+                pphi = permute(phi{l}, [1, 2, 4, 3]); % additional dimension for mult. with diff. mat.
+                dzPhi = sum(shiftdim(Dz, -2).*pphi, 4); % ez.F = ∂u/∂z, dimension 4 is singleton
+                Gi(:,:,:,xDim,:) = 1i*(dat.k*obj.np.h0).*phi{l};  % assign components ex.F, normalized
+                Gi(:,:,:,zDim,:) = dzPhi;  % assign components ez.F, already normalized
+            end
             G{l} = Gi; 
         end 
     end
