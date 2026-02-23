@@ -48,6 +48,6 @@ for i = 1:size(k,1)
         cg(i, j) = (Psi0'*(2*k(i,j).*L2 - 1i*L1)*Psi0) ./ (2*w(i,j)*Psi0'*M*Psi0);
     end
 end
-cg = cg*gew.np.fh0;
+cg = real(cg)*gew.np.fh0;
 
 end
