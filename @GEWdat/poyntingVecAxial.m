@@ -36,7 +36,7 @@ end
 
 px = cell(dat.gew.geom.nLay,1);
 for l = 1:dat.gew.geom.nLay
-    px{l} = -1/2*sum(real( conj(v{l}(:,:,:,udof)).*T{l}(:,:,:,udof,x) ), 4); % except for dof, v = 0
+    px{l} = -1/2*sum(real( conj(v{l}).*T{l}(:,:,:,udof,x) ), 4); % except for dof, v = 0
     if isPiezoelectric(dat.gew)
         plElec =  1/2*real( phi{l}.*conj(-1i*w.*D{l}(:,:,:,x)) ) ;
         px{l} = px{l} + plElec;

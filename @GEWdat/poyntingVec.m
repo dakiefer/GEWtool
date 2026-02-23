@@ -34,11 +34,11 @@ end
 
 p = cell(dat.gew.geom.nLay,1);
 for l = 1:dat.gew.geom.nLay
-    p{l} = -1/2*sum(real( conj(v{l}(:,:,:,udof)).*T{l}(:,:,:,udof,:) ), 4); % except for dof, v = 0
+    p{l} = -1/2*sum(real( conj(v{l}).*T{l}(:,:,:,udof,:) ), 4); % except for dof, v = 0
     p{l} = permute(p{l}, [1 2 3 5 4]); % removes 4th dimension (singleton) 
     if isPiezoelectric(dat.gew)
-        plElec =  1/2*real( phi{l}.*conj(-1i*w.*D{l}(:,:,:,udof)) ) ;
-        p{l}(:,:,:,udof) = p{l}(:,:,:,udof) + plElec(:,:,:,udof); % plElec might be 2x1 while plMech could be 3x1 
+        plElec =  1/2*real( phi{l}.*conj(-1i*w.*D{l}) ) ;
+        p{l}(:,:,:,udof) = p{l}(:,:,:,udof) + plElec; % plElec might be 2x1 while plMech could be 3x1 
     end
 end
 
