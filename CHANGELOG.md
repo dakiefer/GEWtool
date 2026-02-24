@@ -2,6 +2,32 @@
 
 Documents the changes to GEWtool.
 
+## 2.1 (2026-02-24)
+- FEATURE Add **graphical user interface** `GEWinspector` to visualize dispersion and modal structure
+- FEATURE `computeK`: **trace complex-valued dispersion curves**. This is the new default. Deactivate by setting opts.trace = false.
+- CHANGE  GEWdat: all field quantities are now returned in **normalized** units (as in Waveguide.np). Wave velocities, frequency and wavenumbers are still returned in SI units.
+- FEATURE GEWdat: computation of **energy velocity in piezoelectric** waveguides.
+- FEATURE GEWdat: field computations account for **piezoelectric wave fields** 
+- FEATURE GEWdat: added `electricField`, `potential`,`electricFluxDensity`, `energyDensityElectric`, `energyElectric`
+- FEATURE `GEWdat.polarizationAngleAt()`: computes the angle between the SH-direction and the wave's polarization
+- FEATURE `GEWdat.displacement()` extracts displacement field from piezoelectric field
+- FEATURE `GEWdat.extractModes()` now supports logical indices and linear indices
+- FEATURE `GEWdat.isreal()` returns true if wavenumber k and frequencies w are real-valued
+- FEATURE `GEWdat.isPiezoelectric()` returns true if a piezoelectric layer is present
+- FEATURE Added Material files: gold (pvdf), aluminum nitrate, molybdenum, platinum, silicon dioxide, titanium, tungsten.
+- CHANGE  stress and electric flux density are now computed by Material/MaterialPiezoelectric instead of GEWdat (specialization required)
+- FEATURE Material class: support for extrinsic and active rotations
+- FEATURE Material: convert from Material to MaterialPiezoelectric, support for scalar epsilon (permittivity)
+- BUGFIX  waveguide of symmetric/antisymmetric waves now returns full thickness instead of half the thickness.
+- BUGFIX  in computeK/computeW: check if problem is singular. Switch to eig() for singular problems.
+- CHANGE  Waveguide: added property coordNames. Re-implemented "displComp" as dependent property. Removed displacementNames().
+- BUGFIX  GEWinterpolate() now interpolates on normalized coordinates for stability
+- CHANGE  GEWinterpolate() better guessing of parity assumption for extrapolation of S/A waves
+- FEATURE GEWinterpolate() argument to specify parity of function to be extrapolated
+- FEATURE Geometry.layerNodeCompOf(): retrieves layer number, node number and dof number for a specified global dof. 
+- FIX     corrected laser-ultrasonic excitability to that of a point source step function in time
+- CHANGE  examples/rod_displacements_animation: support for flexural modes
+
 ## 2.0 (2025-01-29)
 
 - FEATURE **piezoelectric plates** are now supported. Simply pass a piezoelectric material to the Plate class.
