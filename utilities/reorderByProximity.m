@@ -50,7 +50,7 @@ for i = 2:nCols
     C(~valid) = BIG;
 
     % assignment
-    pairs = matchpairs(C, BIG*0.1);
+    pairs = matchpairs(C, BIG*10); % BIG*10 -> do not allow unmatched -> leads to array size error
 
     perm = zeros(nRows,1);
     perm(pairs(:,1)) = pairs(:,2);
