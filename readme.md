@@ -3,7 +3,7 @@
 
 **Compute guided elastic wave (GEW) dispersion in MATLAB.**
 
-`GEWtool` is an advanced system to compute and postprocess guided elastodynamic waves (GEWs) in plates and cylinders. It is simple to use yet provides full access to the computational results as well as the underlying code. You are welcome to contribute to this open-source project.
+`GEWtool` (pronounce /ɡɛv tuːl/, as in *g*ood *e*lder *v*ibe *tool*) is an advanced system to compute and postprocess guided elastic waves (GEWs) in plates and cylinders. It is simple to use yet provides full access to the computational results as well as the underlying code. You are welcome to contribute to this open-source project.
 
 **Features**:
 
