@@ -1,4 +1,4 @@
-# GEWtool [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10114243.svg)](https://doi.org/10.5281/zenodo.10114243)
+# GEWtool [![DOI 10.5281/zenodo.10114243](https://zenodo.org/badge/DOI/10.5281/zenodo.10114243.svg)](https://doi.org/10.5281/zenodo.10114243)
 
 
 **Compute guided elastic wave (GEW) dispersion in MATLAB.**
@@ -36,22 +36,30 @@
 ## Example: Lamb waves
 
 ```matlab
-mat = Material('steel');         % load from database (or create your own)
-h = 1e-3;                        % thickness in m
-N = 12;                          % number of nodes (dictates accuracy)
-k = linspace(1e-2, 12, 100)/h;   % wavenumbers to solve for
-plate = Plate(mat, h, N);        % create waveguide description 
-gews = plate.LambSA; tic;        % choose S+A Lamb waves (assembles matrices)
-dat = computeW(gews, k, 4); toc; % solve and save 4 modes (argument optional)
-plot(dat);                       % plot dispersion curves
+mat = MaterialIsotropic('steel'); % load from database (or create your own)
+h = 1e-3;                         % thickness in m
+N = 22;                           % number of nodes (dictates accuracy)
+k = linspace(1e-2, 12, 100)/h;    % wavenumbers to solve for
+plate = Plate(mat, h, N);         % create waveguide description 
+gews = plate.LambSA; tic;         % choose S+A Lamb waves (assembles matrices)
+dat = computeW(gews, k, 6); toc;  % solve and save 6 modes (argument optional)
+plot(dat);                        % plot dispersion curves
 ```
 
 output:
-`> Elapsed time is 0.010129 seconds.` 
+`> Elapsed time is 0.136516 seconds.` 
 
 ![Lamb waves in steel](assets/dispersion_lamb_steel.jpg)
 
-Proceed by inspecting the laser-ultrasonic excitability of the waves computed above (product of tangential and normal displacements ux·uz):
+The result can be explored interactively using the purpose-built graphical user interface `GEWinspector`:
+
+```matlab
+GEWinspector(dat) 				% opens interactive window
+```
+
+![GEWinspector graphical user interface](assets/GEWinspector.gif)
+
+All data is available for postprocessing and visualization in the returned object `dat`. For example, you can plot the laser-ultrasonic excitability of the waves (product of tangential and normal displacements ux·uz):
 
 ```matlab
 k = linspace(1e-2, 12, 200)/h;          % use more wavenumbers
@@ -83,9 +91,10 @@ To get started, explore the `examples` directory.
 
 You can also display help for all functions and classes, e.g., by typing `help Plate`. The most important ones are
 
-- Material representation: `Material`, `MaterialIsotropic`
+- Material representation: `Material`, `MaterialIsotropic`,`MaterialPiezoelectric`
 - Waveguides:  `Plate`, `Cylinder`, `CylinderCircumferential`
 - Solvers: `computeW`, `computeK`, `computeZGV`
+- Graphical user interface: `GEWinspector`
 
 ## Known limitations 
 
@@ -165,10 +174,10 @@ Hauke Gravenkamp, Pierre Chantelot, Claire Prada and Michael Ponschab
 
 ## Author
 
-2022–2026 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris, Université PSL.
+2022–2026 – Daniel A. Kiefer, Institut Langevin, ESPCI Paris, Université PSL, CNRS.
 
 I have several years of experience in waveguide modeling and numerical implementations thereof. In January 2022 I decided to create a new modular and versatile code from scratch. The result is GEWtool. My hope is that it be a valuable research tool and at the same time a helpful educational resource for those interested in numerical methods and elastic waves.
 
 Contact: [daniel.kiefer@espci.fr](mailto:daniel.kiefer@espci.fr) &nbsp; • &nbsp; [dakiefer.net](https://dakiefer.net) &nbsp; • &nbsp; Follow me on [ResearchGate](https://www.researchgate.net/profile/Daniel-Kiefer-5)!
 
-[![Logo Institut Langevin](assets/logo_institut_langevin.svg)](https://www.institut-langevin.espci.fr)&nbsp;&nbsp;[![Logo ESPCI](assets/logo_espci.svg)](https://www.espci.psl.eu/en/)&nbsp;&nbsp;&nbsp;&nbsp;[![Logo CNRS](assets/logo_cnrs.svg)](https://www.cnrs.fr/en)
+[![Logo Institut Langevin](assets/logo_institut_langevin.svg)](https://www.institut-langevin.espci.fr)&nbsp;&nbsp;&nbsp;&nbsp;[![Logo CNRS](assets/logo_cnrs.svg)](https://www.cnrs.fr/en)&nbsp;&nbsp;&nbsp;&nbsp;[![Logo ESPCI](assets/logo_espci.svg)](https://www.espci.psl.eu/en/)
