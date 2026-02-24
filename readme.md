@@ -170,7 +170,7 @@ Homogenization, quaternions, rotation angles
 Piezoelectricity
 
 Acknowledgments - Many inspiring discussions influenced GEWtool. D. A. Kiefer is thankful to:   
-Hauke Gravenkamp, Pierre Chantelot, Claire Prada and Michael Ponschab
+Hauke Gravenkamp, Claire Prada, Matt Clark, Pierre Chantelot and Michael Ponschab
 
 ## Author
 

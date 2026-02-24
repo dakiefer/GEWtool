@@ -4,6 +4,7 @@ function R = eulerAnglesToRotationMatrix(varargin)
 % Arguments:
 % - angle:   (scalar numeric) angle in radian to rotate
 % - axis:    (one of 'x', 'y', 'z') axis to rotate about
+% - type:    (optional) "extrinsic" | "intrinsic", "passive" | "active"
 % 
 % You can specify as many sets of angle-axis pairs as you desire. The rotation
 % will be performed in the provided order in the current coordinate system
@@ -15,6 +16,7 @@ function R = eulerAnglesToRotationMatrix(varargin)
 % R = eulerAnglesToRotationMatrix(angle, axis); 
 % R = eulerAnglesToRotationMatrix(angle1, axis1, angle2, axis2); % rotate around
 %          "axis1", then around "axis2".
+% R = eulerAnglesToRotationMatrix(angle, axis, "extrinsic", "active"); 
 % 
 % Literature: 
 % [1] D. Royer and T. Valier-Brasier, Ondes élastiques dans les solides 
@@ -24,7 +26,7 @@ function R = eulerAnglesToRotationMatrix(varargin)
 % 10.1002/j.1538-7305.1943.tb01304.x.
 % [3] https://en.wikipedia.org/wiki/Euler_angles
 % 
-% 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% 2022-2026 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
 % extract whether to perform extrinsic or active rotations:
 extrinsic = false;
