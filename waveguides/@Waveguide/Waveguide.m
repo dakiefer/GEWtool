@@ -279,12 +279,24 @@ methods
     end
 
     function wc = cutoffFreq(obj, wmax, includeZeroFreq)
-        if isempty(obj.op)
-            error('GEWTOOL:cutoffFreq:chooseWaves', 'First choose the waves you want to compute: Lamb(), sh(), fullyCoupled().');
-        end
-        if size(obj.op.M,1) < 4
-            error('GEWTOOL:cutoffFreq:chooseWaves', 'Matrices need to be at least of size 4x4.');
-        end
+        % cutoffFreq - Compute the cutoff frequencies at k = 0. 
+        % 
+        % Uses eig() for stability as the problem is usually singular at k = 0. 
+        %
+        % Usage: 
+        % > wc = gew.cutoffFreq; % lists all cutoff frequencies
+        % > wc = gew.cutoffFreq(2*pi*1e6); % limits to 1 MHz
+        % > wc = gew.cutoffFreq(2*pi*1e6, false) % removes the wc's at 0 Hz
+        % 
+        % Arguments: 
+        % - obj               Waveguide object (array) 
+        % - wmax              (optional, scalar) Maximum angular frequency of interest
+        % - includeZeroFreq   (true | false) remove cutoffs at w = 0. 
+        % 
+        % Return value: 
+        % - wc                (double array) listing all cutoff frequencies in rad/s
+        % 
+        % 2025-2026 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, CNRS, France
         if nargin < 3
             includeZeroFreq = false;
         elseif ischar(includeZeroFreq)
@@ -296,15 +308,28 @@ methods
         elseif ~islogical(includeZeroFreq)
             error('GEWTOOL:cutoffFreq:wrongArg', 'Provide argument "includeZeroFreq" as a boolean/logical or char.');
         end
+        if nargin < 2 
+            wmax = inf; 
+        end
+        if ~isscalar(obj) % compute recursively for every waveguide problem in the vector "gew"
+            wc = arrayfun(@(obj)cutoffFreq(obj, wmax, includeZeroFreq),obj,'UniformOutput',false); % apply to every object in the array "dat"
+            wc = sort(vertcat(wc{:}));
+            return;
+        end
+        if isempty(obj.op)
+            error('GEWTOOL:cutoffFreq:chooseWaves', 'First choose the waves you want to compute: Lamb(), sh(), fullyCoupled().');
+        end
+        if size(obj.op.M,1) < 5
+            error('GEWTOOL:cutoffFreq:chooseWaves', 'Matrices need to be at least of size 5x5.');
+        end
+        
         wnCutoff = real(sqrt(eig(-obj.op.L0, obj.op.M, 'chol'))); % calculate cutoff frequencies
         wnCutoff = sort(wnCutoff);
-        if nargin < 3 || ~includeZeroFreq % remove 0 Hz: relative to 4th cutoff as we have at most 3 cutoffs at 0 Hz.
-            wnCutoff = wnCutoff(wnCutoff > 1e-4*wnCutoff(4));
+        if ~includeZeroFreq % remove 0 Hz: relative to 4th cutoff as we have at most 3 cutoffs at 0 Hz.
+            wnCutoff = wnCutoff(wnCutoff > 1e-4*wnCutoff(5));
         end
         wc = wnCutoff*obj.np.fh0/obj.np.h0; % in Hz.
-        if nargin > 1 && ~isempty(wmax)
-            wc = wc(wc <= wmax); % limit to maximum frequency if provided
-        end
+        wc = wc(wc <= wmax); % limit to maximum frequency if provided
     end
 
     function nM = nModes(obj, wmax)
