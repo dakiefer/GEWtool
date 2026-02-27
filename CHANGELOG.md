@@ -2,7 +2,13 @@
 
 Documents the changes to GEWtool.
 
+## 2.1.1 (2026-02-27)
+
+- FEATURE `Waveguide.cutoffFreq()` now supports mutliple waveguide problems (vector gew object)
+- BUGFIX  `GEWinspector` does no longer throw warnings if latex is not your default interpreter
+
 ## 2.1 (2026-02-24)
+
 - FEATURE Add **graphical user interface** `GEWinspector` to visualize dispersion and modal structure
 - FEATURE `computeK`: **trace complex-valued dispersion curves**. This is the new default. Deactivate by setting opts.trace = false.
 - CHANGE  GEWdat: all field quantities are now returned in **normalized** units (as in Waveguide.np). Wave velocities, frequency and wavenumbers are still returned in SI units.
