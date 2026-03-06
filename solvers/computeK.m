@@ -1,35 +1,41 @@
 function dat = computeK(gews, w, nModes, opts)
-    % computeK - Obtain complex wavenumbers k for specified frequencies w.
-    % Solves the polynomial eigenvalue problem [(ik)^2*L2 + ik*L1 + L0(w)]*u = 0.
-    %
-    % Arguments:
-    % - gews:    Waveguide object(s), either a scalar or vector.
-    %            Describes the eigenproblem, i.e., the matrices Li.
-    %            If gews is a vector, computeW solves one problem after another 
-    %            and returns a vector of results "dat" of same length.
-    % - w:       Angular frequencies to specify in rad/s. Vector valued.
-    % - nModes:  (optional) Number of modes to compute/save (discards the highest wavenumbers).
-    % - opts:    (optional) A structure of options. Possible fields are: 
-    %            - 'eigenvecs': true (default) | false. Whether to compute
-    %               eigenvectors.
-    %            - 'standardEVP': true | false. Whether to convert the
-    %               generalized eigenvalue problem to a standard one. Default: true
-    %               if M is diagonal, false otherwise.
-    %            - 'sparse': false (default) | true. Use sparse matrices.
-    %            - 'subspace': false (default) | true. Use eigs() instead of eig().
-    %            - 'parallel': false (default) | true. Multi-core computation.
-    %            - 'show': print the used options when computing (for debugging)
-    %
-    % Return value:
-    % - dat:     A data structure containing 
-    %            - w: the angular frequencies in rad/s, expanded to [nK x nF]
-    %            - k: the wavenumbers in rad/m [nK x nF]
-    %            - u: the displacement eigenvectors as a 
-    %                 cell array describing the layers, elements are [nK x nF x N x Nudof]
-    % 
-    % See also computeW, Waveguide.
-    % 
-    % 2022-2024 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
+% computeK - Obtain complex wavenumbers k for specified frequencies w.
+% Solves the polynomial eigenvalue problem [(ik)^2*L2 + ik*L1 + L0(w)]*u = 0.
+%
+% Arguments:
+% - gews:    Waveguide object(s), either a scalar or vector.
+%            Describes the eigenproblem(s), i.e., the matrices Li.
+%            If gews is a vector, computeW solves one problem after another 
+%            and returns a vector of results "dat" of the same length.
+% - w:       Angular frequencies to specify in rad/s. Vector valued.
+% - nModes:  (optional) Number of modes to compute/save (discards highest).
+% - opts:    (optional) A structure of options. Possible fields are: 
+%            - 'eigenvecs': true (default) | false. Whether to compute eigenvectors.
+%               Turn off for speedup. 
+%            - 'standardEVP': true | false. Whether to convert the
+%               generalized eigenvalue problem to a standard one. Default: true
+%               if M is diagonal, false otherwise.
+%            - 'subspace': false | true. Use eigs() instead of eig() for speedup.
+%               Defaults to true when size(op.M,1) > 60. You should also provide 
+%               nModes to computeK.
+%            - 'sparse': false | true. Use sparse matrices. Default == 'subspace'.
+%            - 'parallel': false | true. Multi-core computation. Defaults to true 
+%               when a parallel pool is running.
+%            - 'trace': true (default) | false. Reorder modes so that they are properly
+%               sorted (grouped). Turn off for consistency across multiple computations. 
+%            - 'show': print the used options when computing (for debugging)
+%
+% Return value:
+% - dat:     Object(s) of class 'GEWdat' that stores 
+%            - w: the angular frequencies in rad/s, expanded to [nK x nW]
+%            - k: the wavenumbers in rad/m [nK x nW]
+%            - Psi: the eigenvectors [nK x nW x size(gews(i).op.M,2)]
+%            - u: the (displacement) eigenvectors expanded to a cell array where
+%            each entry is the eigenvector on a layer of size [nK x nW x Nlay x Nudof]
+% 
+% See also computeW, Waveguide.
+% 
+% 2022-2026 - Daniel A. Kiefer, Institut Langevin, ESPCI Paris, France
 
     if nargin < 4, opts = struct(); end
     if nargin < 3, nModes = []; end

@@ -1,16 +1,29 @@
 function [kk_sorted, idx] = reorderByProximity(kk, wm, wp)
 % reorderByProximity - reorder modes such that the eigenvalues change smoothly.
 % 
+% For each column of kk, the entries are re-ordered such that kk(n,i) and
+% kk(n,i+1) are the closest possible in magnitude and phase. Usually, kk(n,i) is
+% the n-th mode's complex wavenumber at frequency wi.
+% 
 % The function is based on the Hungarian (assignment) algorithm implemented in
 % Matlab's matchpairs().
+% 
+% Arguments: 
+% - kk:    matrix to be sorted/traced
+% - wm:    weight for magnitude-matching (default: 1)
+% - wp:    weight for phase-matching (default: 1)
+%
+% Return values: 
+% - kk_sorted:  matrix kk but with each column permuted (possibly differently)
+% - idx:        indices such that for i = 1:size(kk,2), kk_sorted(:,i) = kk(idx(:,i),i); end
 % 
 % This function was entirely written by an AI-based code generation system, 
 % prompted and adapted by D. A. Kiefer.
 % 
 % 2026 - Daniel A. Kiefer, Institut Langevin, CNRS, ESPCI Paris, France
 
-if nargin < 2, wm = 1; end
-if nargin < 3, wp = 1; end
+if nargin < 2, wm = 1; end % default weight for magnitude-matching
+if nargin < 3, wp = 1; end % default weight for phase-matching
 
 [nRows, nCols] = size(kk);
 
