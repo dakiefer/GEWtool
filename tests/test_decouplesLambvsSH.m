@@ -130,12 +130,14 @@ udof = [1 3];
 plate = Plate(matIso,h,N);
 lastwarn('', ''); % reset warnings
 gew = plate.polarization(udof,0); 
+gew = gew.assembleLayers(udof,0);
 [warnMsg, warnId] = lastwarn(); 
 assert(isempty(warnId) && isempty(warnMsg))
 
 plate = Plate(matTri,h,N);
 lastwarn('', ''); % reset warnings
 gew = plate.polarization(udof,0); 
+gew = gew.assembleLayers(udof,0);
 [warnMsg, warnId] = lastwarn(); 
 assert(strcmp(warnId, 'GEWTOOL:Waveguide:donotdecouple'))
 disp('Warning issued on purpose. Testing.')

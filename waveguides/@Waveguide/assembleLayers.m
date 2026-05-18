@@ -27,9 +27,6 @@ for l = 1:geom.nLay
      M(dof,dof) =  M(dof,dof) +  Mlay;
 end
 
-% reset boundary conditions, if any have been set: 
-obj.geom.gdofDBC = [];
-
 % use electrically open BCs per default (the V-term in the paper):
 if isa(lays{1}, 'LayerPlatePiezo') % at the bottom
     if ~isdiag(lays{1}.PP), error('TODO: only implemented for GLL Lagrange elements.'); end
@@ -48,5 +45,8 @@ end
 % assign result:
 op.M = M; op.L0 = L0; op.L1 = L1; op.L2 = L2;
 obj.op = op;
+
+% incorporate the Dirichlet BCs: 
+obj.incorporateDirichletBCs();
 
 end % function

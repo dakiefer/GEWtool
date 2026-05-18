@@ -47,6 +47,7 @@ methods
         % See also: sh, fullyCoupled.
         udof = obj.udofLamb();
         gew = obj.polarization(udof, 0); % vanishing axial wavenumber 
+        gew = gew.assembleLayers(udof, 0);
         % renormalization: instead of n, use k = n/b at outer radius b:
         b = gew.geom.zItf(end,end)/gew.np.h0; % normalized outer radius 
         gew.op.L2 = gew.op.L2*b^2;
@@ -63,6 +64,7 @@ methods
         % See also: fullyCoupled, Lamb.
         udof = obj.udofSH(); % ux component
         gew = obj.polarization(udof, 0); % vanishing axial wavenumber 
+        gew = gew.assembleLayers(udof, 0);
         % renormalization: instead of n, use k = n/b at outer radius b:
         b = gew.geom.zItf(end,end)/gew.np.h0; % normalized outer radius 
         gew.op.L2 = gew.op.L2*b^2;
@@ -78,6 +80,7 @@ methods
         % See also: Lamb, sh.
         udof = [1 2 3]; % ux, uphi and ur components
         gew = obj.polarization(udof, 0); % vanishing axial wavenumber 
+        gew = gew.assembleLayers(udof, 0);
         % renormalization: instead of n, use k = n/b at outer radius b:
         b = gew.geom.zItf(end,end)/gew.np.h0; % normalized outer radius 
         gew.op.L2 = gew.op.L2*b^2;

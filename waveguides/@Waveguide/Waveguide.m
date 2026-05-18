@@ -93,12 +93,13 @@ methods
     end
 
     function obj = polarization(obj, udof, n)
-        % POLARIZATION - Assemble wave operators for given polarization and order.
+        % POLARIZATION - Set the polarization and circumferential order.
         % Argument:
         % - udof:   desired polarization (displacement components) as a vector.
         %           e.g. [1 2 3], [1 2], [3].
         % - n:      order of the waves (circumferential order in cylinders).
         %           ignore if not needed. default: 0.
+        % Call assembleLayers() to obtain the final matrices.
         % 
         % See also: Lamb, sh, decouplesLambvsSH.
         polarizationNames = "u"+obj.coordNames(udof); % NOTE: udof ≠ obj.udof
@@ -111,15 +112,14 @@ methods
         for i = 1:length(Nunknowns)
             Nunknowns(i) = obj.lay{i}.Nunknowns(udof); % number of unknowns depends on the physics 
         end
-        if any(obj.geom.Nudof ~= Nunknowns) % update geometry if necessary
-            geomNew = Geometry(obj.geom.zItf, obj.geom.N, Nunknowns); 
-            geomNew.symmetrized = obj.geom.symmetrized;
-            obj.geom = geomNew; 
+        if any(obj.geom.Nudof ~= Nunknowns) & ~isempty(obj.geom.gdofDBC)
+            warning('GEWTOOL:polarization:DBCconflict','The specified DOFs for Dirichlet BCs (DBCs) are no longer valid because the numbering of global DOFs changed with the new polarization. I am removing all DBCs.');
+            obj.geom.gdofDBC = [];
         end
-		obj.assembleLayers(udof, n);
-        obj.udof = udof;  % remember polarization
+        obj.geom.Nudof = Nunknowns;
         polStr = strjoin(polarizationNames,'-')+"-polarized"; 
         if n ~= 0, polStr = polStr+sprintf(", n = %d",n); end
+        obj.udof = udof;  % remember polarization
         obj.family = char(polStr);
         if isa(obj,'Cylinder'), obj.n = n; end  % remember circumferential wavenumber
 	end
@@ -129,6 +129,7 @@ methods
         % 
         % See also: Lamb, sh, decouplesLambvsSH.
         gew = obj.polarization(1:3, n);
+        gew = gew.assembleLayers(1:3, n);
 	end
 
 	function gew = Lamb(obj, n)
@@ -136,6 +137,7 @@ methods
         % 
         % See also: sh, fullyCoupled, decouplesLambvsSH.
         gew = obj.polarization(obj.udofLamb, n);
+        gew = gew.assembleLayers(obj.udofLamb, n);
     end
 
 	function gew = sh(obj, n)
@@ -143,6 +145,7 @@ methods
         %
         % See also: Lamb, fullyCoupled, decouplesLambvsSH.
 		gew = obj.polarization(obj.udofSH, n);
+        gew = gew.assembleLayers(obj.udofSH, n);
     end
 
     function dis = isDissipative(obj)
@@ -245,27 +248,36 @@ methods
         end
         decoupl = true;
     end
-    
-    function obj = fixGdof(obj, gdof)
-        % fixGdof - Homogeneous Dirichlet BCs: Fixes the specified degrees of freedom.
-        % The displacements at the indicated global degrees of freedom are set to zero.
+
+    function obj = addDOFtoDBC(obj, gdof)
+        % addDOFtoDBC - Stages "gdof" to be fixed to zero after assemblage.
+        % The displacements at the indicated global degrees of freedom will be set to zero by assembleLayers().
         % This function is used internally to implement the symmetric and anti-symmetric
-        % Lamb waves.
+        % Lamb waves. Calling addDOFtoDBC() successively has a cumulative effect. 
+        obj.geom.gdofDBC = unique([obj.geom.gdofDBC, gdof(:).']); % save for use after assembling the matrices
+    end
+    
+    function obj = incorporateDirichletBCs(obj)
+        % incorporateDirichletBCs - Incorporates the Homogeneous Dirichlet BCs
+        % previously specified by addDOFtoDBC().
         if isempty(obj.op)
-            warning('GEWTOOL:Waveguide:notassembled', 'Define the waveguide problem first by calling, e.g., fullyCoupled().');
+            error('GEWTOOL:Waveguide:notassembled', 'Define the waveguide problem first by calling, e.g., fullyCoupled().');
             return
         end
-        if ~isempty(obj.geom.gdofDBC)
-            error('GEWTOOL:Waveguide:multipleCallsToFixGdof', ['Only one call to fixGdof is permitted.'... 
-                ' Collect all global dofs you want to fix in a vector and pass them to fixGdof().']);
-        end
         ops = fields(obj.op);
+        gdof = obj.geom.gdofDBC;
         for i=1:length(ops)
             opName = ops{i};
             obj.op.(opName)(gdof,:) = []; % remove row
             obj.op.(opName)(:,gdof) = []; % remove column
         end
-        obj.geom.gdofDBC = gdof(:).'; 
+    end
+
+    function obj = fixGdof(obj, gdof)
+        % fixGdof - Homogeneous Dirichlet BCs: Fixes the specified degrees of freedom.
+        % Equivalent to calling addDOFtoDBC() and incorporateDirichletBCs().
+        obj.addDOFtoDBC(gdof);
+        obj.incorporateDirichletBCs;
     end
 
     function ret = isPiezoelectric(obj)

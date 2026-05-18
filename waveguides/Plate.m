@@ -67,7 +67,8 @@ methods
         udof = 1:3;
         udofFix = obj.dofInplane(udof); 
         gew = obj.polarization(udof,0); % n = 0 (circumferential order)
-        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix ux- and uy-displacements at bottom (z=0)
+        gew = gew.addDOFtoDBC(gew.geom.gdofBC{1}(udofFix,1)); % fix ux- and uy-displacements at bottom (z=0)
+        gew = gew.assembleLayers(udof,0);
         gew.family = 'all anti-sym.';
     end
 
@@ -81,7 +82,8 @@ methods
         udof = 1:3;
         udofFix = obj.dofOutofplane(udof); % 3 if [ux, uy, uz], 2 if [ux, uz]
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
-        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix uz-displacement at bottom (z=0)
+        gew = gew.addDOFtoDBC(gew.geom.gdofBC{1}(udofFix,1)); % fix uz-displacement at bottom (z=0)
+        gew = gew.assembleLayers(udof,0);
         gew.family = 'all sym.';
     end
 
@@ -116,7 +118,8 @@ methods
         udof = obj.udofLamb;
         udofFix = obj.dofOutofplane(udof); % 3 if [ux, uy, uz], 2 if [ux, uz]
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
-        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix uz-displacement at bottom (z=0)
+        gew = gew.addDOFtoDBC(gew.geom.gdofBC{1}(udofFix,1)); % fix uz-displacement at bottom (z=0)
+        gew = gew.assembleLayers(udof,0);
         gew.family = 'Lamb sym.';
     end
     
@@ -130,7 +133,8 @@ methods
         udof = obj.udofLamb;
         udofFix = obj.dofInplane(udof);
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
-        gew = gew.fixGdof(gew.geom.gdofBC{1}(udofFix,1)); % fix ux-displacement at bottom (z=0)
+        gew = gew.addDOFtoDBC(gew.geom.gdofBC{1}(udofFix,1)); % fix ux-displacement at bottom (z=0)
+        gew = gew.assembleLayers(udof,0);
         gew.family = 'Lamb anti-sym.';
     end
     
