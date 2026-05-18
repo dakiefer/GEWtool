@@ -95,7 +95,8 @@ methods
             wrange = max(wlist); 
             style = '-';
         else % we computed at const w
-            wrange = real(dat(1).w(end,end));
+            wlist = arrayfun( @(dati) max(dati.w(:,end)), dat );
+            wrange = max(wlist); 
             style = '.';
         end
         holdStat = ishold; % creats new axis if not yet existent
