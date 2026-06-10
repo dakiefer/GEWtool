@@ -103,18 +103,58 @@ methods
         end 
         % simplify to leaky-only when the halfspaces on both sides are equal: 
         if length(obj.halfSpaces) == 2 && obj.halfSpaces(1).mat == obj.halfSpaces(2).mat
-            obj.opNonlin.Rtop = obj.opNonlin.Rtop - obj.opNonlin.Rbottom; % top - bottom (waves radiated away from the plate)
-            obj.opNonlin = rmfield(obj.opNonlin,'Rbottom'); 
-            obj.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
+            if isa(obj.halfSpaces(1).mat,'MaterialFluid')
+                leaky = copy(obj);
+                leaky.opNonlin.Rtop = obj.opNonlin.Rtop - obj.opNonlin.Rbottom; % top - bottom (waves radiated away from the plate)
+                leaky.opNonlin = rmfield(leaky.opNonlin,'Rbottom'); 
+                leaky.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
+                trans = copy(obj);
+                trans.opNonlin.Rtop = obj.opNonlin.Rtop + obj.opNonlin.Rbottom; % top - bottom (waves radiated away from the plate)
+                trans.opNonlin = rmfield(trans.opNonlin,'Rbottom'); 
+                trans.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
+                obj = [leaky, trans]; % update return value
+            elseif isa(obj.halfSpaces(1).mat,'MaterialIsotropic')
+                mm = copy(obj);
+                mm.opNonlin.Rkgtop = obj.opNonlin.Rkgtop - obj.opNonlin.Rkgbottom;
+                mm.opNonlin.Rketop = obj.opNonlin.Rketop - obj.opNonlin.Rkebottom;
+                mm.opNonlin.Rgtop = obj.opNonlin.Rgtop - obj.opNonlin.Rgbottom;
+                mm.opNonlin.Retop = obj.opNonlin.Retop - obj.opNonlin.Rebottom;
+                mm.opNonlin = rmfield(mm.opNonlin,{'Rkgbottom','Rkebottom','Rgbottom','Rebottom'}); 
+                mm.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
+                mp = copy(obj);
+                mp.opNonlin.Rkgtop = obj.opNonlin.Rkgtop - obj.opNonlin.Rkgbottom;
+                mp.opNonlin.Rketop = obj.opNonlin.Rketop + obj.opNonlin.Rkebottom;
+                mp.opNonlin.Rgtop = obj.opNonlin.Rgtop - obj.opNonlin.Rgbottom;
+                mp.opNonlin.Retop = obj.opNonlin.Retop + obj.opNonlin.Rebottom;
+                mp.opNonlin = rmfield(mp.opNonlin,{'Rkgbottom','Rkebottom','Rgbottom','Rebottom'}); 
+                mp.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
+                pm = copy(obj);
+                pm.opNonlin.Rkgtop = obj.opNonlin.Rkgtop + obj.opNonlin.Rkgbottom;
+                pm.opNonlin.Rketop = obj.opNonlin.Rketop - obj.opNonlin.Rkebottom;
+                pm.opNonlin.Rgtop = obj.opNonlin.Rgtop + obj.opNonlin.Rgbottom;
+                pm.opNonlin.Retop = obj.opNonlin.Retop - obj.opNonlin.Rebottom;
+                pm.opNonlin = rmfield(pm.opNonlin,{'Rkgbottom','Rkebottom','Rgbottom','Rebottom'}); 
+                pm.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
+                pp = copy(obj);
+                pp.opNonlin.Rkgtop = obj.opNonlin.Rkgtop + obj.opNonlin.Rkgbottom;
+                pp.opNonlin.Rketop = obj.opNonlin.Rketop + obj.opNonlin.Rkebottom;
+                pp.opNonlin.Rgtop = obj.opNonlin.Rgtop + obj.opNonlin.Rgbottom;
+                pp.opNonlin.Retop = obj.opNonlin.Retop + obj.opNonlin.Rebottom;
+                pp.opNonlin = rmfield(pp.opNonlin,{'Rkgbottom','Rkebottom','Rgbottom','Rebottom'}); 
+                pp.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
+                obj = [mm, pp, pm, mp]; % update return value
+            end
         end
         % transform into a polynomial eigenvalue problem in a higher-dimensional
         % state space: 
-        op = obj.opNonlin; 
-        for i = 1:length(obj.halfSpaces)
-            op = getPolynomialForm(obj, op, obj.halfSpaces(i));
+        for p = 1:length(obj)
+            op = obj(p).opNonlin; 
+            for i = 1:length(obj(p).halfSpaces)
+                op = getPolynomialForm(obj(p), op, obj(p).halfSpaces(i));
+            end
+            op = PlateLeaky.reduceToQuadratic(op); 
+            obj(p).op = op;
         end
-        op = PlateLeaky.reduceToQuadratic(op); 
-        obj.op = op;
     end
     function obj = incorporateLoading(obj, loading, dofA, dofU, udof)
         % sides = {'a', 'b'}; % used for labeling the sides
