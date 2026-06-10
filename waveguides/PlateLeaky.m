@@ -292,33 +292,17 @@ methods
         op.L2 = LL2; op.L1 = LL1; op.L0 = LL0; op.M = MM;
     end
     function gew = symmetrizeGeometry(obj)
-        % symmetrizeGeometry - upper symmetric half of the original plate.
-        % Creates a new PlateLeaky object describing only the upper symmetric half 
-        % of the original object. 
-        % Throws a warning if the plate is not symmetric in geometry and materials. 
-        % This function is used by LambS, LambA, LambSA, etc., and you will 
-        % usually not need to call it explicitly.
         if ~obj.decouplesSA('v')
             error('GEWTOOL:symmetrizeGeometry','The setup is not symmetric. I cannot symmetrize the geometry.'); 
         end
         gew = symmetrizeGeometry@PlateClosed(obj);
-        gew.exteriorMat = obj.exteriorMat;
-        gew.exteriorMat{1} = []; % loading only at top side
+        gew.halfSpaces = obj.halfSpaces(2);
     end
     function decoupl = decouplesSA(obj, verb)
-        % decouplesSA - Tests whether symmetric and antisymmetric waves decouple.
-        % Usage: 
-        % decoupl = decouplesSA;       Returns true if SA waves decouple.
-        % decoupl = decouplesSA('v');  Throw warning indicating reason.
-        % 
-        % See also: decouplesLambvsSH.
-
-        % verify symmetry of materials:
         if nargin ~= 2
             verb = 'nonVerb';
         end
-        bothSides = ~isempty(obj.exteriorMat{1}) && ~isempty(obj.exteriorMat{2});
-        bothSame = bothSides && obj.exteriorMat{1} == obj.exteriorMat{2}; % short circuit to avoid error for empty entries
+        bothSame = length(obj.halfSpaces) == 2 && obj.halfSpaces(1).mat == obj.halfSpaces(2).mat;
         decoupl = bothSame && decouplesSA@PlateClosed(obj,verb);
     end
     function hasSolid = hasSolidLoading(obj)
