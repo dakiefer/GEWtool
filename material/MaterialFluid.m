@@ -84,6 +84,9 @@ methods
         % Usage: 
         % isEq = eq(a, b);
         % isEq = a == b;
+        if ~isa(b, class(a))
+            ret = false; return;
+        end
         ret = a.B == b.B && a.rho == b.rho;
     end
     function ret = ne(a, b)
