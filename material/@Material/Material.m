@@ -305,6 +305,9 @@ methods
         % Usage: 
         % isEq = eq(a, b);
         % isEq = a == b;
+        if ~isa(b, class(a))
+            ret = false; return;
+        end
         ret = ~any(a.c ~= b.c, 'all') && a.rho == b.rho;
     end
     function ret = ne(a, b)
