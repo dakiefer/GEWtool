@@ -48,7 +48,7 @@ classdef GEWdatLeaky < GEWdat
 
 properties 
     nA    % (scalar integer) number of bulk waves in the exterior half spaces
-    nBeta % (scalar integer) number of *different* vertical wave numbers
+    nBeta % (scalar integer) number of *non-eliminated* vertical wave numbers
 end
 
 properties (Dependent)
@@ -72,15 +72,14 @@ methods
         end
         obj = obj@GEWdat(gew,k,w,Psi);
         obj.nA = size(gew.opNonlin.L0,2) - numel(gew.geom.gdofFree); % number of bulk waves
-        r = floor( size(gew.op.L0,2)/size(gew.opNonlin.L0,2) ); % not integer for solid loading (reduction of cubic EVP)
-        obj.nBeta = log2(r); % size of matrices increases ~ 2^nBeta
+        obj.nBeta = GEWdatLeaky.getNumberOfNonEliminatedBeta(gew.halfSpaces);
     end
     function q = get.q(obj)
         blockInd_q = 2^obj.nBeta;
         q = obj.getBlock(blockInd_q);
     end
     function A = get.A(obj)
-        indA = obj.gew.halfSpaces.dofA; 
+        indA = [obj.gew.halfSpaces.dofA];
         A = obj.q(:,:,indA);
     end
     function beta = get.beta(obj)
@@ -166,6 +165,18 @@ methods
     function indBetaBlock = getBlockIndexOfBetai(obj,i)
         j = obj.nBeta:-1:i; 
         indBetaBlock = sum((2.^j)/2); 
+    end
+end
+
+methods (Static)
+    function nBeta = getNumberOfNonEliminatedBeta(loading)
+        nBeta = 0; 
+        for i = 1:length(loading)
+            nBeta_i = length(loading(i).dofA); % number of beta == number of bulk wave amplitudes
+            if ~loading(i).eliminated
+                nBeta = nBeta + nBeta_i;
+            end
+        end
     end
 end
 
