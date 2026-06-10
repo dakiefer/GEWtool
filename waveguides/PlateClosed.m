@@ -46,7 +46,7 @@ methods
     function gew = fullyCoupled(obj)
         n = 0;
         gew = fullyCoupled@Waveguide(obj, n);
-        gew.family = 'all';
+        [gew.family] = deal('all'); % assign same to each element of gew if necessary
     end
 
     function gew = fullyCoupledA(obj)
@@ -61,7 +61,7 @@ methods
         gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.addDOFtoDBC(gew.geom.gdofBC{1}(udofFix,1)); % fix ux- and uy-displacements at bottom (z=0)
         gew = gew.assembleLayers(udof,0);
-        gew.family = 'all anti-sym.';
+        [gew.family] = deal('all anti-sym.'); % assign same to each element of gew if necessary
     end
 
     function gew = fullyCoupledS(obj)
@@ -76,7 +76,7 @@ methods
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.addDOFtoDBC(gew.geom.gdofBC{1}(udofFix,1)); % fix uz-displacement at bottom (z=0)
         gew = gew.assembleLayers(udof,0);
-        gew.family = 'all sym.';
+        [gew.family] = deal('all sym.'); % assign same to each element of gew if necessary
     end
 
     function gews = fullyCoupledSA(obj)
@@ -97,7 +97,7 @@ methods
     function gew = Lamb(obj)
         n = 0;
         gew = Lamb@Waveguide(obj, n);
-        gew.family = 'Lamb';
+        [gew.family] = deal('Lamb'); % assign same to each element of gew if necessary
     end
     
     function gew = LambS(obj)
@@ -112,7 +112,7 @@ methods
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.addDOFtoDBC(gew.geom.gdofBC{1}(udofFix,1)); % fix uz-displacement at bottom (z=0)
         gew = gew.assembleLayers(udof,0);
-        gew.family = 'Lamb sym.';
+        [gew.family] = deal('Lamb sym.'); % assign same to each element of gew if necessary
     end
     
     function gew = LambA(obj)
@@ -127,7 +127,7 @@ methods
 		gew = obj.polarization(udof,0); % n = 0 (circumferential order)
         gew = gew.addDOFtoDBC(gew.geom.gdofBC{1}(udofFix,1)); % fix ux-displacement at bottom (z=0)
         gew = gew.assembleLayers(udof,0);
-        gew.family = 'Lamb anti-sym.';
+        [gew.family] = deal('Lamb anti-sym.'); % assign same to each element of gew if necessary
     end
     
     function gews = LambSA(obj)
@@ -148,7 +148,7 @@ methods
     function gew = sh(obj)
         n = 0;
         gew = sh@Waveguide(obj, n);
-        gew.family = 'SH waves';
+        [gew.family] = deal('SH waves'); % assign same to each element of gew if necessary
     end
 
     function decoupl = decouplesSA(obj, verb)
