@@ -75,14 +75,19 @@ end
 
 methods
 	function obj = PlateLeaky(mats, zs, Ns, halfSpaces)
+        if nargin < 4
+            halfSpaces = []; % to be provided later on (useful for symmetrizeGeometry()
+        end
         if ~all(isfinite(zs))
             error('GEWTOOL:PlateLeaky:wrongArg', 'All thicknesses/coordinates zs should be finite. Call Plate() to handle infinite exterior half-spaces. Alternativelly, you can pass them as appropriate structure in the fourth argument to PlateLeaky().');
         end
         obj = obj@PlateClosed(mats, zs, Ns);
-        for i = 1:length(halfSpaces) 
-            halfSpaces(i).eliminated = false; % augument this field to remember if the half space has already been eliminated
+        if ~isempty(halfSpaces)
+            for i = 1:length(halfSpaces) 
+                halfSpaces(i).eliminated = false; % augument this field to remember if the half space has already been eliminated
+            end
+            obj.halfSpaces = halfSpaces;
         end
-        obj.halfSpaces = halfSpaces;
     end
     function obj = assembleLayers(obj, udof, n)
         obj = assembleLayers@Waveguide(obj, udof, n);
