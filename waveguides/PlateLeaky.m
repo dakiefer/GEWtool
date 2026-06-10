@@ -333,18 +333,29 @@ methods
     end
 end
 
+
+
+
 methods (Static)
     function [dofA, dofU] = getCouplingDOFs(halfspace,geom,Ndof)
-        if halfspace.at == "top"
+        if halfspace.at == "top" || geom.symmetrized
             lay = geom.nLay; side = 2;
         elseif halfspace.at == "bottom" 
             lay = 1; side = 1;
         end
         if isa(halfspace.mat,'MaterialFluid') % is a fluid
             dofU = geom.gdofBC{lay}(end,side); % end -> last displacement component is always normal to the plate
+            for i = 1:length(dofU) % remove Dirichlet nodes if any have been set
+                r = length(find(geom.gdofDBC < dofU(i)));
+                dofU(i) = dofU(i) - r;
+            end
             dofA = Ndof + 1; 
         elseif isa(halfspace.mat,'MaterialIsotropic')
             dofU = geom.gdofBC{lay}(:,side);
+            for i = 1:length(dofU) % remove Dirichlet nodes if any have been set
+                r = length(find(geom.gdofDBC < dofU(i)));
+                dofU(i) = dofU(i) - r;
+            end
             dofA = Ndof + (1:length(dofU)); % same number of additional unknows as number of displacement components
         end
     end
