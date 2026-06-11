@@ -70,6 +70,7 @@ classdef PlateLeaky < PlateClosed
 properties
     halfSpaces = [] % TODO field "loading" as a array of struct with load.mat and load.at = "top"/"bottom"
     opNonlin = [] % matrices of the nonlinear eigenvalue problem
+    segregateFamilies = true; % whether to separate symmetric loading into several gews (when possible)
     % TODO expand "loading" struct array in terms of wave velocities (2 for solid loading) 
 end
 
@@ -102,7 +103,7 @@ methods
             obj = incorporateLoading(obj, loading, dofA, dofU, udof); 
         end 
         % simplify to leaky-only when the halfspaces on both sides are equal: 
-        if length(obj.halfSpaces) == 2 && obj.halfSpaces(1).mat == obj.halfSpaces(2).mat
+        if obj.segregateFamilies && length(obj.halfSpaces) == 2 && obj.halfSpaces(1).mat == obj.halfSpaces(2).mat
             if isa(obj.halfSpaces(1).mat,'MaterialFluid')
                 leaky = copy(obj);
                 leaky.opNonlin.Rtop = obj.opNonlin.Rtop - obj.opNonlin.Rbottom; % top - bottom (waves radiated away from the plate)
