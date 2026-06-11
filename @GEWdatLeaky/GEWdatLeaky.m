@@ -86,7 +86,7 @@ methods
         beta = nan([size(obj.k) obj.nBeta]); % allocate
         qHq = sum(conj(obj.q).*obj.q,3);
         for i = 1:obj.nBeta
-            blockInd_ibq = getBlockIndexOfBetai(obj,i); % which one of the 2^nA blocks to chose
+            blockInd_ibq = getBlockIndexOfBetai(obj,i); % which one of the 2^nBeta blocks to chose
             ibq = obj.getBlock(blockInd_ibq);
             betaih = -1i*sum(conj(obj.q).*ibq,3)./qHq;
             beta(:,:,i) = betaih/obj.gew.np.h0; % vertical wavenumbers for the ith bulk wave
@@ -172,7 +172,13 @@ methods (Static)
     function nBeta = getNumberOfNonEliminatedBeta(loading)
         nBeta = 0; 
         for i = 1:length(loading)
-            nBeta_i = length(loading(i).dofA); % number of beta == number of bulk wave amplitudes
+            if isa(loading(i).mat,'MaterialFluid')
+                nBeta_i = 1; 
+            elseif isa(loading(i).mat,'MaterialIsotropic')
+                nBeta_i = 2; % SH and SV waves radiate at same angle -> one common vertical wavenumber beta
+            else 
+                error('GEWTOOL:GEWdatLeaky:getNumberofNonEliminatedBeta','The loading material needs to be a fluid or an isotropic material.');
+            end
             if ~loading(i).eliminated
                 nBeta = nBeta + nBeta_i;
             end
