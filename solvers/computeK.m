@@ -105,18 +105,19 @@ function dat = computeK(gews, w, nModes, opts)
         end
 
         if opti.trace % trace modes: re-arrange such that dat.k
-            ww = w.*ones(size(kh)); % expand to same size (will be shuffled)
-            [kh, ind] = reorderByProximity(kh); % matches the modes such that the wavenumbers change as little as possible with frequency
-            for n = 1:size(ww,2), ww(:,n) = ww(ind(:,n),n); end % same ordering as wavenumbers
-            if ~isempty(u)
-                for n = 1:size(ww,2), u(:,n,:) = u(ind(:,n),n,:); end % same ordering 
+            ind = []; % initialize
+            try
+                [kh, ind] = reorderByProximity(kh); % matches the modes such that the wavenumbers change as little as possible with frequency
+            catch exception
+                warning('I was not able to re-order modes by proximity (tracing). Modes will be unordered.')
             end
-        else
-            ww = w; % avoid modifying w directly, as it will be reused in the next i-iteration
+            if ~isempty(u) && ~isempty(ind) % order eigenvectors if mode matching was successful
+                for n = 1:size(kh,2), u(:,n,:) = u(ind(:,n),n,:); end % same ordering 
+            end
         end
 
         k = kh/gew.np.h0;
-        dat(i) = GEWdat(gew,k,ww,u); % save in an object of class 'GEWdat' 
+        dat(i) = GEWdat(gew,k,w,u); % save in an object of class 'GEWdat' 
     end
 end
 
