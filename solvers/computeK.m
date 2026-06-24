@@ -48,7 +48,7 @@ function dat = computeK(gews, w, nModes, opts)
         gew = gews(i);
         [opti, nModes] = parseSolverOpts(opts, gew.op, nModes); % opti will be modified in the iteration
         if isfield(opti,'target') & isnumeric(opti.target)
-            opti.target = opti.target*gews.np.h0; % normalize to match gew.op
+            opti.target = opti.target*gew.np.h0; % normalize to match gew.op
         end
         if opti.sparse
             M = sparse(gew.op.M); L0 = sparse(gew.op.L0); L1 = sparse(gew.op.L1); L2 = sparse(gew.op.L2);
