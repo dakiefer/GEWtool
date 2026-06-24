@@ -314,7 +314,7 @@ methods
         ret = ~eq(a, b);
     end
     function plot(varargin)
-        % plot - plot the slowness curve around the axis ex.
+        % plot - plot the slowness curve around the axis ez.
         % Alias to plotSlownessCurve(varargin{:});
         plotSlownessCurve(varargin{:});
     end
