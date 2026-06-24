@@ -109,11 +109,15 @@ methods
                 leaky.opNonlin.Rtop = obj.opNonlin.Rtop - obj.opNonlin.Rbottom; % top - bottom (waves radiated away from the plate)
                 leaky.opNonlin = rmfield(leaky.opNonlin,'Rbottom'); 
                 leaky.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
-                trans = copy(obj);
-                trans.opNonlin.Rtop = obj.opNonlin.Rtop + obj.opNonlin.Rbottom; % top - bottom (waves radiated away from the plate)
-                trans.opNonlin = rmfield(trans.opNonlin,'Rbottom'); 
-                trans.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
-                obj = [leaky, trans]; % update return value
+                % trans = copy(obj);
+                % trans.opNonlin.Rtop = obj.opNonlin.Rtop + obj.opNonlin.Rbottom; % top - bottom (waves radiated away from the plate)
+                % trans.opNonlin = rmfield(trans.opNonlin,'Rbottom'); 
+                % trans.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
+                % obj = [leaky, trans]; % update return value
+                obj = leaky; % return only leaky waves with (+beta,-beta) paring
+                % NOTE: the k-spectrum of transmission modes computes correctly but
+                % beta cannot be extracted from the eigenvectors as these
+                % are degenerate (up- and down- transmission coalesces).
             elseif isa(obj.halfSpaces(1).mat,'MaterialIsotropic')
                 mm = copy(obj);
                 mm.opNonlin.Rkgtop = obj.opNonlin.Rkgtop - obj.opNonlin.Rkgbottom;
@@ -122,28 +126,32 @@ methods
                 mm.opNonlin.Retop = obj.opNonlin.Retop - obj.opNonlin.Rebottom;
                 mm.opNonlin = rmfield(mm.opNonlin,{'Rkgbottom','Rkebottom','Rgbottom','Rebottom'}); 
                 mm.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
-                mp = copy(obj);
-                mp.opNonlin.Rkgtop = obj.opNonlin.Rkgtop - obj.opNonlin.Rkgbottom;
-                mp.opNonlin.Rketop = obj.opNonlin.Rketop + obj.opNonlin.Rkebottom;
-                mp.opNonlin.Rgtop = obj.opNonlin.Rgtop - obj.opNonlin.Rgbottom;
-                mp.opNonlin.Retop = obj.opNonlin.Retop + obj.opNonlin.Rebottom;
-                mp.opNonlin = rmfield(mp.opNonlin,{'Rkgbottom','Rkebottom','Rgbottom','Rebottom'}); 
-                mp.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
-                pm = copy(obj);
-                pm.opNonlin.Rkgtop = obj.opNonlin.Rkgtop + obj.opNonlin.Rkgbottom;
-                pm.opNonlin.Rketop = obj.opNonlin.Rketop - obj.opNonlin.Rkebottom;
-                pm.opNonlin.Rgtop = obj.opNonlin.Rgtop + obj.opNonlin.Rgbottom;
-                pm.opNonlin.Retop = obj.opNonlin.Retop - obj.opNonlin.Rebottom;
-                pm.opNonlin = rmfield(pm.opNonlin,{'Rkgbottom','Rkebottom','Rgbottom','Rebottom'}); 
-                pm.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
-                pp = copy(obj);
-                pp.opNonlin.Rkgtop = obj.opNonlin.Rkgtop + obj.opNonlin.Rkgbottom;
-                pp.opNonlin.Rketop = obj.opNonlin.Rketop + obj.opNonlin.Rkebottom;
-                pp.opNonlin.Rgtop = obj.opNonlin.Rgtop + obj.opNonlin.Rgbottom;
-                pp.opNonlin.Retop = obj.opNonlin.Retop + obj.opNonlin.Rebottom;
-                pp.opNonlin = rmfield(pp.opNonlin,{'Rkgbottom','Rkebottom','Rgbottom','Rebottom'}); 
-                pp.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
-                obj = [mm, pp, pm, mp]; % update return value
+                % mp = copy(obj);
+                % mp.opNonlin.Rkgtop = obj.opNonlin.Rkgtop - obj.opNonlin.Rkgbottom;
+                % mp.opNonlin.Rketop = obj.opNonlin.Rketop + obj.opNonlin.Rkebottom;
+                % mp.opNonlin.Rgtop = obj.opNonlin.Rgtop - obj.opNonlin.Rgbottom;
+                % mp.opNonlin.Retop = obj.opNonlin.Retop + obj.opNonlin.Rebottom;
+                % mp.opNonlin = rmfield(mp.opNonlin,{'Rkgbottom','Rkebottom','Rgbottom','Rebottom'}); 
+                % mp.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
+                % pm = copy(obj);
+                % pm.opNonlin.Rkgtop = obj.opNonlin.Rkgtop + obj.opNonlin.Rkgbottom;
+                % pm.opNonlin.Rketop = obj.opNonlin.Rketop - obj.opNonlin.Rkebottom;
+                % pm.opNonlin.Rgtop = obj.opNonlin.Rgtop + obj.opNonlin.Rgbottom;
+                % pm.opNonlin.Retop = obj.opNonlin.Retop - obj.opNonlin.Rebottom;
+                % pm.opNonlin = rmfield(pm.opNonlin,{'Rkgbottom','Rkebottom','Rgbottom','Rebottom'}); 
+                % pm.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
+                % pp = copy(obj);
+                % pp.opNonlin.Rkgtop = obj.opNonlin.Rkgtop + obj.opNonlin.Rkgbottom;
+                % pp.opNonlin.Rketop = obj.opNonlin.Rketop + obj.opNonlin.Rkebottom;
+                % pp.opNonlin.Rgtop = obj.opNonlin.Rgtop + obj.opNonlin.Rgbottom;
+                % pp.opNonlin.Retop = obj.opNonlin.Retop + obj.opNonlin.Rebottom;
+                % pp.opNonlin = rmfield(pp.opNonlin,{'Rkgbottom','Rkebottom','Rgbottom','Rebottom'}); 
+                % pp.halfSpaces(1).eliminated = true; %  = obj.halfSpaces(2); 
+                % obj = [mm, pp, pm, mp]; % update return value
+                obj = mm; % return only leaky waves with (+beta1,-beta1) and (+beta2,-beta2) paring
+                % NOTE: the k-spectrum of the other modes computes correctly but
+                % the beta cannot be extracted from the eigenvectors as these
+                % are degenerate (up- and down- transmission coalesces).
             end
         end
         % transform into a polynomial eigenvalue problem in a higher-dimensional
